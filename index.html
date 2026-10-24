@@ -135,6 +135,15 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 #bttbl td{padding:6px 10px;white-space:nowrap;border-bottom:1px solid var(--grid)}
 #bttbl .num{text-align:right}
 #btcard .disc{margin-top:12px}
+.sbttbl{border-collapse:collapse;width:100%;font:12px var(--f-mono);font-variant-numeric:tabular-nums}
+.sbttbl th{position:sticky;top:0;background:var(--panel2);text-align:left;font-weight:500;color:var(--muted);padding:6px 10px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.sbttbl td{padding:6px 10px;white-space:nowrap;border-bottom:1px solid var(--grid)}
+.sbttbl .num{text-align:right}
+.sbtpre{display:flex;flex-wrap:wrap;gap:4px 14px}
+.sbtpre label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+#sbtout h3{font:600 14px var(--f-display);margin:16px 0 6px}
+#sbtout .tblwrap{margin-bottom:6px}
+#sbtcard .disc{margin-top:12px}
 .scanhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:8px}
 .scanhead h2{margin:0}
 .scanrows{display:grid;gap:8px}
@@ -200,7 +209,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 .h3{font:600 14px var(--f-display);margin:16px 0 4px}
 #planblocks2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px;margin-top:16px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-</head><body></style>
+</style></head><body>
 
 <div class="app">
   <main class="main">
@@ -223,46 +232,6 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
           <option value="SOLUSDT.P"></option><option value="XRPUSDT.P"></option><option value="DOGEUSDT.P"></option>
           <option value="ADAUSDT.P"></option><option value="AVAXUSDT.P"></option><option value="LINKUSDT.P"></option>
           <option value="1000PEPEUSDT.P"></option><option value="SUIUSDT.P"></option><option value="BTCUSDT"></option>
-          <option value="NIGHTUSDT.P"></option><option value="SYNUSDT.P"></option><option value="NEARUSDT.P"></option>
-          <option value="SIGNUSDT.P"></option><option value="UNIUSDT.P"></option><option value="KITEUSDT.P"></option>
-          <option value="ZROUSDT.P"></option><option value="FLUIDUSDT.P"></option><option value="REDUSDT.P"></option>
-          <option value="RSRUSDT.P"></option><option value="JCTUSDT.P"></option><option value="STXUSDT.P"></option>
-          <option value="EDUUSDT.P"></option><option value="APTUSDT.P"></option><option value="1000FLOKIUSDT.P"></option>
-          <option value="1000SHIBUSDT.P"></option><option value="AAVEUSDT.P"></option><option value="ACHUSDT.P"></option>
-          <option value="AKTUSDT.P"></option><option value="APRUSDT.P"></option><option value="ARBUSDT.P"></option>
-          <option value="ARKMUSDT.P"></option><option value="AVNTUSDT.P"></option><option value="AXLUSDT.P"></option>
-          <option value="BATUSDT.P"></option><option value="BCHUSDT.P"></option><option value="BEATUSDT.P"></option>
-          <option value="BIGTIMEUSDT.P"></option><option value="BIOUSDT.P"></option><option value="BLESSUSDT.P"></option>
-          <option value="BMTUSDT.P"></option><option value="BOMEUSDT.P"></option><option value="CFGUSDT.P"></option>
-          <option value="CHIPUSDT.P"></option><option value="COMPUSDT.P"></option><option value="COOKIEUSDT.P"></option>
-          <option value="CROSSUSDT.P"></option><option value="CYSUSDT.P"></option><option value="DASHUSDT.P"></option>
-          <option value="DOGSUSDT.P"></option><option value="DOSUSDT.P"></option><option value="DOTUSDT.P"></option>
-          <option value="EDENUSDT.P"></option><option value="EGLDUSDT.P"></option><option value="ENAUSDT.P"></option>
-          <option value="ENJUSDT.P"></option><option value="EPICUSDT.P"></option><option value="ETCUSDT.P"></option>
-          <option value="FETUSDT.P"></option><option value="FHEUSDT.P"></option><option value="FIGHTUSDT.P"></option>
-          <option value="FRAXUSDT.P"></option><option value="GIGGLEUSDT.P"></option><option value="GRTUSDT.P"></option>
-          <option value="HAEDALUSDT.P"></option><option value="HBARUSDT.P"></option><option value="HEIUSDT.P"></option>
-          <option value="HEMIUSDT.P"></option><option value="HOMEUSDT.P"></option><option value="HUSDT.P"></option>
-          <option value="HYPERUSDT.P"></option><option value="HYPEUSDT.P"></option><option value="ICPUSDT.P"></option>
-          <option value="INJUSDT.P"></option><option value="INUSDT.P"></option><option value="INXUSDT.P"></option>
-          <option value="JTOUSDT.P"></option><option value="JUPUSDT.P"></option><option value="KAITOUSDT.P"></option>
-          <option value="KATUSDT.P"></option><option value="KERNELUSDT.P"></option><option value="LINKUSDT.P"></option>
-          <option value="LQTYUSDT.P"></option><option value="LTCUSDT.P"></option><option value="MAGMAUSDT.P"></option>
-          <option value="MERLUSDT.P"></option><option value="MIRAUSDT.P"></option><option value="MITOUSDT.P"></option>
-          <option value="NEOUSDT.P"></option><option value="ONDOUSDT.P"></option><option value="ONTUSDT.P"></option>
-          <option value="OPENUSDT.P"></option><option value="OPGUSDT.P"></option><option value="OPNUSDT.P"></option>
-          <option value="PENDLEUSDT.P"></option><option value="PENGUUSDT.P"></option><option value="PEOPLEUSDT.P"></option>
-          <option value="PIEVERSEUSDT.P"></option><option value="PLUMEUSDT.P"></option><option value="PORTALUSDT.P"></option>
-          <option value="POWERUSDT.P"></option><option value="PROVEUSDT.P"></option><option value="PUMPUSDT.P"></option>
-          <option value="QTUMUSDT.P"></option><option value="RAVEUSDT.P"></option><option value="RECALLUSDT.P"></option>
-          <option value="RIVERUSDT.P"></option><option value="SANDUSDT.P"></option><option value="SEIUSDT.P"></option>
-          <option value="SENTUSDT.P"></option><option value="SKYUSDT.P"></option><option value="SOMIUSDT.P"></option>
-          <option value="SUSHIUSDT.P"></option><option value="SYRUPUSDT.P"></option><option value="ONTUSDT.P"></option>
-          <option value="OPENUSDT.P"></option><option value="OPGUSDT.P"></option><option value="TAGUSDT.P"></option>
-          <option value="TAOUSDT.P"></option><option value="TIAUSDT.P"></option><option value="TOSHIUSDT.P"></option>
-          <option value="VANAUSDT.P"></option><option value="VETUSDT.P"></option><option value="WCTUSDT.P"></option>
-          <option value="WIFUSDT.P"></option><option value="WLDUSDT.P"></option><option value="XLMUSDT.P"></option>
-          <option value="XPLUSDT.P"></option><option value="YBUSDT.P"></option><option value="ZECUSDT.P"></option>
         </datalist>
         <button type="submit" class="btn pri">Xem</button>
       </form>
@@ -274,8 +243,8 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       </div>
       <div class="group">
         <label class="lbl" for="sens" title="Số nến mỗi bên dùng để xác nhận một đỉnh/đáy. Nhỏ: nhiều đỉnh/đáy, nhạy, nhiều nhiễu. Lớn: ít đỉnh/đáy nhưng quan trọng hơn.">Độ nhạy</label>
-        <input type="range" id="sens" min="2" max="10" step="1" value="7">
-        <span class="kval" id="sensv">7</span>
+        <input type="range" id="sens" min="2" max="10" step="1" value="5">
+        <span class="kval" id="sensv">5</span>
       </div>
       <div class="group">
         <button type="button" class="btn" id="reload">Tải lại</button>
@@ -286,6 +255,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
     <p class="hint2" id="symhelp">Nhập hoặc dán tối đa 100 mã (cách nhau bằng dấu phẩy, khoảng trắng hoặc xuống dòng) rồi bấm Xem để quét setup cả danh sách. Thêm <b>.P</b> sau mã để xem giá Futures (ví dụ BTCUSDT.P). Không có .P là giá Spot. Với coin giá nhỏ, Futures thường dùng mã như 1000PEPEUSDT.P; gõ PEPEUSDT.P trang cũng tự thử mã đó.</p>
 
     <p class="hint2" id="lastwrap" hidden><button type="button" class="chipbtn" id="lastlist"></button></p>
+    <p class="hint2"><button type="button" class="chipbtn" id="sbtopen">Backtest setup trên lịch sử…</button></p>
 
     <section class="card" id="watchcard">
       <div class="scanhead"><h2>Cảnh báo setup tự động</h2><span class="scanprog" id="wprog"></span></div>
@@ -317,24 +287,40 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <section class="card" id="scancard" hidden aria-live="polite">
       <div class="scanhead"><h2>Quét nhiều coin</h2><span class="scanprog" id="scanprog"></span>
-        <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
+        <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="sbtopen2">Backtest setup</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
       <p class="note" id="scannote" hidden></p>
       <div class="scanrows" id="scanrows"></div>
       <p class="disc" id="scandisc">Setup là kết quả của luật cố định: "Sẵn sàng" khi H4 có xu hướng, H1 thuận và giá ở vùng vào H1, M15 xác nhận. "Có setup" khi H4 có xu hướng, H1 không đi ngược, và trong vài nến gần nhất có nến từ chối (xanh với LONG, đỏ với SHORT) ngay tại vùng vào lệnh H1 ở khung M15 hoặc H1, chưa chạm cắt lỗ và chưa đạt TP1. Không phải khuyến nghị đầu tư.</p>
     </section>
 
+    <section class="card" id="sbtcard" hidden aria-live="polite">
+      <div class="scanhead"><h2>Backtest setup trên lịch sử</h2><span class="scanprog" id="sbtprog"></span>
+        <span><button type="button" class="btn" id="sbtclose">Đóng</button></span></div>
+      <p class="hint2" style="margin:0 0 10px">Chạy lại đúng quy tắc quét (H4 xác định hướng, H1 vùng vào lệnh, M15 xác nhận) từng bước trên lịch sử của danh sách coin, rồi đếm xem mỗi setup chạm TP1 hay cắt lỗ trước. Mỗi bước chỉ dùng nến đã đóng, không nhìn trước tương lai. Dùng giá thật từ Binance, cần mở bằng file trên máy hoặc GitHub Pages.</p>
+      <div class="btform" id="sbtform">
+        <div class="fld"><label for="sbt-days">Lịch sử M15</label><select id="sbt-days"><option value="10">10 ngày</option><option value="20">20 ngày</option><option value="30" selected>30 ngày</option></select></div>
+        <div class="fld"><label for="sbt-step">Quét mỗi</label><select id="sbt-step"><option value="1">15 phút</option><option value="2" selected>30 phút</option><option value="4">1 giờ</option></select></div>
+        <div class="fld"><label for="sbt-hold">Giữ lệnh tối đa</label><select id="sbt-hold"><option value="48">12 giờ</option><option value="96" selected>24 giờ</option><option value="192">48 giờ</option></select></div>
+        <div class="fld"><label for="sbt-fee">Phí mỗi chiều (%)</label><input type="number" id="sbt-fee" value="0.05" min="0" max="1" step="0.01"></div>
+      </div>
+      <div class="sbtpre" id="sbtpre" role="group" aria-label="Bộ ngưỡng cần so sánh"></div>
+      <p class="hint2" style="margin:6px 0 10px"><button type="button" class="btn pri" id="sbtrun">Chạy backtest</button> <button type="button" class="btn" id="sbtstop" hidden>Dừng</button> <span id="sbtsrc"></span></p>
+      <div id="sbtout"></div>
+      <p class="disc" id="sbtdisc">Kết quả quá khứ không bảo đảm tương lai. Số lệnh ít (dưới khoảng 30) thì tỷ lệ thắng chưa đáng tin, hãy nhìn khoảng tin cậy. Chọn bộ ngưỡng đẹp nhất trên cùng một mẫu dữ liệu rất dễ bị "khớp quá mức" (overfitting): nếu muốn đổi ngưỡng, hãy kiểm tra lại trên một khoảng thời gian hoặc nhóm coin khác. Chưa mô phỏng trượt giá, funding, lệnh chờ không khớp và thanh khoản. Giả định vào lệnh ở giá mở nến M15 kế tiếp. Đây không phải khuyến nghị đầu tư.</p>
+    </section>
+
     <section class="group" id="layers" aria-label="Lớp phân tích">
       <button type="button" class="chipbtn" data-k="trend" aria-pressed="true"><span class="sw" style="background:var(--tl)"></span>Đường xu hướng</button>
-      <button type="button" class="chipbtn" data-k="fib" aria-pressed="false"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
+      <button type="button" class="chipbtn" data-k="fib" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
       <button type="button" class="chipbtn" data-k="pat" aria-pressed="true"><span class="sw" style="background:var(--pat)"></span>Mô hình giá</button>
       <button type="button" class="chipbtn" data-k="piv" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Đỉnh/đáy</button>
       <button type="button" class="chipbtn" data-k="ema" aria-pressed="true"><span class="sw" style="background:var(--ema1)"></span>EMA 20/50</button>
       <button type="button" class="chipbtn" data-k="boll" aria-pressed="true"><span class="sw" style="background:var(--boll)"></span>Bollinger 20/2</button>
-      <button type="button" class="chipbtn" data-k="macd" aria-pressed="false"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
+      <button type="button" class="chipbtn" data-k="macd" aria-pressed="true"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
       <button type="button" class="chipbtn" data-k="sig" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Nến signal setup</button>
-      <button type="button" class="chipbtn" data-k="bt" aria-pressed="false"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
+      <button type="button" class="chipbtn" data-k="bt" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
       <button type="button" class="chipbtn" data-k="plan" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Kế hoạch (vào/SL/TP)</button>
-      <button type="button" class="chipbtn" data-k="vol" aria-pressed="false"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
+      <button type="button" class="chipbtn" data-k="vol" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
     </section>
 
     <section class="chartcard">
@@ -608,7 +594,8 @@ function detectPatterns(d,piv,a){
         out.push({key:'dtop',name:'Hai đỉnh (Double Top)',bias:'bear',status:conf?'đã xác nhận':'đang hình thành',
           desc:'Hai đỉnh gần ngang nhau quanh '+fmt((h1.p+h2.p)/2)+', cách nhau '+(h2.i-h1.i)+' nến, đường cổ ở '+fmt(t.p)+'. '+(conf?'Giá đã đóng dưới đường cổ nên mô hình được xác nhận.':'Giá đóng dưới đường cổ sẽ xác nhận mô hình giảm.'),
           lines:[{i1:h1.i,p1:h1.p,i2:h2.i,p2:h2.p},{i1:h1.i,p1:t.p,i2:n-1,p2:t.p,dash:true}],
-          pts:[h1,h2,t],label:{i:h2.i,p:h2.p,above:true}});
+          pts:[h1,h2,t],label:{i:h2.i,p:h2.p,above:true},
+          geo:{side:-1,neck:t.p,ext:Math.max(h1.p,h2.p),height:(h1.p+h2.p)/2-t.p,extName:'đỉnh thứ hai',neckName:'đường cổ'}});
       }
     }
   }
@@ -621,7 +608,8 @@ function detectPatterns(d,piv,a){
         out.push({key:'dbot',name:'Hai đáy (Double Bottom)',bias:'bull',status:conf?'đã xác nhận':'đang hình thành',
           desc:'Hai đáy gần ngang nhau quanh '+fmt((l1.p+l2.p)/2)+', cách nhau '+(l2.i-l1.i)+' nến, đường cổ ở '+fmt(t.p)+'. '+(conf?'Giá đã đóng trên đường cổ nên mô hình được xác nhận.':'Giá đóng trên đường cổ sẽ xác nhận mô hình tăng.'),
           lines:[{i1:l1.i,p1:l1.p,i2:l2.i,p2:l2.p},{i1:l1.i,p1:t.p,i2:n-1,p2:t.p,dash:true}],
-          pts:[l1,l2,t],label:{i:l2.i,p:l2.p,above:false}});
+          pts:[l1,l2,t],label:{i:l2.i,p:l2.p,above:false},
+          geo:{side:1,neck:t.p,ext:Math.min(l1.p,l2.p),height:t.p-(l1.p+l2.p)/2,extName:'đáy thứ hai',neckName:'đường cổ'}});
       }
     }
   }
@@ -633,7 +621,8 @@ function detectPatterns(d,piv,a){
       out.push({key:'hs',name:'Vai đầu vai (Head & Shoulders)',bias:'bear',status:conf?'đã xác nhận':'đang hình thành',
         desc:'Đầu ở '+fmt(hd.p)+' cao hơn hai vai ('+fmt(s1.p)+' và '+fmt(s2.p)+'). Đường cổ nối hai đáy, hiện ở khoảng '+fmt(neck)+'. '+(conf?'Giá đã đóng dưới đường cổ.':'Giá đóng dưới đường cổ sẽ xác nhận mô hình đảo chiều giảm.'),
         lines:[{i1:s1.i,p1:s1.p,i2:t1.i,p2:t1.p},{i1:t1.i,p1:t1.p,i2:hd.i,p2:hd.p},{i1:hd.i,p1:hd.p,i2:t2.i,p2:t2.p},{i1:t2.i,p1:t2.p,i2:s2.i,p2:s2.p},{i1:t1.i,p1:t1.p,i2:n-1,p2:neck,dash:true}],
-        pts:[s1,hd,s2,t1,t2],label:{i:hd.i,p:hd.p,above:true}});
+        pts:[s1,hd,s2,t1,t2],label:{i:hd.i,p:hd.p,above:true},
+        geo:{side:-1,neck:neck,ext:s2.p,height:hd.p-(t1.p+mn*(hd.i-t1.i)),extName:'vai phải',neckName:'đường cổ'}});
     }
   }
   if(L.length>=3){
@@ -644,7 +633,8 @@ function detectPatterns(d,piv,a){
       out.push({key:'ihs',name:'Vai đầu vai ngược',bias:'bull',status:conf?'đã xác nhận':'đang hình thành',
         desc:'Đầu ở '+fmt(qh.p)+' thấp hơn hai vai ('+fmt(q1.p)+' và '+fmt(q2.p)+'). Đường cổ nối hai đỉnh, hiện ở khoảng '+fmt(neck2)+'. '+(conf?'Giá đã đóng trên đường cổ.':'Giá đóng trên đường cổ sẽ xác nhận mô hình đảo chiều tăng.'),
         lines:[{i1:q1.i,p1:q1.p,i2:u1.i,p2:u1.p},{i1:u1.i,p1:u1.p,i2:qh.i,p2:qh.p},{i1:qh.i,p1:qh.p,i2:u2.i,p2:u2.p},{i1:u2.i,p1:u2.p,i2:q2.i,p2:q2.p},{i1:u1.i,p1:u1.p,i2:n-1,p2:neck2,dash:true}],
-        pts:[q1,qh,q2,u1,u2],label:{i:qh.i,p:qh.p,above:false}});
+        pts:[q1,qh,q2,u1,u2],label:{i:qh.i,p:qh.p,above:false},
+        geo:{side:1,neck:neck2,ext:q2.p,height:(u1.p+mu*(qh.i-u1.i))-qh.p,extName:'vai phải',neckName:'đường cổ'}});
     }
   }
 
@@ -703,7 +693,8 @@ function detectPatterns(d,piv,a){
       out.push({key:'cup',name:'Cốc tay cầm (Cup & Handle)',bias:'bull',status:best.brk?'đã xác nhận (phá vỡ lên)':'đang hình thành tay cầm',
         desc:'Cốc có miệng quanh '+fmt(best.rim)+', đáy '+fmt(best.bt.p)+' (sâu '+fmt(best.depth)+'), tay cầm hồi xuống '+fmt(best.hlow.p)+'. '+(best.brk?'Giá đã đóng trên miệng cốc nên mô hình được xác nhận.':'Giá đóng trên '+fmt(best.rim)+' sẽ xác nhận mô hình tăng; mục tiêu thường đo bằng độ sâu của cốc.'),
         lines:[{i1:best.hl.i,p1:best.hl.p,i2:best.bt.i,p2:best.bt.p},{i1:best.bt.i,p1:best.bt.p,i2:best.hr.i,p2:best.hr.p},{i1:best.hr.i,p1:best.hr.p,i2:best.hlow.i,p2:best.hlow.p},{i1:best.hl.i,p1:best.rim,i2:n-1,p2:best.rim,dash:true}],
-        pts:[best.hl,best.bt,best.hr,best.hlow],label:{i:best.bt.i,p:best.bt.p,above:false}});
+        pts:[best.hl,best.bt,best.hr,best.hlow],label:{i:best.bt.i,p:best.bt.p,above:false},
+        geo:{side:1,neck:best.rim,ext:best.hlow.p,height:best.depth,extName:'đáy tay cầm',neckName:'miệng cốc'}});
     }
   })();
 
@@ -727,14 +718,15 @@ function detectPatterns(d,piv,a){
       if(uS-lS>pole*0.5||uE-lE<a*0.3)continue;
       var cF=sg*lastC;
       if(cF<lE-a*0.5)continue;
-      found={pe:pe,mp:mp,top:top,uS:uS,uE:uE,lS:lS,lE:lE,pole:pole,brk:cF>uE+a*0.5};
+      found={pe:pe,mp:mp,top:top,uS:uS,uE:uE,lS:lS,lE:lE,pole:pole,mnl:mnl,brk:cF>uE+a*0.5};
     }
     if(found){
       var f=found,R2=function(v){return sg*v},up=sg>0;
       out.push({key:'flag',name:up?'Cờ tăng (Bull Flag)':'Cờ giảm (Bear Flag)',bias:up?'bull':'bear',status:f.brk?'đã xác nhận (phá vỡ '+(up?'lên':'xuống')+')':'đang hình thành',
-        desc:'Cột cờ '+(up?'tăng':'giảm')+' mạnh '+fmt(f.pole)+' ('+(f.pole/a).toFixed(1)+' ATR) trong '+(f.pe-f.mp)+' nến, sau đó giá nghỉ '+(n-1-f.pe)+' nến trong kênh nhỏ đi ngược chiều. '+(f.brk?'Giá đã phá vỡ kênh theo hướng cột cờ.':'Giá đóng '+(up?'trên ':'dưới ')+fmt(R2(up?f.uE:f.lE))+' sẽ xác nhận, mục tiêu thường đo bằng chiều dài cột cờ.'),
+        desc:'Cột cờ '+(up?'tăng':'giảm')+' mạnh '+fmt(f.pole)+' ('+(f.pole/a).toFixed(1)+' ATR) trong '+(f.pe-f.mp)+' nến, sau đó giá nghỉ '+(n-1-f.pe)+' nến trong kênh nhỏ đi ngược chiều. '+(f.brk?'Giá đã phá vỡ kênh theo hướng cột cờ.':'Giá đóng '+(up?'trên ':'dưới ')+fmt(R2(f.uE))+' sẽ xác nhận, mục tiêu thường đo bằng chiều dài cột cờ.'),
         lines:[{i1:f.mp,p1:R2(lo(f.mp)),i2:f.pe,p2:R2(f.top)},{i1:f.pe+1,p1:R2(f.uS),i2:n-1,p2:R2(f.uE)},{i1:f.pe+1,p1:R2(f.lS),i2:n-1,p2:R2(f.lE)}],
-        pts:[{i:f.mp,p:R2(lo(f.mp))},{i:f.pe,p:R2(f.top)}],label:{i:Math.round((f.pe+n-1)/2),p:R2(f.uE),above:up}});
+        pts:[{i:f.mp,p:R2(lo(f.mp))},{i:f.pe,p:R2(f.top)}],label:{i:Math.round((f.pe+n-1)/2),p:R2(f.uE),above:up},
+        geo:{side:sg,neck:R2(f.uE),ext:R2(f.mnl),height:f.pole,extName:up?'đáy cờ':'đỉnh cờ',neckName:'biên cờ'}});
     }
   });
 
@@ -794,7 +786,8 @@ function detectPatterns(d,piv,a){
       out.push({key:'darvas',name:'Hộp Darvas',bias:bias,status:st,
         desc:'Sau khi lập đỉnh mới '+fmt(f.T)+', giá đi ngang trong hộp '+fmt(f.bot)+' đến '+fmt(f.T)+' suốt '+(n-1-f.ti)+' nến. '+(st==='đang trong hộp'?'Theo Darvas, mua khi giá đóng trên nóc hộp, cắt lỗ dưới đáy hộp.':'Giá đã '+st+' hộp.'),
         lines:[{i1:f.ti,p1:f.T,i2:n-1,p2:f.T},{i1:f.ti,p1:f.bot,i2:n-1,p2:f.bot},{i1:f.ti,p1:f.bot,i2:f.ti,p2:f.T}],
-        pts:[{i:f.ti,p:f.T},{i:f.bi,p:f.bot}],label:{i:Math.round((f.ti+n-1)/2),p:f.T,above:true}});
+        pts:[{i:f.ti,p:f.T},{i:f.bi,p:f.bot}],label:{i:Math.round((f.ti+n-1)/2),p:f.T,above:true},
+        geo:{side:0,top:f.T,bot:f.bot,height:f.T-f.bot,neckName:'mép hộp',extName:'mép đối diện của hộp'}});
     }
   })();
   return out;
@@ -1090,6 +1083,11 @@ function findSweep(d,A){
   }
   return null;
 }
+/* Các ngưỡng chính của setup, gom một chỗ để backtest có thể so sánh nhiều bộ ngưỡng. Giá trị mặc định giữ nguyên hành vi cũ.
+   confirmN: số tín hiệu M15 tối thiểu (trên 4); slPad, slMin: đệm cắt lỗ và khoảng cách cắt lỗ tối thiểu (ATR);
+   zoneTol, body: dung sai chạm vùng và thân nến tối thiểu của nến signal (ATR); tp1Min: khoảng cách TP1 tối thiểu (R). */
+var CFG={confirmN:3,slPad:0.25,slMin:0.8,zoneTol:0.25,body:0.15,tp1Min:0.8};
+var CFG_DEF={confirmN:3,slPad:0.25,slMin:0.8,zoneTol:0.25,body:0.15,tp1Min:0.8};
 /* Kế hoạch cho một hướng s (1 Long, -1 Short). ext.h1 và ext.h4 là các vùng giá của khung lớn, dùng để đặt mục tiêu chốt lời. */
 function planCoreOf(d,A,s,mode,ext){
   var n=A.n,c=d[n-1].c,a=A.a,pool=levelPool(A,d),sweep=findSweep(d,A);
@@ -1100,30 +1098,30 @@ function planCoreOf(d,A,s,mode,ext){
     var fvg=findFVG(d,a,up?'bull':'bear',c);
     var qm=null;
     A.pats.forEach(function(pt){if(pt.key==='qml'&&pt.bias===(up?'bull':'bear')&&pt.zone&&(pt.zone.mid-c)*adv>a*0.2)qm=pt});
-    if(qm){e1={lo:qm.zone.lo,hi:qm.zone.hi,label:'Chờ hồi về vùng QML',note:'điểm gãy cấu trúc QM tại '+fmt(qm.zone.mid)+', mất '+fmt(qm.head)+' là hủy kịch bản'}}
-    else if(fvg)e1={lo:fvg.lo,hi:fvg.hi,label:'Chờ hồi về vùng FVG '+(up?'tăng':'giảm'),note:'khoảng trống giá chưa được lấp'};
-    else if(advLv[0]){var z=zone(advLv[0].p,a*0.25);e1={lo:z.lo,hi:z.hi,label:'Chờ hồi về vùng '+(up?'hỗ trợ':'kháng cự')+' gần nhất',note:advLv[0].src}}
-    else e1={lo:c-a*0.25,hi:c+a*0.25,label:'Vào quanh giá hiện tại',note:'không có vùng hồi rõ ràng'};
+    if(qm){e1={lo:qm.zone.lo,hi:qm.zone.hi,label:'Chờ hồi về vùng QML',note:'điểm gãy cấu trúc QM tại '+fmt(qm.zone.mid)+', mất '+fmt(qm.head)+' là hủy kịch bản',src:'Mô hình QML'}}
+    else if(fvg)e1={lo:fvg.lo,hi:fvg.hi,label:'Chờ hồi về vùng FVG '+(up?'tăng':'giảm'),note:'khoảng trống giá chưa được lấp',src:'FVG (khoảng trống giá)'};
+    else if(advLv[0]){var z=zone(advLv[0].p,a*0.25);e1={lo:z.lo,hi:z.hi,label:'Chờ hồi về vùng '+(up?'hỗ trợ':'kháng cự')+' gần nhất',note:advLv[0].src,src:'Mức giá gần nhất: '+advLv[0].src}}
+    else e1={lo:c-a*0.25,hi:c+a*0.25,label:'Vào quanh giá hiện tại',note:'không có vùng hồi rõ ràng',src:'Giá hiện tại (không có vùng hồi rõ)'};
     entries.push(e1);
     var e20=A.e20[n-1];
-    if((e20-c)*adv>0){var z2=zone(e20,a*0.2);entries.push({lo:z2.lo,hi:z2.hi,label:'Vào theo đà khi hồi về EMA20',note:'chỉ vào khi có nến đảo chiều từ chối vùng này'})}
-    else if(proLv[0]){var z3=zone(proLv[0].p+s*a*0.2,a*0.1);entries.push({lo:z3.lo,hi:z3.hi,label:'Vào khi phá vỡ '+(up?'kháng cự':'hỗ trợ'),note:'chờ nến đóng cửa '+(up?'trên ':'dưới ')+fmt(proLv[0].p)})}
+    if((e20-c)*adv>0){var z2=zone(e20,a*0.2);entries.push({lo:z2.lo,hi:z2.hi,label:'Vào theo đà khi hồi về EMA20',note:'chỉ vào khi có nến đảo chiều từ chối vùng này',src:'EMA20'})}
+    else if(proLv[0]){var z3=zone(proLv[0].p+s*a*0.2,a*0.1);entries.push({lo:z3.lo,hi:z3.hi,label:'Vào khi phá vỡ '+(up?'kháng cự':'hỗ trợ'),note:'chờ nến đóng cửa '+(up?'trên ':'dưới ')+fmt(proLv[0].p),src:'Mức phá vỡ: '+proLv[0].src})}
   }else{
     var bp=proLv[0]?proLv[0].p:c+s*1.5*a,zb=zone(bp+s*a*0.2,a*0.15);
-    e1={lo:zb.lo,hi:zb.hi,label:'Vào khi phá vỡ '+(up?'lên':'xuống'),note:'chờ nến đóng cửa '+(up?'trên ':'dưới ')+fmt(bp)+' ('+(proLv[0]?proLv[0].src:'biên độ gần nhất')+')'};
+    e1={lo:zb.lo,hi:zb.hi,label:'Vào khi phá vỡ '+(up?'lên':'xuống'),note:'chờ nến đóng cửa '+(up?'trên ':'dưới ')+fmt(bp)+' ('+(proLv[0]?proLv[0].src:'biên độ gần nhất')+')',src:'Mức phá vỡ: '+(proLv[0]?proLv[0].src:'biên độ 1.5 ATR từ giá')};
     entries.push(e1);
   }
-  mid=(e1.lo+e1.hi)/2;edge=up?e1.lo:e1.hi;ref=null;refNote='';
-  if(sweep&&sweep.side===s&&mode==='pullback'){ref=sweep.wick;refNote=(up?'dưới đáy':'trên đỉnh')+' quét thanh khoản '+fmt(sweep.wick)}
-  if(ref===null&&qm){ref=qm.head;refNote=(up?'dưới':'trên')+' đầu QM '+fmt(ref)}
+  mid=(e1.lo+e1.hi)/2;edge=up?e1.lo:e1.hi;ref=null;refNote='';var refSrc='';
+  if(sweep&&sweep.side===s&&mode==='pullback'){ref=sweep.wick;refNote=(up?'dưới đáy':'trên đỉnh')+' quét thanh khoản '+fmt(sweep.wick);refSrc='Râu quét thanh khoản'}
+  if(ref===null&&qm){ref=qm.head;refNote=(up?'dưới':'trên')+' đầu QM '+fmt(ref);refSrc='Đầu mô hình QML'}
   if(ref===null){
     var pv=A.piv.filter(function(p){return up?(p.type==='L'&&p.p<edge):(p.type==='H'&&p.p>edge)}).sort(function(x,y){return up?y.p-x.p:x.p-y.p});
     /* Kịch bản phá biên: bỏ qua swing quá xa, giá quay lại trong biên 1.5 ATR là đủ để hủy kịch bản. */
-    if(pv[0]&&(mode!=='break'||Math.abs(pv[0].p-edge)<=a*2.5)){ref=pv[0].p;refNote=(up?'dưới đáy':'trên đỉnh')+' gần nhất '+fmt(ref)}
+    if(pv[0]&&(mode!=='break'||Math.abs(pv[0].p-edge)<=a*2.5)){ref=pv[0].p;refNote=(up?'dưới đáy':'trên đỉnh')+' gần nhất '+fmt(ref);refSrc=(up?'Đáy':'Đỉnh')+' swing gần nhất'}
   }
-  if(ref===null){ref=edge+adv*1.5*a;refNote='cách vùng vào lệnh 1.5 ATR'}
-  sl=ref+adv*a*0.25;
-  if((sl-edge)*adv<a*0.8){sl=edge+adv*a*0.8;refNote='cách vùng vào lệnh 0.8 ATR'}
+  if(ref===null){ref=edge+adv*1.5*a;refNote='cách vùng vào lệnh 1.5 ATR';refSrc='Khoảng cách 1.5 ATR (không có swing phù hợp)'}
+  sl=ref+adv*a*CFG.slPad;
+  if((sl-edge)*adv<a*CFG.slMin){sl=edge+adv*a*CFG.slMin;refNote='cách vùng vào lệnh '+CFG.slMin+' ATR';refSrc='Khoảng cách tối thiểu '+CFG.slMin+' ATR (mốc '+refSrc.toLowerCase()+' quá gần vùng vào)'}
   var risk=Math.abs(mid-sl),tps=[];
   if(ext&&ext.h1&&ext.h4){
     var lbl=function(arr,tf){return arr.map(function(x){return {p:x.p,src:tf+' '+x.src}})};
@@ -1132,14 +1130,14 @@ function planCoreOf(d,A,s,mode,ext){
       var arr=list.filter(function(x){return (x.p-mid)*s>0&&Math.abs(x.p-mid)>=minD}).sort(function(x,y){return Math.abs(x.p-mid)-Math.abs(y.p-mid)});
       return arr[0]||null;
     };
-    var m1=risk*0.8,t1=first(m15.concat(h1),m1);
+    var m1=risk*CFG.tp1Min,t1=first(m15.concat(h1),m1);
     if(t1)tps.push({p:t1.p,note:t1.src});
     var m2=Math.max(risk*1.5,(t1?Math.abs(t1.p-mid):m1)+a*0.5),t2=first(h1.concat(h4),m2);
     if(t2)tps.push({p:t2.p,note:t2.src});
     var m3=Math.max(risk*2.5,(t2?Math.abs(t2.p-mid):m2)+a),t3=first(h4.concat(h1),m3);
     if(t3)tps.push({p:t3.p,note:t3.src});
   }else{
-    pickLevels(pool,mid,s,a,a*0.8).filter(function(x){return Math.abs(x.p-mid)>=risk*0.8}).slice(0,3).forEach(function(x){tps.push({p:x.p,note:x.src})});
+    pickLevels(pool,mid,s,a,a*0.8).filter(function(x){return Math.abs(x.p-mid)>=risk*CFG.tp1Min}).slice(0,3).forEach(function(x){tps.push({p:x.p,note:x.src})});
   }
   var mult=[1.5,2.5,4];
   for(i2=0;i2<3&&tps.length<3;i2++){
@@ -1148,7 +1146,7 @@ function planCoreOf(d,A,s,mode,ext){
   }
   tps.sort(function(x,y){return Math.abs(x.p-mid)-Math.abs(y.p-mid)});
   tps.forEach(function(x){x.r=Math.abs(x.p-mid)/risk});
-  return {side:s,mode:mode,entries:entries,sl:{p:sl,note:refNote+', cộng đệm 0.25 ATR'},tps:tps,mid:mid,risk:risk,riskPct:risk/mid*100,rr2:tps[1]?tps[1].r:(tps[0]?tps[0].r:0)};
+  return {side:s,mode:mode,entries:entries,sl:{p:sl,note:refNote+', cộng đệm '+CFG.slPad+' ATR',src:refSrc,atr:Math.abs(sl-edge)/a},tps:tps,mid:mid,risk:risk,riskPct:risk/mid*100,rr2:tps[1]?tps[1].r:(tps[0]?tps[0].r:0)};
 }
 function buildPlan(d,A){
   if(!A)return null;
@@ -1228,9 +1226,63 @@ function planSig(pl){
 }
 function planText(p,title){
   var s='<p><strong>'+title+'</strong></p>';
-  s+='<p>Vào lệnh: '+p.entries.map(function(e,i){return (i+1)+') '+e.label+': '+fmt(e.lo)+' đến '+fmt(e.hi)+' ('+e.note+')'}).join('; ')+'.</p>';
-  s+='<p>Cắt lỗ: <strong>'+fmt(p.sl.p)+'</strong> ('+p.sl.note+'). Chốt lời: '+p.tps.map(function(t,i){return 'TP'+(i+1)+' '+fmt(t.p)+' ('+t.r.toFixed(1)+'R)'}).join(', ')+'.</p>';
+  s+='<p>Vào lệnh: '+p.entries.map(function(e,i){return (i+1)+') '+e.label+': '+fmt(e.lo)+' đến '+fmt(e.hi)+' ('+e.note+(e.src?'; nguồn vùng: '+e.src:'')+')'}).join('; ')+'.</p>';
+  s+='<p>Cắt lỗ: <strong>'+fmt(p.sl.p)+'</strong> ('+p.sl.note+(p.sl.src?'; nguồn: '+p.sl.src:'')+'). Chốt lời: '+p.tps.map(function(t,i){return 'TP'+(i+1)+' '+fmt(t.p)+' ('+t.r.toFixed(1)+'R)'}).join(', ')+'.</p>';
   return s;
+}
+
+/* Kế hoạch vào lệnh theo mô hình giá, theo cách giao dịch kinh điển:
+   vào khi giá đóng cửa phá đường cổ (hoặc hồi test lại đường cổ sau khi phá), cắt lỗ sau điểm cuối của mô hình,
+   mục tiêu đo bằng chiều cao mô hình chiếu từ đường cổ. Chỉ lấy mô hình cùng hướng s (hướng xu hướng H4).
+   Không thay đổi trạng thái setup đa khung, chỉ bổ sung kế hoạch để đối chiếu. */
+function patternPlans(d,A,s,tf){
+  var out=[];
+  if(!A||!s)return out;
+  var n=A.n,a=A.a,c=d[n-1].c,up=s>0,adv=-s;
+  A.pats.forEach(function(p){
+    var g=p.geo;
+    if(!g)return;
+    var side=g.side,neck,ext;
+    if(p.key==='darvas'){
+      if(p.bias==='bull'&&!up||p.bias==='bear'&&up)return;
+      side=s;neck=up?g.top:g.bot;ext=up?g.bot:g.top;
+    }else{
+      if(side!==s)return;
+      neck=g.neck;ext=g.ext;
+    }
+    var H=g.height;
+    if(!(H>=a*1.5)||!isFinite(neck)||!isFinite(ext))return;
+    if((neck-ext)*s<=0)return;                     /* điểm cuối phải nằm sau đường cổ so với hướng lệnh */
+    var past=(c-neck)*s,broken=past>0,far=past>a*1.5;
+    /* Giá đã đi quá xa mục tiêu đầu thì mô hình không còn dùng để vào lệnh. */
+    if(past>H*0.9)return;
+    var entries=[],e1,e2=null,label;
+    if(!broken){
+      e1={lo:neck+s*a*0.1-a*0.15,hi:neck+s*a*0.1+a*0.15,label:'Vào khi đóng cửa phá '+g.neckName+' '+(up?'lên':'xuống'),note:'chờ nến '+tf+' đóng cửa '+(up?'trên ':'dưới ')+fmt(neck)+', chưa phá thì chưa vào',src:'Mô hình '+p.name+', '+g.neckName+' '+fmt(neck)};
+      entries.push(e1);
+    }else{
+      e1={lo:neck-a*0.3,hi:neck+a*0.3,label:'Chờ hồi test lại '+g.neckName,note:far?'giá đã đi xa '+(past/a).toFixed(1)+' ATR khỏi '+g.neckName+', chờ nhịp hồi':'giá vừa phá '+g.neckName+', vào khi hồi test và giữ được',src:'Mô hình '+p.name+', '+g.neckName+' '+fmt(neck)};
+      entries.push(e1);
+      if(!far)entries.push({lo:c-a*0.15,hi:c+a*0.15,label:'Vào theo nến phá vỡ (đuổi giá)',note:'rủi ro cao hơn vì cắt lỗ xa hơn, chỉ vào khi chấp nhận',src:'Giá hiện tại sau khi phá '+g.neckName});
+    }
+    var mid=(e1.lo+e1.hi)/2,edge=up?e1.lo:e1.hi;
+    var sl=ext+adv*a*CFG.slPad,srcNote=g.extName+' '+fmt(ext);
+    if((sl-edge)*adv<a*CFG.slMin){sl=edge+adv*a*CFG.slMin;srcNote='khoảng cách tối thiểu '+CFG.slMin+' ATR (mốc '+g.extName+' '+fmt(ext)+' quá gần vùng vào)'}
+    var risk=Math.abs(mid-sl);
+    if(!(risk>0))return;
+    var tps=[[0.5,'đo 1/2 chiều cao mô hình'],[1,'đo 1 lần chiều cao mô hình (mục tiêu kinh điển)'],[1.618,'đo 1.618 lần chiều cao mô hình']].map(function(m){
+      var t=neck+s*H*m[0];
+      return {p:t,note:m[1],r:(t-mid)*s/risk};
+    }).filter(function(t){return (t.p-mid)*s>risk*0.3});
+    if(!tps.length)return;
+    var rr=tps[Math.min(1,tps.length-1)].r,warn=[];
+    if(rr<1.5)warn.push('Tỷ lệ lời/lỗ tới mục tiêu chính chỉ khoảng '+rr.toFixed(1)+'R, thấp. Cắt lỗ theo mô hình khá xa so với quãng giá còn lại.');
+    var inZone=Math.abs(c-mid)<=a*0.6;
+    out.push({side:s,mode:'pattern',pat:p.name,patKey:p.key,tf:tf,patStatus:p.status,broken:broken,far:far,inZone:inZone,entries:entries,
+      sl:{p:sl,note:'sau '+srcNote+', cộng đệm '+CFG.slPad+' ATR',src:'Mô hình: '+srcNote,atr:Math.abs(sl-edge)/a},
+      tps:tps,mid:mid,risk:risk,riskPct:risk/mid*100,rr2:rr,warn:warn,neck:neck});
+  });
+  return out;
 }
 
 /* ---------- đa khung: H4 xác định xu hướng, H1 xác nhận, M15 tìm điểm vào ---------- */
@@ -1279,7 +1331,7 @@ function buildMtf(M){
   var okRest=ck.slice(1).filter(function(x){return x.ok}).length,status;
   if(align==='nghịch')status='wait_h1';
   else if(!h1In)status='wait_zone';
-  else if(okRest<3)status='wait_confirm';
+  else if(okRest<CFG.confirmN)status='wait_confirm';
   else status='ready';
   out.status=status;
   var p15=okRest>=3?1:okRest>=2?0.5:0,p1=align==='thuận'?1:align==='trung lập'?0.5:0;
@@ -1290,6 +1342,8 @@ function buildMtf(M){
   out.summary.push('Điểm vào theo H1: '+eh.label.toLowerCase()+' '+fmt(eh.lo)+' – '+fmt(eh.hi)+' ('+eh.note+'). Cắt lỗ '+fmt(mainH1.sl.p)+', mục tiêu theo vùng giá H4/H1.');
   out.summary.push('M15: '+(status==='ready'?'giá đang ở vùng vào lệnh H1 và có '+okRest+'/4 tín hiệu xác nhận, đủ điều kiện vào '+sname+'. Có thể canh vào chính xác trong vùng M15 '+fmt(fine.entries[0].lo)+' – '+fmt(fine.entries[0].hi)+' để cắt lỗ gần hơn.':status==='wait_zone'?'giá chưa ở vùng vào lệnh H1 '+fmt(eh.lo)+' – '+fmt(eh.hi)+'. Chờ giá hồi về đây rồi mới tìm tín hiệu ở M15.':status==='wait_confirm'?'giá đã tới vùng vào lệnh H1 nhưng mới có '+okRest+'/4 tín hiệu xác nhận ở M15. Chờ nến M15 xác nhận.':'chờ H1 quay lại thuận xu hướng trước khi tìm điểm vào.'));
   out.main=mainH1;out.fine=fine;
+  out.patt=patternPlans(M.h1.d,M.h1.A,s,'H1').concat(patternPlans(M.h4.d,M.h4.A,s,'H4')).slice(0,4);
+  if(out.patt.length)out.summary.push('Mô hình giá cùng hướng '+sname+': '+out.patt.map(function(x){return x.pat+' ('+x.tf+', '+x.patStatus+')'}).join('; ')+'. Kế hoạch vào lệnh theo mô hình nằm ở mục riêng bên dưới, để đối chiếu với kế hoạch H1.');
   var piv4=M.h4.A.piv.filter(function(p){return p.type===(s>0?'L':'H')}),lvl=piv4.length?piv4[piv4.length-1].p:M.h4.A.e50[M.h4.A.n-1];
   out.counter={side:-s,level:lvl,text:'Hạn chế '+(s>0?'Short':'Long')+' ngược xu hướng H4. Chỉ cân nhắc khi H4 đóng cửa '+(s>0?'dưới ':'trên ')+fmt(lvl)+' (phá cấu trúc xu hướng) và H1 đã chuyển sang xu hướng '+(s>0?'giảm':'tăng')+'. Cho tới lúc đó nên đứng ngoài thay vì đánh ngược xu hướng.'};
   if(mainH1.riskPct>4)out.warn.push('Khoảng cách cắt lỗ theo H1 khoảng '+mainH1.riskPct.toFixed(1)+'% giá, khá xa. Nếu dùng đòn bẩy cao, lỗ có thể vượt xa mức bạn chấp nhận. Hãy giảm khối lượng hoặc đòn bẩy, hoặc dùng điểm vào tinh chỉnh ở M15 để cắt lỗ gần hơn.');
@@ -1301,7 +1355,7 @@ function mtfSig(m){
   if(!m)return '';
   var p=m.main;
   var f=m.fine;
-  return m.s+m.status+m.points+(m.align||'')+(p?fmt(p.entries[0].lo)+fmt(p.entries[0].hi)+fmt(p.sl.p)+p.tps.map(function(t){return fmt(t.p)}).join(','):'')+(f?fmt(f.entries[0].lo)+fmt(f.sl.p):'');
+  return m.s+m.status+m.points+(m.align||'')+(p?fmt(p.entries[0].lo)+fmt(p.entries[0].hi)+fmt(p.sl.p)+p.tps.map(function(t){return fmt(t.p)}).join(','):'')+(f?fmt(f.entries[0].lo)+fmt(f.sl.p):'')+(m.patt||[]).map(function(x){return x.patKey+x.tf+fmt(x.entries[0].lo)+fmt(x.sl.p)}).join('|');
 }
 function sMtf(meta){
   var m=meta.mplan,s='<p><strong>Phân tích đa khung '+meta.label+'</strong> (H4 xu hướng, H1 vùng vào lệnh, M15 tinh chỉnh)</p>'+m.summary.map(function(x){return '<p>'+x+'</p>'}).join('');
@@ -1316,6 +1370,7 @@ function sMtf(meta){
     s+='<p>Kết luận: <strong>'+m.verdict+'</strong>, mức đồng thuận '+m.label+' ('+m.points.toFixed(1)+'/3).</p>';
     s+=planText(m.main,'Kế hoạch '+sname+' theo xu hướng (vào lệnh theo H1)');
     s+=planText(m.fine,'Tinh chỉnh điểm vào ở M15 (cùng hướng, theo cấu trúc M15)');
+    (m.patt||[]).forEach(function(x){s+=planText(x,'Theo mô hình '+x.pat+' ('+x.tf+', '+x.patStatus+')');(x.warn||[]).forEach(function(w){s+='<p>'+w+'</p>'})});
     s+='<p>'+m.counter.text+'</p>';
     m.warn.forEach(function(w){s+='<p>'+w+'</p>'});
   }
@@ -1442,9 +1497,9 @@ function zoneSignals(d,zone,slp,tp1,s,look){
   for(i=i0;i<=n-2;i++){
     var o=d[i].o,c=d[i].c,h=d[i].h,l=d[i].l,a=at[i];
     if(!a)continue;
-    var tol=a*0.25,rng=(h-l)||1e-12;
+    var tol=a*CFG.zoneTol,rng=(h-l)||1e-12;
     if(!(h>=zone.lo-tol&&l<=zone.hi+tol))continue;
-    if(!((c-o)*s>0&&Math.abs(c-o)>=a*0.15))continue;
+    if(!((c-o)*s>0&&Math.abs(c-o)>=a*CFG.body))continue;
     if((s>0?(c-l):(h-c))/rng<0.5)continue;
     if(s>0?c<zone.lo-tol:c>zone.hi+tol)continue;
     if(s>0?l<=slp:h>=slp)continue;
@@ -1500,8 +1555,116 @@ function scanOne(sets,k,key){
     res.verdict='Chưa có setup';
     res.reason=m.verdict+'.';
   }
-  if(m.main&&m.s!==0)res.plan={entry:m.main.entries[0],sl:m.main.sl.p,tp1:m.main.tps[0]?m.main.tps[0].p:null};
+  if(m.main&&m.s!==0)res.plan={entry:m.main.entries[0],sl:m.main.sl.p,tp1:m.main.tps[0]?m.main.tps[0].p:null,src:m.main.entries[0].src||'',slSrc:m.main.sl.src||''};
+  res.patt=(m.patt||[]).map(function(x){return {name:x.pat,tf:x.tf,status:x.patStatus,inZone:x.inZone,entry:x.entries[0],sl:x.sl.p,tp:x.tps[Math.min(1,x.tps.length-1)].p}});
   return res;
+}
+/* ---------- backtest setup: chạy lại đúng quy tắc quét coin trên lịch sử ----------
+   Đi từng bước theo thời gian. Tại mỗi bước chỉ dùng nến đã đóng; nến đang chạy của mỗi khung được dựng từ các nến M15 đã đóng,
+   giống hệt dữ liệu quét thật (nến cuối là nến chưa đóng). Khi có setup "sẵn sàng" hoặc "có setup" thì vào lệnh ở giá mở cửa nến M15 kế tiếp,
+   cắt lỗ và TP1 lấy đúng từ kế hoạch H1 lúc đó. Nếu cùng một nến chạm cả cắt lỗ và TP1 thì tính là cắt lỗ (bi quan).
+   Hết maxHold nến M15 mà chưa chạm thì thoát ở giá đóng cửa. Phí tính cho cả hai chiều. */
+var BT_PRESETS=[
+  {id:'def',name:'Mặc định',cfg:{},desc:'Các ngưỡng đang dùng'},
+  {id:'strict',name:'Chặt hơn',cfg:{confirmN:4,zoneTol:0.15,body:0.25,slPad:0.35},desc:'Cần đủ 4/4 xác nhận M15, nến signal sát vùng và thân lớn hơn, cắt lỗ xa hơn chút'},
+  {id:'loose',name:'Lỏng hơn',cfg:{confirmN:2,zoneTol:0.4,body:0.1},desc:'Chỉ cần 2/4 xác nhận, nến signal dễ chạm vùng hơn'},
+  {id:'slw',name:'Cắt lỗ rộng',cfg:{slPad:0.5,slMin:1.2},desc:'Đệm cắt lỗ 0.5 ATR, tối thiểu 1.2 ATR từ vùng vào'},
+  {id:'sln',name:'Cắt lỗ gọn',cfg:{slPad:0.15,slMin:0.6},desc:'Đệm cắt lỗ 0.15 ATR, tối thiểu 0.6 ATR từ vùng vào'}
+];
+function btWithCfg(cfg,fn){
+  var old={},k;
+  for(k in CFG_DEF){old[k]=CFG[k];CFG[k]=(cfg&&cfg[k]!==undefined)?cfg[k]:CFG_DEF[k]}
+  try{return fn()}finally{for(k in old)CFG[k]=old[k]}
+}
+function btLastClosed(arr,ms,tNow){
+  var lo=0,hi=arr.length-1,r=-1;
+  while(lo<=hi){var m=(lo+hi)>>1;if(arr[m].t+ms<=tNow){r=m;lo=m+1}else hi=m-1}
+  return r;
+}
+/* Dữ liệu của ba khung ngay sau khi nến M15 thứ i đóng cửa. */
+function btSlices(sets,i){
+  var m=sets['15m'],tNow=m[i].t+900000,c=m[i].c,out={};
+  var flat=function(t){return {t:t,o:c,h:c,l:c,c:c,v:0}};
+  var s15=m.slice(Math.max(0,i-298),i+1);s15.push(flat(tNow));out['15m']=s15;
+  [['1h',3600000],['4h',14400000]].forEach(function(q){
+    var arr=sets[q[0]],ms=q[1],j=btLastClosed(arr,ms,tNow),fs=Math.floor(tNow/ms)*ms,sl=arr.slice(Math.max(0,j-298),j+1),f;
+    if(fs===tNow)f=flat(tNow);
+    else{
+      var x=i;while(x>0&&m[x-1].t>=fs)x--;
+      f={t:fs,o:m[x].o,h:-Infinity,l:Infinity,c:c,v:0};
+      for(var y=x;y<=i;y++){f.h=Math.max(f.h,m[y].h);f.l=Math.min(f.l,m[y].l);f.v+=m[y].v}
+    }
+    sl.push(f);out[q[0]]=sl;
+  });
+  return out;
+}
+function btSetupInit(sets,opts){
+  var o=opts||{};
+  return {sets:sets,step:o.step||2,maxHold:o.maxHold||96,fee:o.fee==null?0.0005:o.fee,k:o.k||5,key:o.key||('bt'+Math.random().toString(36).slice(2)),
+    cfg:o.cfg||{},i:Math.max(o.start||0,80),trades:[],scanned:0,done:false,unresolved:0};
+}
+/* Chạy tối đa nSteps bước đánh giá, trả về true khi đã hết dữ liệu. Có thể gọi lặp lại để nhường giao diện giữa các lần. */
+function btSetupStep(st,nSteps){
+  if(st.done)return true;
+  var m=st.sets['15m'],c=0;
+  btWithCfg(st.cfg,function(){
+    while(c<nSteps){
+      var i=st.i;
+      if(i>=m.length-2){st.done=true;break}
+      c++;
+      var r=scanOne(btSlices(st.sets,i),st.k,st.key);
+      st.scanned++;
+      if((r.status==='ready'||r.status==='signal')&&r.plan&&r.plan.tp1!=null){
+        var s=r.side,entry=m[i+1].o,sl=r.plan.sl,tp=r.plan.tp1,risk=Math.abs(entry-sl);
+        if(s&&risk>0&&(entry-sl)*s>0&&(tp-entry)*s>0){
+          var out=null,j,last=Math.min(i+st.maxHold,m.length-1);
+          for(j=i+1;j<=last;j++){
+            var b=m[j],hitSl=s>0?b.l<=sl:b.h>=sl,hitTp=s>0?b.h>=tp:b.l<=tp;
+            if(hitSl){out={o:'sl',g:-1};break}
+            if(hitTp){out={o:'tp1',g:Math.abs(tp-entry)/risk};break}
+          }
+          if(!out&&last-i>=st.maxHold)out={o:'time',g:(m[last].c-entry)*s/risk,jj:last};
+          if(!out){st.unresolved++;st.done=true;break}
+          var endJ=out.jj||j,cost=st.fee*2*entry/risk;
+          st.trades.push({t:m[i].t+900000,side:s,status:r.status,entry:entry,sl:sl,tp1:tp,out:out.o,g:out.g,r:out.g-cost,bars:endJ-i,riskPct:risk/entry*100,
+            patt:!!(r.patt&&r.patt.length),src:r.plan.src||''});
+          st.i=endJ+1;
+          continue;
+        }
+      }
+      st.i+=st.step;
+    }
+  });
+  if(st.done)['4h','1h','15m'].forEach(function(tf){delete TMEM[st.key+'|'+tf]});
+  return st.done;
+}
+function btSetupRun(sets,opts){
+  var st=btSetupInit(sets,opts);
+  while(!btSetupStep(st,500)){}
+  return st;
+}
+function btWilson(w,n){
+  if(!n)return [0,0];
+  var z=1.96,p=w/n,den=1+z*z/n,ctr=(p+z*z/(2*n))/den,hw=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/den;
+  return [Math.max(0,ctr-hw),Math.min(1,ctr+hw)];
+}
+function btStats(trades){
+  var n=trades.length,tp=0,sl=0,tm=0,sum=0,gw=0,gl=0,wsum=0,eq=0,peak=0,dd=0,risk=0,bars=0;
+  trades.slice().sort(function(a,b){return a.t-b.t}).forEach(function(t){
+    if(t.out==='tp1'){tp++;wsum+=t.g}else if(t.out==='sl')sl++;else tm++;
+    sum+=t.r;if(t.r>0)gw+=t.r;else gl-=t.r;
+    eq+=t.r;if(eq>peak)peak=eq;if(peak-eq>dd)dd=peak-eq;
+    risk+=t.riskPct;bars+=t.bars;
+  });
+  var w=btWilson(tp,n);
+  return {n:n,tp:tp,sl:sl,time:tm,winRate:n?tp/n:0,wlo:w[0],whi:w[1],avgR:n?sum/n:0,sumR:sum,pf:gl>0?gw/gl:(gw>0?Infinity:0),
+    avgWinR:tp?wsum/tp:0,beWR:tp?1/(1+wsum/tp):null,maxDD:dd,avgRiskPct:n?risk/n:0,avgBars:n?bars/n:0};
+}
+function btGroup(trades,fn){
+  var g={};
+  trades.forEach(function(t){var k=fn(t);(g[k]=g[k]||[]).push(t)});
+  var o={};Object.keys(g).forEach(function(k){o[k]=btStats(g[k])});
+  return o;
 }
 //#LOGIC-END
 
@@ -1957,6 +2120,157 @@ function updateLast(){
 $('#lastlist').addEventListener('click',function(){var a=loadWatch();if(a.length>1){symInput.value=a.join(', ');runScan(a)}});
 updateLast();
 
+/* ---------- backtest setup trên lịch sử (giao diện) ---------- */
+var sbt={id:0,busy:false,res:null,sel:'def'};
+async function klinesBack(sym,tf,fut,total){
+  var out=[],end=null,left=total;
+  while(left>0){
+    var lim=Math.min(1000,left),rows=await klines(sym,tf,fut,lim,end);
+    if(!rows.length)break;
+    out=rows.concat(out);left-=rows.length;
+    if(rows.length<lim)break;
+    end=rows[0].t-1;
+  }
+  return out;
+}
+async function sbtRetry(fn){
+  for(var a=0;;a++){
+    try{return await fn()}
+    catch(e){
+      var msg=e&&e.message?String(e.message):'';
+      if(/^HTTP (429|418)/.test(msg)&&a<3){await sleep(2500*(a+1));continue}
+      throw e;
+    }
+  }
+}
+function sbtTokens(){
+  var t=multiTokens(symInput.value)||(scanState.tokens&&scanState.tokens.length?scanState.tokens:null)||(loadWatch().length?loadWatch():null);
+  if(!t){var one=normSymbol(symInput.value);t=one?[labelOf(one.sym,one.fut)]:[]}
+  var seen={},list=[];
+  t.forEach(function(x){var n=normSymbol(x);if(!n)return;var k=n.sym+(n.fut?'.P':'');if(!seen[k]){seen[k]=1;list.push(n)}});
+  return list.slice(0,100);
+}
+function sbtPresetsHtml(){
+  $('#sbtpre').innerHTML=BT_PRESETS.map(function(p,i){return '<label title="'+esc(p.desc)+'"><input type="checkbox" data-id="'+p.id+'"'+(i<3?' checked':'')+'> '+esc(p.name)+'</label>'}).join('');
+}
+function sbtOpen(){
+  $('#sbtcard').hidden=false;
+  var l=sbtTokens();
+  $('#sbtsrc').textContent=l.length?'Danh sách: '+l.length+' mã ('+l.slice(0,4).map(function(n){return labelOf(n.sym,n.fut)}).join(', ')+(l.length>4?'…':'')+')':'Chưa có mã nào. Nhập danh sách coin ở ô "Cặp" rồi mở lại.';
+  $('#sbtcard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function sbtCoin(n,my,P){
+  var first=await sbtRetry(function(){return fetchBinance(n.sym,'4h',n.fut,400)}),sym=first.symbol,label=labelOf(sym,n.fut);
+  var h1=await sbtRetry(function(){return klinesBack(sym,'1h',n.fut,P.days*24+150)});
+  var m15=await sbtRetry(function(){return klinesBack(sym,'15m',n.fut,P.days*96+120)});
+  var h4=first.rows;
+  /* Bỏ nến cuối của mỗi khung vì đó là nến chưa đóng. */
+  h4=h4.slice(0,-1);h1=h1.slice(0,-1);m15=m15.slice(0,-1);
+  if(my!==sbt.id)return null;
+  var sets={'4h':h4,'1h':h1,'15m':m15},out={label:label,m15:m15.length,trades:{},scanned:0};
+  for(var q=0;q<P.presets.length;q++){
+    var pr=P.presets[q],st=btSetupInit(sets,{step:P.step,maxHold:P.hold,fee:P.fee,k:state.k,cfg:pr.cfg,key:'sbt|'+label+'|'+pr.id});
+    while(!btSetupStep(st,250)){
+      await sleep(0);
+      if(my!==sbt.id)return null;
+    }
+    st.trades.forEach(function(t){t.coin=label});
+    out.trades[pr.id]=st.trades;out.scanned=st.scanned;
+  }
+  return out;
+}
+async function sbtRun(){
+  if(sbt.busy)return;
+  var list=sbtTokens();
+  if(!list.length){$('#sbtout').innerHTML='<p class="warn">Chưa có mã nào để chạy. Nhập danh sách coin ở ô "Cặp".</p>';return}
+  var pres=[];
+  document.querySelectorAll('#sbtpre input:checked').forEach(function(c){var p=BT_PRESETS.filter(function(x){return x.id===c.dataset.id})[0];if(p)pres.push(p)});
+  if(!pres.length){$('#sbtout').innerHTML='<p class="warn">Chọn ít nhất một bộ ngưỡng để chạy.</p>';return}
+  var P={days:+$('#sbt-days').value,step:+$('#sbt-step').value,hold:+$('#sbt-hold').value,fee:Math.max(0,+$('#sbt-fee').value||0)/100,presets:pres};
+  var my=++sbt.id;sbt.busy=true;sbt.sel=pres[0].id;
+  var res={P:P,coins:[],failed:[],trades:{},total:list.length,done:0};
+  pres.forEach(function(p){res.trades[p.id]=[]});
+  sbt.res=res;
+  $('#sbtrun').disabled=true;$('#sbtstop').hidden=false;
+  sbtRender();
+  var idx=0;
+  async function worker(){
+    while(idx<list.length&&my===sbt.id){
+      var n=list[idx++],r=null;
+      try{r=await sbtCoin(n,my,P)}
+      catch(e){
+        if(my!==sbt.id)return;
+        var msg=e&&e.invalid?'Không có mã này':(e&&e.message?String(e.message):'lỗi mạng');
+        res.failed.push({label:labelOf(n.sym,n.fut),reason:msg});
+      }
+      if(my!==sbt.id)return;
+      res.done++;
+      if(r){res.coins.push(r);pres.forEach(function(p){res.trades[p.id]=res.trades[p.id].concat(r.trades[p.id]||[])})}
+      sbtRender();
+      await sleep(150);
+    }
+  }
+  await Promise.all([worker(),worker(),worker()]);
+  if(my!==sbt.id)return;
+  sbt.busy=false;$('#sbtrun').disabled=false;$('#sbtstop').hidden=true;
+  sbtRender();
+}
+function pct0(x){return (x*100).toFixed(0)+'%'}
+function rcls(x){return x>0.005?'up':x<-0.005?'down':''}
+function rtxt(x){if(Math.abs(x)<0.005)return '0.00R';return (x>0?'+':'')+x.toFixed(2)+'R'}
+function sbtRow(label,s){
+  if(!s.n)return '<tr><td>'+esc(label)+'</td><td class="num">0</td><td class="num" colspan="5">không có lệnh</td></tr>';
+  return '<tr><td>'+esc(label)+'</td><td class="num">'+s.n+'</td><td class="num">'+pct0(s.winRate)+' <small>('+pct0(s.wlo)+'–'+pct0(s.whi)+')</small></td><td class="num '+rcls(s.avgR)+'">'+rtxt(s.avgR)+'</td><td class="num">'+(s.pf===Infinity?'∞':s.pf.toFixed(2))+'</td><td class="num">'+(s.beWR==null?'–':pct0(s.beWR))+'</td><td class="num">'+s.maxDD.toFixed(1)+'R</td></tr>';
+}
+function sbtTable(title,rows){
+  return '<h3>'+esc(title)+'</h3><div class="tblwrap"><table class="sbttbl"><thead><tr><th>Nhóm</th><th class="num">Lệnh</th><th class="num">Thắng TP1 <small>(tin cậy 95%)</small></th><th class="num">R trung bình</th><th class="num">PF</th><th class="num">Hoà vốn cần</th><th class="num">Sụt giảm tối đa</th></tr></thead><tbody>'+rows.join('')+'</tbody></table></div>';
+}
+function sbtRender(){
+  var r=sbt.res,el=$('#sbtout');
+  if(!r){el.innerHTML='';return}
+  $('#sbtprog').textContent=(sbt.busy?'Đang chạy '+r.done+'/'+r.total+' coin… ':'Xong '+r.done+'/'+r.total+' coin · ')+r.coins.length+' coin có dữ liệu'+(r.failed.length?' · '+r.failed.length+' lỗi':'');
+  var pres=r.P.presets,h='';
+  var all=pres.map(function(p){return sbtRow(p.name,btStats(r.trades[p.id]))});
+  h+=sbtTable('So sánh các bộ ngưỡng (tất cả coin gộp lại)',all);
+  var sel=sbt.sel;if(!pres.some(function(p){return p.id===sel}))sel=pres[0].id;
+  var tr=r.trades[sel]||[],sp=pres.filter(function(p){return p.id===sel})[0];
+  h+='<h3>Chi tiết bộ ngưỡng: <select id="sbtsel" aria-label="Chọn bộ ngưỡng xem chi tiết">'+pres.map(function(p){return '<option value="'+p.id+'"'+(p.id===sel?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'</select></h3>';
+  var cfgTxt=Object.keys(CFG_DEF).map(function(k){var v=(sp.cfg[k]!==undefined?sp.cfg[k]:CFG_DEF[k]);return k+'='+v}).join(', ');
+  h+='<p class="hint2" style="margin:0 0 6px">'+esc(sp.desc)+'. Ngưỡng: '+esc(cfgTxt)+'.</p>';
+  var bySide=btGroup(tr,function(t){return t.side>0?'LONG':'SHORT'}),byStat=btGroup(tr,function(t){return t.status==='ready'?'Sẵn sàng (M15 đã xác nhận)':'Có nến signal tại vùng vào'}),byPat=btGroup(tr,function(t){return t.patt?'Có mô hình giá cùng hướng':'Không có mô hình cùng hướng'});
+  var rows=[];
+  [bySide,byStat,byPat].forEach(function(g){Object.keys(g).sort().forEach(function(k){rows.push(sbtRow(k,g[k]))})});
+  h+=sbtTable('Chia theo hướng, loại setup và mô hình giá',rows);
+  var byCoin=btGroup(tr,function(t){return t.coin}),ck=Object.keys(byCoin).sort(function(a,b){return byCoin[b].sumR-byCoin[a].sumR});
+  if(ck.length)h+=sbtTable('Theo từng coin (sắp theo tổng R)',ck.map(function(k){return sbtRow(k,byCoin[k])}));
+  var recent=tr.slice().sort(function(a,b){return b.t-a.t}).slice(0,100);
+  if(recent.length){
+    h+='<details><summary>Danh sách lệnh gần nhất ('+recent.length+' lệnh) để tự đối chiếu với biểu đồ</summary><div class="tblwrap"><table class="sbttbl"><thead><tr><th>Lúc phát hiện</th><th>Coin</th><th>Hướng</th><th>Loại</th><th class="num">Vào</th><th class="num">Cắt lỗ</th><th class="num">TP1</th><th>Kết quả</th><th class="num">R sau phí</th></tr></thead><tbody>'+recent.map(function(t){
+      var d=new Date(t.t);
+      return '<tr><td>'+pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+' '+pad2(d.getHours())+':'+pad2(d.getMinutes())+'</td><td>'+esc(t.coin)+'</td><td>'+(t.side>0?'LONG':'SHORT')+'</td><td>'+(t.status==='ready'?'Sẵn sàng':'Nến signal')+'</td><td class="num">'+fmt(t.entry)+'</td><td class="num">'+fmt(t.sl)+'</td><td class="num">'+fmt(t.tp1)+'</td><td>'+(t.out==='tp1'?'Chạm TP1':t.out==='sl'?'Cắt lỗ':'Hết giờ')+' ('+t.bars+' nến M15)</td><td class="num '+rcls(t.r)+'">'+rtxt(t.r)+'</td></tr>';
+    }).join('')+'</tbody></table></div></details>';
+  }
+  var st=btStats(tr),notes=[];
+  if(!sbt.busy){
+    if(st.n<30)notes.push('Chỉ có '+st.n+' lệnh, mẫu quá nhỏ để kết luận. Thử tăng số ngày, thêm coin hoặc quét dày hơn.');
+    if(st.n>=30&&st.beWR!=null)notes.push('Cách đọc: với R trung bình khi thắng khoảng '+st.avgWinR.toFixed(2)+'R, cần thắng khoảng '+pct0(st.beWR)+' số lệnh chỉ để hoà vốn (chưa tính lệnh hết giờ). Bộ ngưỡng này thắng '+pct0(st.winRate)+', R trung bình '+rtxt(st.avgR)+' mỗi lệnh sau phí.');
+    if(pres.length>1)notes.push('Bạn đang so sánh '+pres.length+' bộ ngưỡng trên cùng dữ liệu: bộ nào đứng đầu có thể chỉ do may mắn của mẫu này. Hãy chạy lại trên khoảng thời gian hoặc nhóm coin khác trước khi đổi ngưỡng.');
+    var tot=0;pres.forEach(function(p){tot+=r.trades[p.id].length});
+    if(r.failed.length)notes.push('Không chạy được: '+r.failed.map(function(f){return f.label+' ('+f.reason+')'}).join('; ')+'.');
+    var short=r.coins.filter(function(c){return c.m15<400}).map(function(c){return c.label});
+    if(short.length)notes.push('Dữ liệu ngắn (coin mới niêm yết): '+short.join(', ')+'.');
+  }
+  h+=notes.map(function(x){return '<p class="hint2" style="margin:8px 0">'+esc(x)+'</p>'}).join('');
+  el.innerHTML=h;
+}
+$('#sbtopen').addEventListener('click',sbtOpen);
+$('#sbtopen2').addEventListener('click',sbtOpen);
+$('#sbtclose').addEventListener('click',function(){sbt.id++;sbt.busy=false;$('#sbtrun').disabled=false;$('#sbtstop').hidden=true;$('#sbtcard').hidden=true});
+$('#sbtstop').addEventListener('click',function(){sbt.id++;sbt.busy=false;$('#sbtrun').disabled=false;$('#sbtstop').hidden=true;if(sbt.res)$('#sbtprog').textContent='Đã dừng · '+sbt.res.coins.length+' coin có dữ liệu';sbtRender();$('#sbtprog').textContent='Đã dừng · '+(sbt.res?sbt.res.coins.length:0)+' coin có dữ liệu'});
+$('#sbtrun').addEventListener('click',sbtRun);
+$('#sbtout').addEventListener('change',function(e){if(e.target.id==='sbtsel'){sbt.sel=e.target.value;sbtRender()}});
+sbtPresetsHtml();
+
 /* ---------- theo dõi và cảnh báo setup tự động ---------- */
 var WSK='pivotlab.wset.v1',WPK='pivotlab.wprev.v1';
 var WS={on:false,mins:5,ready:true,signal:true,near:false,sound:true,wake:false,ntfy:false,topic:'',mode:'each',repeat:false};
@@ -2144,7 +2458,9 @@ function renderScan(total){
     if(r.plan){
       var e=r.plan.entry;
       h+='<span class="sr3">'+(r.status==='ready'||r.status==='signal'||r.status==='near'?'Vùng vào H1 '+fmt(e.lo)+' – '+fmt(e.hi)+' · cắt lỗ '+fmt(r.plan.sl)+(r.plan.tp1!=null?' · TP1 '+fmt(r.plan.tp1):''):'')+'</span>';
+      if((r.status==='ready'||r.status==='signal'||r.status==='near')&&r.plan.src)h+='<span class="sr3">Nguồn vùng vào: '+esc(r.plan.src)+' · mốc cắt lỗ: '+esc(r.plan.slSrc)+'</span>';
     }
+    if(r.patt&&r.patt.length&&(r.status==='ready'||r.status==='signal'||r.status==='near'))h+='<span class="sr3">Mô hình cùng hướng: '+r.patt.map(function(x){return esc(x.name)+' ('+x.tf+(x.inZone?', giá đang ở vùng vào':'')+')'}).join('; ')+'</span>';
     if(r.items&&r.items.length&&r.status!=='error'){
       h+='<span class="sr3">Nến signal: '+r.items.map(function(x){return x.name+' '+(x.side>0?'LONG':'SHORT')+' ('+(x.ago===0?'vừa đóng':x.ago+' nến trước')+', '+'từ chối tại vùng vào H1, thuận H4'+')'}).join(' · ')+'</span>';
     }
@@ -2575,8 +2891,8 @@ function zoneTxt(e){return fmt(e.lo)+' – '+fmt(e.hi)}
 function rowsHtml(rows){return rows.map(function(r){return '<div class="row"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>'}).join('')}
 function planRows(p){
   var rows=[];
-  rows.push(['Vào lệnh',p.entries.map(function(e,i){return '<div class="pl"><b>'+(i+1)+'. '+esc(e.label)+':</b> '+zoneTxt(e)+'<small>'+esc(e.note)+'</small></div>'}).join('')]);
-  rows.push(['Cắt lỗ','<div class="pl"><b>'+fmt(p.sl.p)+'</b><small>'+esc(p.sl.note)+'</small></div>']);
+  rows.push(['Vào lệnh',p.entries.map(function(e,i){return '<div class="pl"><b>'+(i+1)+'. '+esc(e.label)+':</b> '+zoneTxt(e)+'<small>'+esc(e.note)+'</small>'+(e.src?'<small class="srcl">Nguồn vùng: '+esc(e.src)+'</small>':'')+'</div>'}).join('')]);
+  rows.push(['Cắt lỗ','<div class="pl"><b>'+fmt(p.sl.p)+'</b><small>'+esc(p.sl.note)+'</small>'+(p.sl.src?'<small class="srcl">Nguồn mốc: '+esc(p.sl.src)+(p.sl.atr!=null?' · cách mép vùng vào '+p.sl.atr.toFixed(1)+' ATR':'')+'</small>':'')+'</div>']);
   rows.push(['Chốt lời',p.tps.map(function(t,i){return '<div class="pl"><b>TP'+(i+1)+':</b> '+fmt(t.p)+'<small>'+esc(t.note)+' · '+t.r.toFixed(1)+'R</small></div>'}).join('')]);
   rows.push(['Rủi ro','<div class="pl">Khoảng cách cắt lỗ <b>'+p.riskPct.toFixed(2)+'%</b> giá (nhân với đòn bẩy để ra % vốn).<small>Tỷ lệ lời/lỗ tới TP2: '+p.rr2.toFixed(1)+'R</small></div>']);
   return rowsHtml(rows);
@@ -2722,6 +3038,9 @@ function renderMtf(){
     var sname=mp.s>0?'LONG':'SHORT',alt=mp.s>0?'SHORT':'LONG';
     html+='<div id="planblocks2"><div class="plan"><h3>Kế hoạch '+sname+' vào lệnh theo H1'+(st==='ready'?' (đủ điều kiện)':' (chưa kích hoạt)')+'</h3>'+planRows(mp.main)+'</div>';
     html+='<div class="plan"><h3>Tinh chỉnh điểm vào ở M15 (cùng hướng, theo cấu trúc M15)</h3>'+planRows(mp.fine)+'</div>';
+    (mp.patt||[]).forEach(function(x){
+      html+='<div class="plan"><h3>Theo mô hình '+esc(x.pat)+' ('+x.tf+', '+esc(x.patStatus)+')'+(x.inZone?' · giá đang ở vùng vào':'')+'</h3>'+planRows(x)+(x.warn||[]).map(function(w){return '<p class="warn">'+esc(w)+'</p>'}).join('')+'<p class="disc">Cách vào lệnh kinh điển của mô hình, tách biệt với kế hoạch H1 ở trên. Hai kế hoạch có thể khác nhau, hãy chọn một và giữ nhất quán.</p></div>';
+    });
     html+='<div class="plan"><h3>Hướng '+alt+' ngược xu hướng (hạn chế)</h3>'+rowsHtml([['Điều kiện','<div class="pl">'+esc(mp.counter.text)+'</div>']])+'</div></div>';
     html+=mp.warn.map(function(w){return '<p class="warn">'+esc(w)+'</p>'}).join('');
   }
