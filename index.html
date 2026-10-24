@@ -156,9 +156,15 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 .sigline{margin:0;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 .sigline b{color:var(--ink);font-weight:600}
 .sigline .lnk{background:none;border:0;color:var(--tl);cursor:pointer;font:inherit;padding:0;text-decoration:underline;margin-left:8px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px 18px;margin:8px 0}
+.wgrid label{display:flex;align-items:center;gap:8px;font-size:13px}
+.wgrid input[type=text],.wgrid select{font:13px var(--f-mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--ink);min-width:0;flex:1}
+.wstat{font:500 12px var(--f-mono);color:var(--muted);margin:6px 0}
+.wsteps{font-size:13px;color:var(--muted);margin:6px 0 0;padding-left:18px}
+.wsteps li{margin:2px 0}
 .planhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:10px}
 .planhead h2{margin:0}
-.verdict{font:600 13px var(--f-display);padding:4px 12px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.verdict{font:600 13px var(--f-display);padding:4px 12px;border-radius:999px;border:1px solid currentColor;max-width:100%;overflow-wrap:anywhere}
 .verdict.bull{color:var(--up)} .verdict.bear{color:var(--down)} .verdict.neu{color:var(--muted)}
 #plansum p{margin:0 0 6px;max-width:80ch}
 .gtrack{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--down),var(--line) 50%,var(--up));margin:14px 0 6px}
@@ -213,7 +219,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
         <label class="lbl" for="sym">Cặp</label>
         <input type="text" id="sym" size="22" list="symlist" value="BTCUSDT.P" spellcheck="false" autocapitalize="characters" placeholder="VD: SOLUSDT.P hoặc tối đa 100 mã: NEARUSDT.P, UNIUSDT.P" aria-describedby="symhelp">
         <datalist id="symlist">
-         <option value="BTCUSDT.P"></option><option value="ETHUSDT.P"></option><option value="BNBUSDT.P"></option>
+          <option value="BTCUSDT.P"></option><option value="ETHUSDT.P"></option><option value="BNBUSDT.P"></option>
           <option value="SOLUSDT.P"></option><option value="XRPUSDT.P"></option><option value="DOGEUSDT.P"></option>
           <option value="ADAUSDT.P"></option><option value="AVAXUSDT.P"></option><option value="LINKUSDT.P"></option>
           <option value="1000PEPEUSDT.P"></option><option value="SUIUSDT.P"></option><option value="BTCUSDT"></option>
@@ -281,6 +287,34 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <p class="hint2" id="lastwrap" hidden><button type="button" class="chipbtn" id="lastlist"></button></p>
 
+    <section class="card" id="watchcard">
+      <div class="scanhead"><h2>Cảnh báo setup tự động</h2><span class="scanprog" id="wprog"></span></div>
+      <p class="hint2" style="margin:0 0 6px">Tự quét lại danh sách coin gần nhất theo chu kỳ và báo khi một coin <b>mới xuất hiện</b> setup LONG/SHORT. Trang phải đang mở thì mới quét được.</p>
+      <div class="wgrid">
+        <label><input type="checkbox" id="w-on"> <b>Bật theo dõi</b></label>
+        <label>Quét mỗi <select id="w-mins"><option value="1">1 phút</option><option value="2">2 phút</option><option value="5" selected>5 phút</option><option value="10">10 phút</option><option value="15">15 phút</option></select></label>
+        <label><input type="checkbox" id="w-ready" checked> Báo "Có setup sẵn sàng"</label>
+        <label><input type="checkbox" id="w-signal" checked> Báo "Có nến signal tại vùng vào"</label>
+        <label><input type="checkbox" id="w-near"> Báo cả "Sắp có setup"</label>
+        <label><input type="checkbox" id="w-sound" checked> Âm báo trong trang</label>
+        <label><input type="checkbox" id="w-wake"> Giữ màn hình sáng khi đang theo dõi</label>
+      </div>
+      <div class="wgrid">
+        <label><input type="checkbox" id="w-ntfy"> <b>Gửi về điện thoại (ntfy)</b></label>
+        <label>Mã kênh <input type="text" id="w-topic" spellcheck="false" autocapitalize="none" placeholder="vd: pivotlab-k3x9a2m7q1"></label>
+        <label>Cách gửi <select id="w-mode"><option value="each">Mỗi coin một tin</option><option value="digest">Gộp tất cả vào một tin</option></select></label>
+        <label><input type="checkbox" id="w-repeat"> Mỗi lần quét tự động đều báo lại toàn bộ coin đang có setup</label>
+        <span><button type="button" class="btn" id="w-gen">Tạo mã ngẫu nhiên</button> <button type="button" class="btn" id="w-test">Gửi thử</button> <button type="button" class="btn" id="w-now">Quét ngay</button></span>
+      </div>
+      <ol class="wsteps">
+        <li>Cài app <b>ntfy</b> (miễn phí) từ App Store trên iPhone, mở app, bấm <b>+</b> và đăng ký đúng <b>mã kênh</b> ở trên (server mặc định ntfy.sh). Cho phép thông báo.</li>
+        <li>Bật "Gửi về điện thoại", bấm "Gửi thử". Điện thoại nhận thông báo là xong.</li>
+        <li>Máy tính hoặc điện thoại đang mở trang này phải để trang chạy (không tắt tab, không để máy ngủ). Muốn chạy 24/7 khi tắt trang, dùng file <b>pivot-watch.js</b> chạy trên máy tính.</li>
+      </ol>
+      <p class="wstat" id="wstat"></p>
+      <p class="disc">Mã kênh ntfy hoạt động như mật khẩu: ai biết mã đều đọc được thông báo của bạn. Hãy dùng mã ngẫu nhiên, đừng chia sẻ. Nội dung gửi gồm tên coin, hướng và vùng giá. Dữ liệu mẫu giả lập không bao giờ được gửi về điện thoại.</p>
+    </section>
+
     <section class="card" id="scancard" hidden aria-live="polite">
       <div class="scanhead"><h2>Quét nhiều coin</h2><span class="scanprog" id="scanprog"></span>
         <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
@@ -291,16 +325,16 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <section class="group" id="layers" aria-label="Lớp phân tích">
       <button type="button" class="chipbtn" data-k="trend" aria-pressed="true"><span class="sw" style="background:var(--tl)"></span>Đường xu hướng</button>
-      <button type="button" class="chipbtn" data-k="fib" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
+      <button type="button" class="chipbtn" data-k="fib" aria-pressed="false"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
       <button type="button" class="chipbtn" data-k="pat" aria-pressed="true"><span class="sw" style="background:var(--pat)"></span>Mô hình giá</button>
       <button type="button" class="chipbtn" data-k="piv" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Đỉnh/đáy</button>
       <button type="button" class="chipbtn" data-k="ema" aria-pressed="true"><span class="sw" style="background:var(--ema1)"></span>EMA 20/50</button>
       <button type="button" class="chipbtn" data-k="boll" aria-pressed="true"><span class="sw" style="background:var(--boll)"></span>Bollinger 20/2</button>
-      <button type="button" class="chipbtn" data-k="macd" aria-pressed="true"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
+      <button type="button" class="chipbtn" data-k="macd" aria-pressed="false"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
       <button type="button" class="chipbtn" data-k="sig" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Nến signal setup</button>
-      <button type="button" class="chipbtn" data-k="bt" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
+      <button type="button" class="chipbtn" data-k="bt" aria-pressed="false"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
       <button type="button" class="chipbtn" data-k="plan" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Kế hoạch (vào/SL/TP)</button>
-      <button type="button" class="chipbtn" data-k="vol" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
+      <button type="button" class="chipbtn" data-k="vol" aria-pressed="false"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
     </section>
 
     <section class="chartcard">
@@ -1879,17 +1913,21 @@ async function scanCoin(n){
   r.req=req;r.label=label;r.sample=sample;r.sym=sym;r.fut=n.fut;
   return r;
 }
-async function runScan(tokens){
+async function runScan(tokens,opts){
+  var auto=!!(opts&&opts.auto);
   var seen={},list=[];
   tokens.forEach(function(t){var n=normSymbol(t);if(!n)return;var k=n.sym+(n.fut?'.P':'');if(!seen[k]){seen[k]=1;list.push(n)}});
   var trunc=Math.max(0,list.length-100);list=list.slice(0,100);
   if(list.length<2)return false;
-  var my=++scanState.id;
+  var my=++scanState.id,acc=[];
   saveWatch(list.map(function(n){return labelOf(n.sym,n.fut)}));
-  scanState.live=false;scanState.tokens=tokens;scanState.items=[];scanState.busy=true;scanState.active='';scanState.trunc=trunc;
-  if(list.length>12){scanState.only=true;$('#scanonly').checked=true}
-  $('#scancard').hidden=false;renderScan(list.length);
-  $('#scancard').scrollIntoView({behavior:'smooth',block:'start'});
+  scanState.live=false;scanState.tokens=tokens;scanState.busy=true;scanState.trunc=trunc;scanState.auto=auto;scanState.total=list.length;scanState.done=0;
+  if(!auto){
+    scanState.items=[];scanState.active='';
+    if(list.length>12){scanState.only=true;$('#scanonly').checked=true}
+    $('#scancard').hidden=false;renderScan(list.length);
+    $('#scancard').scrollIntoView({behavior:'smooth',block:'start'});
+  }else watchStat();
   var idx=0;
   async function worker(){
     while(idx<list.length){
@@ -1897,12 +1935,15 @@ async function runScan(tokens){
       var r;
       try{r=await scanCoin(n)}catch(e){r={req:labelOf(n.sym,n.fut),label:labelOf(n.sym,n.fut),status:'error',verdict:'Lỗi khi quét',reason:'Không lấy hoặc phân tích được dữ liệu.'}}
       if(my!==scanState.id)return;
-      scanState.items.push(r);renderScan(list.length);
+      scanState.done++;
+      if(auto){acc.push(r);watchStat()}else{scanState.items.push(r);renderScan(list.length)}
     }
   }
   await Promise.all([worker(),worker(),worker(),worker()]);
   if(my!==scanState.id)return true;
+  if(auto){scanState.items=acc;if(!$('#scancard').hidden||scanState.items.length)renderScan(list.length)}
   scanState.busy=false;renderScan(list.length);
+  onScanDone(scanState.items,!auto||!!(opts&&opts.force));
   return true;
 }
 var WLK='pivotlab.watch.v1';
@@ -1915,6 +1956,171 @@ function updateLast(){
 }
 $('#lastlist').addEventListener('click',function(){var a=loadWatch();if(a.length>1){symInput.value=a.join(', ');runScan(a)}});
 updateLast();
+
+/* ---------- theo dõi và cảnh báo setup tự động ---------- */
+var WSK='pivotlab.wset.v1',WPK='pivotlab.wprev.v1';
+var WS={on:false,mins:5,ready:true,signal:true,near:false,sound:true,wake:false,ntfy:false,topic:'',mode:'each',repeat:false};
+var wprev={},wtimer=null,wcount=null,wnext=0,wlock=null,wunseen=0,wbase=null;
+try{var _w=JSON.parse(localStorage.getItem(WSK)||'null');if(_w)Object.keys(WS).forEach(function(k){if(_w[k]!==undefined)WS[k]=_w[k]})}catch(e){}
+try{wprev=JSON.parse(localStorage.getItem(WPK)||'{}')||{}}catch(e){wprev={}}
+function saveW(){try{localStorage.setItem(WSK,JSON.stringify(WS))}catch(e){}}
+function savePrev(){try{localStorage.setItem(WPK,JSON.stringify(wprev))}catch(e){}}
+function wUI(){
+  $('#w-on').checked=WS.on;$('#w-mins').value=String(WS.mins);$('#w-ready').checked=WS.ready;$('#w-signal').checked=WS.signal;$('#w-near').checked=WS.near;
+  $('#w-sound').checked=WS.sound;$('#w-wake').checked=WS.wake;$('#w-ntfy').checked=WS.ntfy;$('#w-topic').value=WS.topic;$('#w-mode').value=WS.mode;$('#w-repeat').checked=WS.repeat;
+}
+function wRead(){
+  WS.on=$('#w-on').checked;WS.mins=+$('#w-mins').value||5;WS.ready=$('#w-ready').checked;WS.signal=$('#w-signal').checked;WS.near=$('#w-near').checked;
+  WS.sound=$('#w-sound').checked;WS.wake=$('#w-wake').checked;WS.ntfy=$('#w-ntfy').checked;WS.mode=$('#w-mode').value||'each';WS.repeat=$('#w-repeat').checked;WS.topic=$('#w-topic').value.trim().replace(/[^A-Za-z0-9_\-]/g,'');
+  saveW();
+}
+function watchStat(){
+  var el=$('#wstat'),pr=$('#wprog');
+  if(!WS.on){el.textContent='Đang tắt theo dõi.';pr.textContent='';return}
+  var n=loadWatch().length;
+  if(n<2){el.textContent='Chưa có danh sách coin. Hãy nhập nhiều mã và bấm Xem một lần để lưu danh sách.';pr.textContent='';return}
+  if(scanState.busy&&scanState.auto){el.textContent='Đang quét '+scanState.done+'/'+scanState.total+'…';pr.textContent='Đang quét';return}
+  var left=Math.max(0,Math.round((wnext-Date.now())/1000));
+  el.textContent='Đang theo dõi '+n+' coin · quét lần tới sau '+Math.floor(left/60)+':'+pad2(left%60)+(WS.ntfy&&!WS.topic?' · chưa có mã kênh ntfy':'');
+  pr.textContent='Đang theo dõi';
+}
+async function wLock(){
+  try{
+    if(WS.on&&WS.wake&&'wakeLock' in navigator&&!wlock&&document.visibilityState==='visible'){
+      wlock=await navigator.wakeLock.request('screen');wlock.addEventListener('release',function(){wlock=null});
+    }else if((!WS.on||!WS.wake)&&wlock){await wlock.release();wlock=null}
+  }catch(e){wlock=null}
+}
+document.addEventListener('visibilitychange',function(){wLock();if(document.visibilityState==='visible'){wunseen=0;document.title='Pivot Lab'}});
+function wSchedule(){
+  clearTimeout(wtimer);clearInterval(wcount);wtimer=null;wcount=null;
+  if(!WS.on){watchStat();return}
+  wnext=Date.now()+WS.mins*60000;
+  wtimer=setTimeout(wTick,WS.mins*60000);
+  wcount=setInterval(watchStat,1000);watchStat();
+}
+async function wTick(force){
+  if(!WS.on)return;
+  if(scanState.busy){wnext=Date.now()+15000;wtimer=setTimeout(wTick,15000);return}
+  var a=loadWatch();
+  if(a.length<2){wSchedule();return}
+  await runScan(a,{auto:true,force:force===true});
+  wSchedule();
+}
+function wStart(){
+  wRead();wLock();
+  if(WS.on){
+    if(loadWatch().length<2){watchStat();return}
+    wTick();
+  }else wSchedule();
+}
+['w-on','w-mins','w-ready','w-signal','w-near','w-sound','w-wake','w-ntfy','w-mode','w-repeat'].forEach(function(id){$('#'+id).addEventListener('change',function(){
+  var was=WS.on;wRead();wLock();
+  if(id==='w-on'){
+    if(WS.on&&!was){
+      wbase=null;
+      try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission()}catch(e){}
+      wStart();
+    }else wSchedule();
+  }
+  else if(id==='w-mins')wSchedule();
+  else watchStat();
+})});
+$('#w-topic').addEventListener('change',function(){wRead();watchStat()});
+$('#w-gen').addEventListener('click',function(){
+  var c='abcdefghijkmnpqrstuvwxyz23456789',t='pivotlab-',i,buf=new Uint8Array(12);
+  try{crypto.getRandomValues(buf)}catch(e){for(i=0;i<12;i++)buf[i]=Math.floor(Math.random()*256)}
+  for(i=0;i<12;i++)t+=c[buf[i]%c.length];
+  $('#w-topic').value=t;wRead();watchStat();
+});
+async function ntfySend(title,body,prio){
+  if(!WS.topic)return false;
+  var url='https://ntfy.sh/'+encodeURIComponent(WS.topic)+'?title='+encodeURIComponent(title)+'&priority='+(prio||'high')+'&tags='+encodeURIComponent('chart_with_upwards_trend')+'&click='+encodeURIComponent(location.href.split('#')[0]);
+  try{await fetch(url,{method:'POST',body:body,mode:'no-cors'});return true}catch(e){return false}
+}
+$('#w-test').addEventListener('click',async function(){
+  wRead();
+  if(!WS.topic){toast('Hãy nhập hoặc tạo mã kênh ntfy trước.');return}
+  var ok=await ntfySend('Pivot Lab: thông báo thử','Nếu bạn thấy tin này trên điện thoại thì kênh ntfy đã hoạt động.','default');
+  toast(ok?'Đã gửi thử tới kênh ntfy. Kiểm tra app ntfy trên điện thoại (đã đăng ký đúng mã kênh chưa?).':'Không gửi được. Kiểm tra kết nối mạng.');
+});
+$('#w-now').addEventListener('click',function(){
+  var a=loadWatch();
+  if(a.length<2){toast('Chưa có danh sách coin. Nhập nhiều mã và bấm Xem trước.');return}
+  if(scanState.busy)return;
+  if(WS.on){clearTimeout(wtimer);wTick(true)}else runScan(a,{auto:true,force:true});
+});
+function wSound(){
+  if(!WS.sound)return;
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    var ac=beep.ac||(beep.ac=new AC());
+    [0,0.22,0.44].forEach(function(dt,i){var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=[784,988,1319][i];g.gain.value=0.09;o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+dt);o.stop(ac.currentTime+dt+0.18)});
+  }catch(e){}
+}
+function wKey(r){
+  var f=r.items&&r.items.length?r.items.slice().sort(function(x,y){return x.ago-y.ago})[0]:null;
+  return r.status+':'+r.side+(r.status==='signal'&&f?':'+f.tf+':'+f.t:'');
+}
+function wMsg(r){
+  var sd=r.side>0?'LONG':'SHORT',t=r.label+' · '+sd+' · '+(r.status==='ready'?'setup sẵn sàng':r.status==='signal'?'nến signal tại vùng vào':'sắp có setup');
+  var b=r.reason||'';
+  if(r.plan){var e=r.plan.entry;b+='\nVùng vào H1 '+fmt(e.lo)+' – '+fmt(e.hi)+' · cắt lỗ '+fmt(r.plan.sl)+(r.plan.tp1!=null?' · TP1 '+fmt(r.plan.tp1):'')}
+  if(r.price!=null)b+='\nGiá hiện tại '+fmt(r.price);
+  return {title:t,body:b};
+}
+function wLine(r){
+  var sd=r.side>0?'LONG':'SHORT',st=r.status==='ready'?'sẵn sàng':r.status==='signal'?'nến signal':'sắp có setup',l=r.label+' · '+sd+' · '+st;
+  if(r.plan)l+=' · vào '+fmt(r.plan.entry.lo)+'–'+fmt(r.plan.entry.hi)+' · SL '+fmt(r.plan.sl)+(r.plan.tp1!=null?' · TP1 '+fmt(r.plan.tp1):'');
+  return l;
+}
+function wSleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function wPush(list,newKeys){
+  if(!WS.ntfy||!WS.topic)return;
+  var real=list.filter(function(r){return !r.sample});
+  if(!real.length)return;
+  if(WS.mode==='digest'){
+    var lines=real.slice(0,20).map(function(r){return (newKeys[r.label]?'[MỚI] ':'')+wLine(r)});
+    if(real.length>20)lines.push('… và '+(real.length-20)+' coin khác');
+    var nn=real.filter(function(r){return newKeys[r.label]}).length;
+    await ntfySend('Pivot Lab: '+real.length+' coin có setup'+(nn?' ('+nn+' mới)':''),lines.join('\n'),'high');
+  }else{
+    for(var q=0;q<real.length;q++){
+      var m=wMsg(real[q]);
+      await ntfySend(m.title,m.body,real[q].status==='near'?'default':'high');
+      if(q<real.length-1)await wSleep(700);
+    }
+  }
+}
+function onScanDone(items,force){
+  if(!WS.on&&!(force&&WS.ntfy))return;
+  var kinds={ready:WS.ready,signal:WS.signal,near:WS.near},cur=[],fresh={};
+  items.forEach(function(r){
+    if(r.status==='error')return;
+    var k=kinds[r.status]?wKey(r):'',prev=wprev[r.label]||'';
+    if(k){cur.push(r);if(k!==prev)fresh[r.label]=true}
+    wprev[r.label]=k;
+  });
+  savePrev();
+  var first=(wbase===null);
+  if(first)wbase=Date.now();
+  /* báo toàn bộ coin đang có setup khi: quét thủ công, lần quét đầu sau khi bật, hoặc đã chọn báo lặp */
+  var all=force||first||WS.repeat,fire=all?cur:cur.filter(function(r){return fresh[r.label]});
+  if(!fire.length){
+    if(first||force)toast(items.length+' coin đã quét, hiện chưa có coin nào có setup.');
+    return;
+  }
+  var nnew=fire.filter(function(r){return fresh[r.label]}).length;
+  if(fire.length>3)toast(fire.length+' coin có setup'+(nnew?' ('+nnew+' mới)':'')+': '+fire.slice(0,8).map(function(r){return r.label}).join(', ')+(fire.length>8?'…':''));
+  else fire.forEach(function(r){var m=wMsg(r);toast(m.title+'. '+m.body.split('\n')[0])});
+  wSound();
+  try{if(window.Notification&&Notification.permission==='granted'&&document.visibilityState!=='visible')fire.slice(0,5).forEach(function(r){var m=wMsg(r);new Notification(m.title,{body:m.body})})}catch(e){}
+  wPush(fire,fresh);
+  if(document.visibilityState!=='visible'){wunseen+=fire.length;document.title='('+wunseen+') Pivot Lab'}
+}
+wUI();watchStat();
+if(WS.on)setTimeout(function(){if(loadWatch().length>=2)wTick();else watchStat()},1500);
+if(location.hash==='#pltest')window.__pl={onScanDone:onScanDone,WS:WS,reset:function(){wbase=null;wprev={}}};
 function scanTf(r){
   if(r.status==='ready')return '15m';
   var f=r.items&&r.items.slice().sort(function(a,b){return a.ago-b.ago})[0];
