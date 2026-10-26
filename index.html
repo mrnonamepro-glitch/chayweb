@@ -208,6 +208,9 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 .afill.bull{background:var(--up)} .afill.bear{background:var(--down)}
 .h3{font:600 14px var(--f-display);margin:16px 0 4px}
 #planblocks2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px;margin-top:16px}
+#listrow.listrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 8px}
+#listrow input[type=text]{width:12ch;font-family:var(--f-mono)}
+#liststat{font-size:12.5px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style></head><body>
 
@@ -226,52 +229,12 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
     <section class="controls" aria-label="Tuỳ chọn biểu đồ">
       <form class="group" id="symf" autocomplete="off">
         <label class="lbl" for="sym">Cặp</label>
-        <input type="text" id="sym" size="22" list="symlist" value="BTCUSDT.P" spellcheck="false" autocapitalize="characters" placeholder="VD: SOLUSDT.P hoặc tối đa 100 mã: NEARUSDT.P, UNIUSDT.P" aria-describedby="symhelp">
+        <input type="text" id="sym" size="22" list="symlist" value="BTCUSDT.P" spellcheck="false" autocapitalize="characters" placeholder="VD: SOLUSDT.P hoặc tối đa 300 mã: NEARUSDT.P, UNIUSDT.P" aria-describedby="symhelp">
         <datalist id="symlist">
           <option value="BTCUSDT.P"></option><option value="ETHUSDT.P"></option><option value="BNBUSDT.P"></option>
           <option value="SOLUSDT.P"></option><option value="XRPUSDT.P"></option><option value="DOGEUSDT.P"></option>
           <option value="ADAUSDT.P"></option><option value="AVAXUSDT.P"></option><option value="LINKUSDT.P"></option>
           <option value="1000PEPEUSDT.P"></option><option value="SUIUSDT.P"></option><option value="BTCUSDT"></option>
-          <option value="NIGHTUSDT.P"></option><option value="SYNUSDT.P"></option><option value="NEARUSDT.P"></option>
-          <option value="SIGNUSDT.P"></option><option value="UNIUSDT.P"></option><option value="KITEUSDT.P"></option>
-          <option value="ZROUSDT.P"></option><option value="FLUIDUSDT.P"></option><option value="REDUSDT.P"></option>
-          <option value="RSRUSDT.P"></option><option value="JCTUSDT.P"></option><option value="STXUSDT.P"></option>
-          <option value="EDUUSDT.P"></option><option value="APTUSDT.P"></option><option value="1000FLOKIUSDT.P"></option>
-          <option value="1000SHIBUSDT.P"></option><option value="AAVEUSDT.P"></option><option value="ACHUSDT.P"></option>
-          <option value="AKTUSDT.P"></option><option value="APRUSDT.P"></option><option value="ARBUSDT.P"></option>
-          <option value="ARKMUSDT.P"></option><option value="AVNTUSDT.P"></option><option value="AXLUSDT.P"></option>
-          <option value="BATUSDT.P"></option><option value="BCHUSDT.P"></option><option value="BEATUSDT.P"></option>
-          <option value="BIGTIMEUSDT.P"></option><option value="BIOUSDT.P"></option><option value="BLESSUSDT.P"></option>
-          <option value="BMTUSDT.P"></option><option value="BOMEUSDT.P"></option><option value="CFGUSDT.P"></option>
-          <option value="CHIPUSDT.P"></option><option value="COMPUSDT.P"></option><option value="COOKIEUSDT.P"></option>
-          <option value="CROSSUSDT.P"></option><option value="CYSUSDT.P"></option><option value="DASHUSDT.P"></option>
-          <option value="DOGSUSDT.P"></option><option value="DOSUSDT.P"></option><option value="DOTUSDT.P"></option>
-          <option value="EDENUSDT.P"></option><option value="EGLDUSDT.P"></option><option value="ENAUSDT.P"></option>
-          <option value="ENJUSDT.P"></option><option value="EPICUSDT.P"></option><option value="ETCUSDT.P"></option>
-          <option value="FETUSDT.P"></option><option value="FHEUSDT.P"></option><option value="FIGHTUSDT.P"></option>
-          <option value="FRAXUSDT.P"></option><option value="GIGGLEUSDT.P"></option><option value="GRTUSDT.P"></option>
-          <option value="HAEDALUSDT.P"></option><option value="HBARUSDT.P"></option><option value="HEIUSDT.P"></option>
-          <option value="HEMIUSDT.P"></option><option value="HOMEUSDT.P"></option><option value="HUSDT.P"></option>
-          <option value="HYPERUSDT.P"></option><option value="HYPEUSDT.P"></option><option value="ICPUSDT.P"></option>
-          <option value="INJUSDT.P"></option><option value="INUSDT.P"></option><option value="INXUSDT.P"></option>
-          <option value="JTOUSDT.P"></option><option value="JUPUSDT.P"></option><option value="KAITOUSDT.P"></option>
-          <option value="KATUSDT.P"></option><option value="KERNELUSDT.P"></option><option value="LINKUSDT.P"></option>
-          <option value="LQTYUSDT.P"></option><option value="LTCUSDT.P"></option><option value="MAGMAUSDT.P"></option>
-          <option value="MERLUSDT.P"></option><option value="MIRAUSDT.P"></option><option value="MITOUSDT.P"></option>
-          <option value="NEOUSDT.P"></option><option value="ONDOUSDT.P"></option><option value="ONTUSDT.P"></option>
-          <option value="OPENUSDT.P"></option><option value="OPGUSDT.P"></option><option value="OPNUSDT.P"></option>
-          <option value="PENDLEUSDT.P"></option><option value="PENGUUSDT.P"></option><option value="PEOPLEUSDT.P"></option>
-          <option value="PIEVERSEUSDT.P"></option><option value="PLUMEUSDT.P"></option><option value="PORTALUSDT.P"></option>
-          <option value="POWERUSDT.P"></option><option value="PROVEUSDT.P"></option><option value="PUMPUSDT.P"></option>
-          <option value="QTUMUSDT.P"></option><option value="RAVEUSDT.P"></option><option value="RECALLUSDT.P"></option>
-          <option value="RIVERUSDT.P"></option><option value="SANDUSDT.P"></option><option value="SEIUSDT.P"></option>
-          <option value="SENTUSDT.P"></option><option value="SKYUSDT.P"></option><option value="SOMIUSDT.P"></option>
-          <option value="SUSHIUSDT.P"></option><option value="SYRUPUSDT.P"></option><option value="ONTUSDT.P"></option>
-          <option value="OPENUSDT.P"></option><option value="OPGUSDT.P"></option><option value="TAGUSDT.P"></option>
-          <option value="TAOUSDT.P"></option><option value="TIAUSDT.P"></option><option value="TOSHIUSDT.P"></option>
-          <option value="VANAUSDT.P"></option><option value="VETUSDT.P"></option><option value="WCTUSDT.P"></option>
-          <option value="WIFUSDT.P"></option><option value="WLDUSDT.P"></option><option value="XLMUSDT.P"></option>
-
         </datalist>
         <button type="submit" class="btn pri">Xem</button>
       </form>
@@ -283,8 +246,8 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       </div>
       <div class="group">
         <label class="lbl" for="sens" title="Số nến mỗi bên dùng để xác nhận một đỉnh/đáy. Nhỏ: nhiều đỉnh/đáy, nhạy, nhiều nhiễu. Lớn: ít đỉnh/đáy nhưng quan trọng hơn.">Độ nhạy</label>
-        <input type="range" id="sens" min="2" max="10" step="1" value="7">
-        <span class="kval" id="sensv">7</span>
+        <input type="range" id="sens" min="2" max="10" step="1" value="5">
+        <span class="kval" id="sensv">5</span>
       </div>
       <div class="group">
         <button type="button" class="btn" id="reload">Tải lại</button>
@@ -292,8 +255,15 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       </div>
     </section>
 
-    <p class="hint2" id="symhelp">Nhập hoặc dán tối đa 100 mã (cách nhau bằng dấu phẩy, khoảng trắng hoặc xuống dòng) rồi bấm Xem để quét setup cả danh sách. Thêm <b>.P</b> sau mã để xem giá Futures (ví dụ BTCUSDT.P). Không có .P là giá Spot. Với coin giá nhỏ, Futures thường dùng mã như 1000PEPEUSDT.P; gõ PEPEUSDT.P trang cũng tự thử mã đó.</p>
+    <p class="hint2" id="symhelp">Nhập hoặc dán tối đa 300 mã (cách nhau bằng dấu phẩy, khoảng trắng hoặc xuống dòng), hoặc nạp từ file .txt ở dòng bên dưới, rồi bấm Xem để quét setup cả danh sách. Thêm <b>.P</b> sau mã để xem giá Futures (ví dụ BTCUSDT.P). Không có .P là giá Spot. Với coin giá nhỏ, Futures thường dùng mã như 1000PEPEUSDT.P; gõ PEPEUSDT.P trang cũng tự thử mã đó.</p>
 
+    <div class="hint2 listrow" id="listrow">
+      <span>Danh sách coin từ file .txt:</span>
+      <input type="text" id="listname" size="14" value="coins.txt" spellcheck="false" autocapitalize="none" aria-label="Tên file .txt cùng thư mục với trang này">
+      <button type="button" class="btn" id="listgh" title="Đọc file cùng thư mục với trang này trên GitHub Pages">Nạp từ GitHub</button>
+      <label class="btn file" for="listpick" title="Chọn file .txt trên máy">Chọn file .txt trên máy<input type="file" id="listpick" accept=".txt,text/plain"></label>
+      <span id="liststat" role="status" aria-live="polite"></span>
+    </div>
     <p class="hint2" id="lastwrap" hidden><button type="button" class="chipbtn" id="lastlist"></button></p>
     <p class="hint2"><button type="button" class="chipbtn" id="sbtopen">Backtest setup trên lịch sử…</button></p>
 
@@ -302,7 +272,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       <p class="hint2" style="margin:0 0 6px">Tự quét lại danh sách coin gần nhất theo chu kỳ và báo khi một coin <b>mới xuất hiện</b> setup LONG/SHORT. Trang phải đang mở thì mới quét được.</p>
       <div class="wgrid">
         <label><input type="checkbox" id="w-on"> <b>Bật theo dõi</b></label>
-        <label>Quét mỗi <select id="w-mins"><option value="1">1 phút</option><option value="2">2 phút</option><option value="5" selected>5 phút</option><option value="10">10 phút</option><option value="15">15 phút</option></select></label>
+        <label>Quét mỗi <select id="w-mins"><option value="1">1 phút</option><option value="2">2 phút</option><option value="5" selected>5 phút</option><option value="10">10 phút</option><option value="15">15 phút</option><option value="60">1 giờ</option><option value="240">4 giờ</option></select></label>
         <label><input type="checkbox" id="w-ready" checked> Báo "Có setup sẵn sàng"</label>
         <label><input type="checkbox" id="w-signal" checked> Báo "Có nến signal tại vùng vào"</label>
         <label><input type="checkbox" id="w-near"> Báo cả "Sắp có setup"</label>
@@ -351,16 +321,16 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <section class="group" id="layers" aria-label="Lớp phân tích">
       <button type="button" class="chipbtn" data-k="trend" aria-pressed="true"><span class="sw" style="background:var(--tl)"></span>Đường xu hướng</button>
-      <button type="button" class="chipbtn" data-k="fib" aria-pressed="false"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
+      <button type="button" class="chipbtn" data-k="fib" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Fibonacci</button>
       <button type="button" class="chipbtn" data-k="pat" aria-pressed="true"><span class="sw" style="background:var(--pat)"></span>Mô hình giá</button>
       <button type="button" class="chipbtn" data-k="piv" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Đỉnh/đáy</button>
       <button type="button" class="chipbtn" data-k="ema" aria-pressed="true"><span class="sw" style="background:var(--ema1)"></span>EMA 20/50</button>
       <button type="button" class="chipbtn" data-k="boll" aria-pressed="true"><span class="sw" style="background:var(--boll)"></span>Bollinger 20/2</button>
-      <button type="button" class="chipbtn" data-k="macd" aria-pressed="false"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
+      <button type="button" class="chipbtn" data-k="macd" aria-pressed="true"><span class="sw" style="background:var(--macd)"></span>MACD 12/26/9</button>
       <button type="button" class="chipbtn" data-k="sig" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Nến signal setup</button>
-      <button type="button" class="chipbtn" data-k="bt" aria-pressed="false"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
+      <button type="button" class="chipbtn" data-k="bt" aria-pressed="true"><span class="sw" style="background:var(--up)"></span>Lệnh backtest</button>
       <button type="button" class="chipbtn" data-k="plan" aria-pressed="true"><span class="sw" style="background:var(--fib)"></span>Kế hoạch (vào/SL/TP)</button>
-      <button type="button" class="chipbtn" data-k="vol" aria-pressed="false"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
+      <button type="button" class="chipbtn" data-k="vol" aria-pressed="true"><span class="sw" style="background:var(--muted)"></span>Khối lượng</button>
     </section>
 
     <section class="chartcard">
@@ -2116,11 +2086,12 @@ async function scanCoin(n){
   r.req=req;r.label=label;r.sample=sample;r.sym=sym;r.fut=n.fut;
   return r;
 }
+var MAXC=300;
 async function runScan(tokens,opts){
   var auto=!!(opts&&opts.auto);
   var seen={},list=[];
   tokens.forEach(function(t){var n=normSymbol(t);if(!n)return;var k=n.sym+(n.fut?'.P':'');if(!seen[k]){seen[k]=1;list.push(n)}});
-  var trunc=Math.max(0,list.length-100);list=list.slice(0,100);
+  var trunc=Math.max(0,list.length-MAXC);list=list.slice(0,MAXC);
   if(list.length<2)return false;
   var my=++scanState.id,acc=[];
   saveWatch(list.map(function(n){return labelOf(n.sym,n.fut)}));
@@ -2161,7 +2132,7 @@ $('#lastlist').addEventListener('click',function(){var a=loadWatch();if(a.length
 updateLast();
 
 /* ---------- backtest setup trên lịch sử (giao diện) ---------- */
-var sbt={id:0,busy:false,res:null,sel:'def'};
+var sbt={id:0,busy:false,res:null,sel:'def',cut:0};
 async function klinesBack(sym,tf,fut,total){
   var out=[],end=null,left=total;
   while(left>0){
@@ -2188,6 +2159,7 @@ function sbtTokens(){
   if(!t){var one=normSymbol(symInput.value);t=one?[labelOf(one.sym,one.fut)]:[]}
   var seen={},list=[];
   t.forEach(function(x){var n=normSymbol(x);if(!n)return;var k=n.sym+(n.fut?'.P':'');if(!seen[k]){seen[k]=1;list.push(n)}});
+  sbt.cut=Math.max(0,list.length-100);
   return list.slice(0,100);
 }
 function sbtPresetsHtml(){
@@ -2196,7 +2168,7 @@ function sbtPresetsHtml(){
 function sbtOpen(){
   $('#sbtcard').hidden=false;
   var l=sbtTokens();
-  $('#sbtsrc').textContent=l.length?'Danh sách: '+l.length+' mã ('+l.slice(0,4).map(function(n){return labelOf(n.sym,n.fut)}).join(', ')+(l.length>4?'…':'')+')':'Chưa có mã nào. Nhập danh sách coin ở ô "Cặp" rồi mở lại.';
+  $('#sbtsrc').textContent=l.length?'Danh sách: '+l.length+' mã ('+l.slice(0,4).map(function(n){return labelOf(n.sym,n.fut)}).join(', ')+(l.length>4?'…':'')+')'+(sbt.cut?'. Backtest chỉ dùng 100 mã đầu, bỏ qua '+sbt.cut+' mã còn lại.':''):'Chưa có mã nào. Nhập danh sách coin ở ô "Cặp" rồi mở lại.';
   $('#sbtcard').scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function sbtCoin(n,my,P){
@@ -2335,7 +2307,8 @@ function watchStat(){
   if(n<2){el.textContent='Chưa có danh sách coin. Hãy nhập nhiều mã và bấm Xem một lần để lưu danh sách.';pr.textContent='';return}
   if(scanState.busy&&scanState.auto){el.textContent='Đang quét '+scanState.done+'/'+scanState.total+'…';pr.textContent='Đang quét';return}
   var left=Math.max(0,Math.round((wnext-Date.now())/1000));
-  el.textContent='Đang theo dõi '+n+' coin · quét lần tới sau '+Math.floor(left/60)+':'+pad2(left%60)+(WS.ntfy&&!WS.topic?' · chưa có mã kênh ntfy':'');
+  var cd=left>=3600?Math.floor(left/3600)+':'+pad2(Math.floor(left%3600/60))+':'+pad2(left%60):Math.floor(left/60)+':'+pad2(left%60);
+  el.textContent='Đang theo dõi '+n+' coin · quét lần tới sau '+cd+(WS.ntfy&&!WS.topic?' · chưa có mã kênh ntfy':'')+(n>100&&WS.mins<5?' · danh sách lớn, chu kỳ ngắn dễ bị Binance giới hạn tốc độ (lỗi 429), nên chọn từ 5 phút trở lên':'');
   pr.textContent='Đang theo dõi';
 }
 async function wLock(){
@@ -2345,7 +2318,14 @@ async function wLock(){
     }else if((!WS.on||!WS.wake)&&wlock){await wlock.release();wlock=null}
   }catch(e){wlock=null}
 }
-document.addEventListener('visibilitychange',function(){wLock();if(document.visibilityState==='visible'){wunseen=0;document.title='Pivot Lab'}});
+document.addEventListener('visibilitychange',function(){
+  wLock();
+  if(document.visibilityState==='visible'){
+    wunseen=0;document.title='Pivot Lab';
+    /* Trình duyệt hay đóng băng bộ hẹn giờ khi trang bị ẩn (nhất là chu kỳ dài). Nếu đã quá giờ quét thì quét bù ngay. */
+    if(WS.on&&wnext&&Date.now()>=wnext&&!scanState.busy&&loadWatch().length>=2){clearTimeout(wtimer);wTick()}
+  }
+});
 function wSchedule(){
   clearTimeout(wtimer);clearInterval(wcount);wtimer=null;wcount=null;
   if(!WS.on){watchStat();return}
@@ -2486,7 +2466,7 @@ function renderScan(total){
   $('#scanprog').textContent=(scanState.busy?'Đã quét '+its.length+'/'+total+'… ':'Xong '+its.length+' coin · ')+good+' có setup · '+soon+' sắp có setup'+(bad?' · '+bad+' lỗi':'');
   var smp=its.some(function(x){return x.sample}),nt=$('#scannote'),nh='';
   if(smp)nh+='<b>Đang dùng dữ liệu mẫu giả lập, không phải giá thật.</b> Bản xem trước này không gọi được Binance. Mở file .html trên máy để quét giá thật. ';
-  if(scanState.trunc)nh+='Danh sách có '+(total+scanState.trunc)+' mã, chỉ quét 100 mã đầu tiên.';
+  if(scanState.trunc)nh+='Danh sách có '+(total+scanState.trunc)+' mã, chỉ quét '+MAXC+' mã đầu tiên.';
   nt.hidden=!nh;nt.innerHTML=nh;
   var shown=scanState.only?its.filter(function(x){return x.status==='ready'||x.status==='signal'||x.status==='near'}):its;
   $('#scanrows').innerHTML=(scanState.only&&!shown.length&&!scanState.busy?'<p class="pl muted">Chưa có coin nào có setup hoặc sắp có setup. Bỏ chọn "Chỉ hiện coin có setup" để xem toàn bộ.</p>':'')+shown.map(function(r,i){
@@ -2529,6 +2509,59 @@ symInput.addEventListener('paste',function(e){
   var t=(e.clipboardData||window.clipboardData);t=t?t.getData('text'):'';
   if(/[\r\n]/.test(t)){e.preventDefault();symInput.setRangeText(t.trim().replace(/[\r\n]+/g,', '),symInput.selectionStart,symInput.selectionEnd,'end')}
 });
+/* ---------- nạp danh sách coin từ file .txt ---------- */
+var LNK='pivotlab.listfile';
+/* Các mã cách nhau bằng dấu phẩy, chấm phẩy, khoảng trắng hoặc xuống dòng. Dòng/đoạn sau # hoặc // là ghi chú. */
+function parseCoinText(txt){
+  var out=[],seen={},bad=0,dup=0;
+  String(txt||'').replace(/^\uFEFF/,'').split(/\r?\n/).forEach(function(line){
+    line=line.replace(/#.*$/,'').replace(/\/\/.*$/,'');
+    line.split(/[\s,;]+/).forEach(function(t){
+      t=t.trim().toUpperCase();
+      if(!t)return;
+      var n=normSymbol(t);
+      if(!n||!/^[A-Z0-9]{3,30}$/.test(n.sym)){bad++;return}
+      var k=n.sym+(n.fut?'.P':'');
+      if(seen[k]){dup++;return}
+      seen[k]=1;out.push(t);
+    });
+  });
+  return {tokens:out,bad:bad,dup:dup};
+}
+function listStat(msg,err){var el=$('#liststat');el.textContent=msg;el.style.color=err?'var(--down,#c0392b)':'var(--muted)'}
+function applyCoinList(txt,src){
+  var r=parseCoinText(txt);
+  if(!r.tokens.length){listStat('Không thấy mã coin nào trong '+src+'.',true);return}
+  var cut=Math.max(0,r.tokens.length-MAXC);
+  symInput.value=r.tokens.join(', ');
+  listStat('Đã nạp '+r.tokens.length+' mã từ '+src+(r.dup?', bỏ '+r.dup+' mã trùng':'')+(r.bad?', bỏ '+r.bad+' mục không hợp lệ':'')+(cut?'. Chỉ quét '+MAXC+' mã đầu, bỏ '+cut+' mã cuối.':'.'));
+  if(r.tokens.length>=2)runScan(r.tokens);
+  else switchSymbol(r.tokens[0]);
+}
+async function loadListGh(){
+  var name=($('#listname').value||'').trim()||'coins.txt';
+  try{localStorage.setItem(LNK,name)}catch(e){}
+  if(location.protocol==='file:'){listStat('Đang mở trang từ file trên máy nên không đọc được từ GitHub. Hãy dùng nút "Chọn file .txt trên máy".',true);return}
+  listStat('Đang tải '+name+'…');
+  try{
+    var u=new URL(name,location.href);u.searchParams.set('v',Date.now());
+    var r=await fetch(u.href,{cache:'no-store'});
+    if(r.status===404){listStat('Không thấy file "'+name+'" cùng thư mục với trang này. Hãy tải file lên cùng thư mục với index.html trên GitHub rồi thử lại.',true);return}
+    if(!r.ok){listStat('Không tải được '+name+' (HTTP '+r.status+').',true);return}
+    applyCoinList(await r.text(),name);
+  }catch(e){listStat('Không tải được '+name+'. Kiểm tra mạng rồi thử lại.',true)}
+}
+$('#listgh').addEventListener('click',loadListGh);
+$('#listpick').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];
+  if(!f)return;
+  var fr=new FileReader();
+  fr.onload=function(){applyCoinList(String(fr.result||''),f.name)};
+  fr.onerror=function(){listStat('Không đọc được file '+f.name+'.',true)};
+  fr.readAsText(f);
+  e.target.value='';
+});
+try{var _ln=localStorage.getItem(LNK);if(_ln)$('#listname').value=_ln}catch(e){}
 function multiTokens(v){var t=String(v||'').split(/[\s,;]+/).filter(Boolean);return t.length>=2?t:null}
 async function switchSymbol(raw){
   var n=normSymbol(raw);
