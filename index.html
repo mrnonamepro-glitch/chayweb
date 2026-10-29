@@ -309,6 +309,27 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       <p class="disc">Mã kênh ntfy hoạt động như mật khẩu: ai biết mã đều đọc được thông báo của bạn. Hãy dùng mã ngẫu nhiên, đừng chia sẻ. Nội dung gửi gồm tên coin, hướng và vùng giá. Dữ liệu mẫu giả lập không bao giờ được gửi về điện thoại.</p>
     </section>
 
+    <section class="card" id="entrycard">
+      <div class="scanhead"><h2>Vào lệnh theo nến signal</h2><span class="scanprog" id="eprog"></span></div>
+      <p class="hint2" style="margin:0 0 6px">Tính lệnh từ nến signal hiện tại trên chart đang xem. Lệnh được kích hoạt khi nến kế tiếp phá đỉnh nến signal (LONG) hoặc đáy nến signal (SHORT). Khối lượng tính theo số tiền rủi ro bạn nhập.</p>
+      <div class="wgrid">
+        <label><input type="checkbox" id="e-on"> <b>Tính lệnh vào</b></label>
+        <label>Nguồn signal <select id="e-src"><option value="zone">Nến signal của setup (tại vùng vào)</option><option value="local">Tín hiệu EMA tại chỗ (mũi tên mờ)</option></select></label>
+        <label>Risk mỗi lệnh ($) <input type="number" id="e-risk" min="0" step="any" inputmode="decimal" value="50"></label>
+        <label>Cắt lỗ ban đầu <select id="e-slm"><option value="candle">Nến signal ± đệm ATR</option><option value="atr">Bội số ATR từ giá vào</option></select></label>
+        <label><span id="e-slpl">Đệm (ATR)</span> <input type="number" id="e-slp" min="0" step="0.05" inputmode="decimal" value="0.25"></label>
+        <label>RR chốt lời (0 là tắt) <input type="number" id="e-rr" min="0" step="0.1" inputmode="decimal" value="0"></label>
+      </div>
+      <div class="wgrid">
+        <label><input type="checkbox" id="e-tr"> <b>Trail stoploss</b></label>
+        <label>Kiểu trail <select id="e-trk"></select></label>
+        <label><span id="e-trpl">Thông số trail</span> <input type="number" id="e-trp" min="0" step="any" inputmode="decimal" value="2"></label>
+        <label>Bắt đầu trail khi đạt (RR) <input type="number" id="e-trr" min="0" step="0.1" inputmode="decimal" value="1"></label>
+      </div>
+      <div id="ebody"></div>
+      <p class="disc">Kết quả là mô phỏng trên dữ liệu giá đang có, chưa tính phí, trượt giá và funding. Trên một nến mà giá chạm cả cắt lỗ và chốt lời thì tính cắt lỗ. Mức trail mới tính từ nến đã đóng nên chỉ có hiệu lực từ nến kế tiếp. Khối lượng chưa giới hạn theo đòn bẩy hay số dư thật của bạn. Đây không phải khuyến nghị đầu tư.</p>
+    </section>
+
     <section class="card" id="scancard" hidden aria-live="polite">
       <div class="scanhead"><h2>Quét nhiều coin</h2><span class="scanprog" id="scanprog"></span>
         <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="sbtopen2">Backtest setup</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
@@ -1897,6 +1918,7 @@ function setData(d,resetChat){
   btRefresh();
   refreshPlan(true);
   renderFindings();
+  renderEntry();
   renderAlerts();
   if(resetChat){
     $('#msgs').innerHTML='';
@@ -2018,6 +2040,7 @@ async function tick(){
   refreshPlan(false);
   if(state.mode==='sample')refreshMtf(false);
   renderFindings();
+  renderEntry();
   updateAlertDist();
   checkAlerts(d[d.length-1].c);
   draw();
@@ -3060,6 +3083,34 @@ function draw(){
     });
   }
 
+  /* lệnh vào theo nến signal: giá vào, cắt lỗ, chốt lời, đường trail vẽ đến nến hiện tại; lệnh đóng thì không vẽ */
+  var ER=ES.on?entryCalc():null;
+  if(ER&&(ER.st==='wait'||ER.st==='open')){
+    var ecol=ER.side>0?C('--up'):C('--down'),xr=plotR-2,x0=Math.max(plotL,X(ER.st==='open'?ER.entryI:ER.sigI+1)-bw/2);
+    var hl=function(p,col,lab,dash){
+      if(p==null||!isFinite(p))return;
+      var yy=Y(p);if(yy<plotT||yy>priceB)return;
+      ctx.setLineDash(dash);ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(xr,yy);ctx.stroke();ctx.setLineDash([]);
+      ctx.font='600 10px '+C('--f-mono');ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillStyle=col;ctx.fillText(lab,xr-4,yy-2);
+    };
+    hl(ER.entry,ecol,(ER.st==='wait'?'Vào khi phá ':'Vào ')+fmt(ER.entry),[6,3]);
+    hl(ER.sl0,C('--down'),'SL '+fmt(ER.sl0),[2,3]);
+    if(ER.tp!=null)hl(ER.tp,C('--up'),'TP '+fmt(ER.tp),[2,3]);
+    if(ER.st==='open'&&ES.tr&&ER.path&&ER.path.length){
+      ctx.strokeStyle=C('--tl');ctx.lineWidth=2;ctx.beginPath();
+      var started=false;
+      ER.path.forEach(function(q,qi){
+        var xa=X(q.i)-bw/2,xb=X(q.i)+bw/2,yy=Y(q.stop);
+        if(!started){ctx.moveTo(xa,yy);started=true}else ctx.lineTo(xa,yy);
+        ctx.lineTo(xb,yy);
+      });
+      ctx.stroke();
+      var lp=ER.path[ER.path.length-1],ly3=Y(lp.stop);
+      if(ly3>=plotT&&ly3<=priceB){ctx.fillStyle=C('--tl');ctx.font='600 10px '+C('--f-mono');ctx.textAlign='right';ctx.textBaseline='top';ctx.fillText('Trail SL '+fmt(lp.stop),xr-4,ly3+3)}
+    }
+    ctx.textAlign='left';
+  }
+
   /* last price line */
   var last=d[n-1],ly2=Y(last.c);
   ctx.setLineDash([3,3]);ctx.strokeStyle=last.c>=last.o?C('--up'):C('--down');ctx.lineWidth=1;
@@ -3640,6 +3691,138 @@ function drawEq(){
   new MutationObserver(drawEq).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawEq);
 })();
+
+/* ---------- vào lệnh theo nến signal ---------- */
+var EK='pivotlab.entry.v1';
+var ES={on:false,src:'zone',risk:50,slm:'candle',slp:0.25,rr:0,tr:false,trk:'atr',trp:2,trr:1};
+try{var _e=JSON.parse(localStorage.getItem(EK)||'null');if(_e)Object.keys(ES).forEach(function(k){if(_e[k]!==undefined)ES[k]=_e[k]})}catch(e){}
+var eCache=null;
+(function(){
+  var o='';Object.keys(BT_TNAME).forEach(function(k){if(k!=='none')o+='<option value="'+k+'">'+BT_TNAME[k]+'</option>'});
+  $('#e-trk').innerHTML=o;
+})();
+function eUI(){
+  $('#e-on').checked=ES.on;$('#e-src').value=ES.src;$('#e-risk').value=ES.risk;$('#e-slm').value=ES.slm;$('#e-slp').value=ES.slp;$('#e-rr').value=ES.rr;
+  $('#e-tr').checked=ES.tr;$('#e-trk').value=ES.trk;$('#e-trp').value=ES.trp;$('#e-trr').value=ES.trr;eLabels();
+}
+function eLabels(){
+  $('#e-slpl').textContent=ES.slm==='atr'?'Bội số ATR':'Đệm (ATR)';
+  var d=BT_TRAIL[ES.trk]||BT_TRAIL.atr;
+  $('#e-trpl').textContent=d.lab;$('#e-trp').disabled=!!d.off;$('#e-trp').step=d.step;
+  var dis=!ES.tr;$('#e-trk').disabled=dis;$('#e-trp').disabled=dis||!!d.off;$('#e-trr').disabled=dis;
+}
+function eRead(){
+  var g=function(id,def){var v=parseFloat($(id).value);return isFinite(v)?v:def};
+  ES.on=$('#e-on').checked;ES.src=$('#e-src').value;ES.risk=Math.max(0,g('#e-risk',50));ES.slm=$('#e-slm').value;ES.slp=Math.max(0,g('#e-slp',0.25));ES.rr=Math.max(0,g('#e-rr',0));
+  ES.tr=$('#e-tr').checked;ES.trk=$('#e-trk').value;ES.trp=Math.max(0,g('#e-trp',2));ES.trr=Math.max(0,g('#e-trr',1));
+  try{localStorage.setItem(EK,JSON.stringify(ES))}catch(e){}
+  eCache=null;
+}
+/* Mô phỏng lệnh từ nến signal sig. Nến kế tiếp phá đỉnh (LONG) hoặc đáy (SHORT) nến signal thì vào ở giá kích hoạt (hoặc giá mở nếu gap qua).
+   Cắt lỗ/chốt lời/trail theo đúng quy tắc của backtest. Nến đang chạy (chưa đóng) chỉ dùng để kiểm tra chạm cắt lỗ/chốt lời, không dùng để dời trail. */
+function entrySim(d,sig,cfg,at,e1){
+  var n=d.length,s=sig.side,i=sig.i,sb=d[i],a=at[i],R={side:s,sigI:i,sigT:sb.t,trig:s>0?sb.h:sb.l,st:'none'};
+  if(!(a>0)||i+1>n-1){R.st='none';R.why='Chưa đủ dữ liệu cho nến signal này.';return R}
+  var b1=d[i+1],broke=s>0?b1.h>R.trig:b1.l<R.trig;
+  function slFor(e){return cfg.slm==='atr'?e-s*cfg.slp*a:(s>0?sb.l-cfg.slp*a:sb.h+cfg.slp*a)}
+  function sized(e,sl){var rk=(e-sl)*s;if(!(rk>0)||rk<e*1e-5)return null;var qty=cfg.risk>0?cfg.risk/rk:0;return {rk:rk,qty:qty,notional:qty*e}}
+  if(!broke){
+    var sl0=slFor(R.trig),sz=sized(R.trig,sl0);
+    R.sl0=sl0;R.entry=R.trig;if(sz){R.risk=sz.rk;R.qty=sz.qty;R.notional=sz.notional}
+    R.tp=cfg.rr>0&&sz?R.trig+s*cfg.rr*sz.rk:null;
+    R.price=d[n-1].c;
+    R.st=(i+1===n-1)?'wait':'expired';
+    return R;
+  }
+  var e=s>0?Math.max(R.trig,b1.o):Math.min(R.trig,b1.o),sl=slFor(e),sz2=sized(e,sl);
+  if(!sz2){R.st='invalid';R.why='Cắt lỗ không hợp lệ (nằm sai phía hoặc quá sát giá vào).';R.entry=e;return R}
+  var rk=sz2.rk,qty=sz2.qty,stop=sl,tp=cfg.rr>0?e+s*cfg.rr*rk:null,best=e,trailOn=false,sar=sl,ep=null,tr=cfg.tr?cfg.trk:'none',tpar=cfg.trp,startRR=cfg.trr;
+  var psStep=tr==='psar'&&tpar>0?tpar:0.02,psMax=Math.max(0.2,psStep),af=psStep,path=[],k,q,exit=null;
+  R.entry=e;R.entryI=i+1;R.sl0=sl;R.risk=rk;R.qty=qty;R.notional=sz2.notional;R.tp=tp;
+  for(k=i+1;k<n;k++){
+    var bar=d[k];path.push({i:k,stop:stop});
+    var hitStop=s>0?bar.l<=stop:bar.h>=stop;
+    if(hitStop){var pxs=k===i+1?stop:(s>0?Math.min(stop,bar.o):Math.max(stop,bar.o));exit={px:pxs,why:stop===sl?'cắt lỗ':'trail stoploss',i:k};break}
+    if(tp!==null&&(s>0?bar.h>=tp:bar.l<=tp)){var pxt=k===i+1?tp:(s>0?Math.max(tp,bar.o):Math.min(tp,bar.o));exit={px:pxt,why:'chốt lời '+cfg.rr+'R',i:k};break}
+    best=s>0?Math.max(best,bar.h):Math.min(best,bar.l);
+    if(k===n-1)break;
+    if(ep===null)ep=s>0?bar.h:bar.l;
+    else if(s>0?bar.h>ep:bar.l<ep){ep=s>0?bar.h:bar.l;af=Math.min(af+psStep,psMax)}
+    sar=sar+af*(ep-sar);
+    if(s>0)sar=Math.min(sar,bar.l,k>i+1?d[k-1].l:bar.l);else sar=Math.max(sar,bar.h,k>i+1?d[k-1].h:bar.h);
+    if(!trailOn&&tr!=='none'&&(best-e)*s/rk>=startRR)trailOn=true;
+    if(trailOn){
+      var c=null;
+      if(tr==='be')c=e;
+      else if(tr==='atr'){if(at[k]>0)c=best-s*tpar*at[k]}
+      else if(tr==='psar')c=sar;
+      else if(tr==='bar'){var N=Math.max(1,Math.round(tpar)),m=s>0?Infinity:-Infinity;for(q=Math.max(0,k-N+1);q<=k;q++)m=s>0?Math.min(m,d[q].l):Math.max(m,d[q].h);c=m}
+      else if(tr==='ema'){if(at[k]>0)c=e1[k]-s*tpar*at[k]}
+      if(c!==null&&isFinite(c)&&(s>0?c>stop:c<stop))stop=c;
+    }
+  }
+  R.path=path;R.stop=stop;R.trailOn=trailOn;R.best=best;R.price=d[n-1].c;
+  if(exit){R.st='closed';R.exit=exit;R.pnl=qty*(exit.px-e)*s;R.r=(exit.px-e)*s/rk}
+  else{R.st='open';R.pnl=qty*(R.price-e)*s;R.r=(R.price-e)*s/rk}
+  return R;
+}
+function entryCalc(){
+  if(!ES.on)return null;
+  var d=state.data,n=d.length;
+  if(n<60||!state.A)return null;
+  var sigs=getSigs(),last=d[n-1];
+  var key=[n,last.t,last.o,last.h,last.l,last.c,state.tf,state.sigs&&state.sigs.length,JSON.stringify(ES)].join('|');
+  if(eCache&&eCache.key===key)return eCache.res;
+  var list=sigs.filter(function(g){return g.kind===ES.src&&g.i<=n-2}),sig=list[list.length-1],res;
+  if(!sig)res={st:'nosig'};
+  else{
+    var fast=Math.max(2,Math.round(parseFloat($('#bt-p1').value)||20)),cl=d.map(function(x){return x.c});
+    res=entrySim(d,sig,ES,atrArr(d,14),emaArr(cl,fast));
+  }
+  eCache={key:key,res:res};
+  return res;
+}
+function renderEntry(){
+  var el=$('#ebody'),pr=$('#eprog');
+  if(!ES.on){el.innerHTML='';pr.textContent='Đang tắt';return}
+  var R=entryCalc();
+  if(!R){el.innerHTML='<p class="pl muted">Chưa có dữ liệu để tính lệnh.</p>';pr.textContent='';return}
+  var sd=function(x){return x>0?'LONG':'SHORT'},u=function(x){return usd(x,true)};
+  var cell=function(k,v,c){return '<div class="stat"><span class="sk">'+k+'</span><span class="sv '+(c||'')+'">'+v+'</span></div>'};
+  var h='';
+  if(R.st==='nosig'){
+    pr.textContent='Chưa có signal';
+    h='<p class="pl muted">Chưa có '+(ES.src==='zone'?'nến signal của setup':'tín hiệu EMA tại chỗ')+' nào trên chart này. '+(ES.src==='zone'?'Nến signal của setup chỉ có ở khung M15 và H1 khi H4 có xu hướng. ':'')+'Hãy chuyển khung hoặc chọn nguồn signal khác.</p>';
+  }else if(R.st==='none'||R.st==='invalid'){
+    pr.textContent='Không tính được';h='<p class="pl muted">'+esc(R.why||'')+'</p>';
+  }else{
+    var head='Nến signal '+sd(R.side)+' lúc '+fmtT(R.sigT)+' · kích hoạt khi giá '+(R.side>0?'vượt đỉnh ':'thủng đáy ')+'nến signal ('+fmt(R.trig)+')';
+    if(R.st==='wait'){
+      pr.textContent='Đang chờ kích hoạt';
+      h='<p class="pl"><b>'+head+'.</b> Nến hiện tại chưa phá mức này nên chưa vào lệnh.</p><div class="btstats">'+cell('Giá kích hoạt (vào)',fmt(R.trig))+cell('Cắt lỗ',fmt(R.sl0),'down')+(R.tp!=null?cell('Chốt lời',fmt(R.tp),'up'):'')+cell('Rủi ro 1R',fmt(R.risk))+cell('Khối lượng',R.qty?R.qty.toPrecision(4)+' ('+usd(R.notional)+')':'–')+cell('Giá hiện tại',fmt(R.price))+'</div>';
+    }else if(R.st==='expired'){
+      pr.textContent='Signal hết hạn';
+      h='<p class="pl"><b>'+head+'.</b> Nến kế tiếp không phá mức này nên signal hết hiệu lực, không có lệnh. Chờ nến signal mới.</p>';
+    }else{
+      var open=R.st==='open',cls=R.pnl>0.005?'up':R.pnl<-0.005?'down':'';
+      pr.textContent=open?'Lệnh đang mở':'Lệnh đã đóng';
+      h='<p class="pl"><b>'+head+'.</b> '+(open?'Đã vào lệnh lúc '+fmtT(state.data[R.entryI].t)+'.':'Đã vào lệnh lúc '+fmtT(state.data[R.entryI].t)+' và đóng lúc '+fmtT(state.data[R.exit.i].t)+' ('+esc(R.exit.why)+').')+'</p>';
+      h+='<div class="btstats">'+cell(open?'Lợi nhuận đang chạy':'Lợi nhuận đã chốt','<span class="'+cls+'">'+u(R.pnl)+'</span>',cls)+cell('RR đạt được','<span class="'+cls+'">'+rtxt(R.r)+'</span>',cls)+
+        cell('Giá vào',fmt(R.entry))+cell(open?'Giá hiện tại':'Giá ra',fmt(open?R.price:R.exit.px))+
+        cell(open&&R.trailOn?'Cắt lỗ hiện tại (đã trail)':'Cắt lỗ',fmt(open?R.stop:R.sl0),'down')+(open&&R.trailOn?cell('Cắt lỗ ban đầu',fmt(R.sl0)):'')+(R.tp!=null?cell('Chốt lời',fmt(R.tp),'up'):'')+
+        cell('Rủi ro ban đầu (1R)',usd(ES.risk)+' · '+fmt(R.risk))+cell('Khối lượng',R.qty.toPrecision(4)+' ('+usd(R.notional)+')')+(ES.tr&&open?cell('Trail',R.trailOn?'Đang chạy':'Chưa bật (chờ đạt '+ES.trr+'R)'):'')+'</div>';
+    }
+  }
+  el.innerHTML=h;
+}
+eUI();renderEntry();
+$('#entrycard').addEventListener('input',function(e){if(e.target.type==='checkbox'||e.target.tagName==='SELECT')return;eRead();eLabels();renderEntry();draw()});
+$('#entrycard').addEventListener('change',function(e){
+  var id=e.target.id;
+  if(id==='e-trk'){ES.trk=$('#e-trk').value;var dd=BT_TRAIL[ES.trk];$('#e-trp').value=dd.def}
+  if(id==='e-slm'){ES.slm=$('#e-slm').value;$('#e-slp').value=ES.slm==='atr'?1.5:0.25}
+  eRead();eLabels();renderEntry();draw();
+});
 
 /* Bố cục màn hình rộng: chuyển các khối sang cột trái/phải, màn hình hẹp (điện thoại, laptop nhỏ) giữ nguyên thứ tự cũ. */
 (function(){
