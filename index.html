@@ -408,7 +408,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <section class="card" id="btcard">
       <h2>Backtest theo signal trên chart</h2>
-      <p class="hint2" style="margin:0 0 10px">Vào lệnh theo nến signal EMA hiển thị trên chart (nhịp hồi về EMA nhanh trong xu hướng rồi nến từ chối), chạy riêng ở ba khung M15, H1 và H4 trên giá lịch sử của cặp đang xem. Vào ở giá mở nến kế tiếp, mỗi lần chỉ giữ một lệnh. Cần mở bằng file trên máy hoặc GitHub Pages để lấy giá thật từ Binance.</p>
+      <p class="hint2" style="margin:0 0 10px">Vào lệnh theo nến signal EMA hiển thị trên chart (nhịp hồi về EMA nhanh trong xu hướng rồi nến từ chối), chạy riêng ở ba khung M15, H1 và H4 trên giá lịch sử của cặp đang xem. Chỉ vào khi nến ngay sau nến signal phá đỉnh (LONG) hoặc đáy (SHORT) của nến signal, mỗi lần chỉ giữ một lệnh. Cần mở bằng file trên máy hoặc GitHub Pages để lấy giá thật từ Binance.</p>
       <form class="btform" id="btf" autocomplete="off">
         <div class="fld"><label for="bt-tf">Khung xem chi tiết</label>
           <select id="bt-tf"><option value="15m">M15</option><option value="1h" selected>H1</option><option value="4h">H4</option></select></div>
@@ -444,7 +444,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
           <tbody id="bttbody"></tbody>
         </table>
       </div>
-      <p class="disc">Kết quả quá khứ không bảo đảm tương lai. Lệnh vào ở giá mở nến kế tiếp sau nến signal. Cắt lỗ, chốt lời và trail được kiểm tra trong từng nến; nếu một nến chạm cả cắt lỗ và chốt lời thì tính cắt lỗ. Mức trail mới được tính từ nến đã đóng nên chỉ có hiệu lực từ nến kế tiếp, và chỉ được siết chặt, không nới ra. Chưa tính trượt giá, funding và thanh khoản. Các bảng so sánh RR, kiểu trail và mức bắt đầu trail chạy trên cùng một mẫu dữ liệu nên dòng đứng đầu có thể chỉ do may mắn của mẫu: hãy xem số lệnh (dưới khoảng 30 là quá ít) và kiểm tra lại ở coin hoặc khoảng thời gian khác trước khi tin. Nến signal hiển thị theo vùng vào lệnh H1 phụ thuộc vùng hiện tại nên không dựng lại được từng thời điểm; muốn thử loại đó hãy dùng "Backtest setup trên lịch sử". Đây không phải khuyến nghị đầu tư.</p>
+      <p class="disc">Kết quả quá khứ không bảo đảm tương lai. Lệnh chỉ vào khi nến ngay sau nến signal phá đỉnh (LONG) hoặc đáy (SHORT) của nến signal, ở giá phá (hoặc giá mở nếu gap qua); nến đó không phá thì signal bị bỏ. Cắt lỗ, chốt lời và trail được kiểm tra trong từng nến; nếu một nến chạm cả cắt lỗ và chốt lời thì tính cắt lỗ. Mức trail mới được tính từ nến đã đóng nên chỉ có hiệu lực từ nến kế tiếp, và chỉ được siết chặt, không nới ra. Chưa tính trượt giá, funding và thanh khoản. Các bảng so sánh RR, kiểu trail và mức bắt đầu trail chạy trên cùng một mẫu dữ liệu nên dòng đứng đầu có thể chỉ do may mắn của mẫu: hãy xem số lệnh (dưới khoảng 30 là quá ít) và kiểm tra lại ở coin hoặc khoảng thời gian khác trước khi tin. Nến signal hiển thị theo vùng vào lệnh H1 phụ thuộc vùng hiện tại nên không dựng lại được từng thời điểm; muốn thử loại đó hãy dùng "Backtest setup trên lịch sử". Đây không phải khuyến nghị đầu tư.</p>
     </section>
   </main>
 
@@ -1083,7 +1083,7 @@ function sigPrep(d,fast,slow){
   var A={e20:e1,e50:e2,rsi:rsiArr(cl,14),macd:macdArr(cl),boll:bollArr(cl,20,2)};
   return {e1:e1,sigs:signalsOf(d,A),at:atrArr(d,14)};
 }
-/* Mỗi nến signal đã đóng (chỉ dùng dữ liệu đến hết nến đó) thì vào lệnh ở giá mở nến kế tiếp, một lệnh tại một thời điểm.
+/* Mỗi nến signal đã đóng (chỉ dùng dữ liệu đến hết nến đó): nếu nến ngay sau nó phá đỉnh (LONG) / đáy (SHORT) của nến signal thì vào lệnh ở giá phá (hoặc giá mở nếu gap qua), không phá thì bỏ signal. Một lệnh tại một thời điểm.
    Khối lượng lệnh tính theo rủi ro: mất đúng riskUsd (hoặc riskPct % balance hiện tại) nếu chạm cắt lỗ ban đầu, giới hạn bởi đòn bẩy tối đa lev (balance × lev).
    Cắt lỗ ban đầu: theo đầu/đuôi nến signal ± đệm ATR (slMode 'candle') hoặc bội số ATR từ giá vào (slMode 'atr').
    Chốt lời cố định ở rr × khoảng cắt lỗ (rr=0 là tắt). Trail stoploss chỉ bật khi giá đã chạy được trailRR × R theo chiều có lợi,
@@ -1098,7 +1098,7 @@ function runSigBacktest(d,cfg,pre){
   pre.sigs.forEach(function(g){sigAt[g.i]=g});
   var fee=(cfg.fee||0)/100,lev=cfg.lev||1,B0=cfg.bal0>0?cfg.bal0:1000,rr=cfg.rr||0,maxHold=cfg.maxHold||0,tr=cfg.trail||'none',tpar=cfg.trailP,startRR=cfg.trailRR==null?1:cfg.trailRR;
   var psStep=tr==='psar'&&tpar>0?tpar:0.02,psMax=Math.max(0.2,psStep);
-  var bal=B0,balE=B0,ntl=0,rUsd=1,nCap=0,pos=0,pend=null,trades=[],curve=new Array(n).fill(null),liq=0,dead=false;
+  var sigExp=0,bal=B0,balE=B0,ntl=0,rUsd=1,nCap=0,pos=0,pend=null,trades=[],curve=new Array(n).fill(null),liq=0,dead=false;
   var ent=0,entI=0,risk=1,stop=0,stop0=0,tp=null,best=0,trailOn=false,sar=0,ep=null,af=0,liqP=null;
   function dirOk(s){return cfg.dir==='long'?s>0:cfg.dir==='short'?s<0:true}
   function close(idx,px,why){
@@ -1112,10 +1112,12 @@ function runSigBacktest(d,cfg,pre){
   for(k=start;k<n;k++){
     var bar=d[k];
     if(pend&&pos===0){
-      var g0=pend,s=g0.side,a=at[g0.i];
+      var g0=pend,s=g0.side,a=at[g0.i],trig=s>0?d[g0.i].h:d[g0.i].l;
       pend=null;
-      if(a>0){
-        var e=bar.o,sl=cfg.slMode==='atr'?e-s*cfg.slP*a:(s>0?d[g0.i].l-cfg.slP*a:d[g0.i].h+cfg.slP*a),rk=(e-sl)*s;
+      /* Chỉ vào lệnh khi nến ngay sau nến signal phá đỉnh (LONG) hoặc đáy (SHORT) của nến signal. Không phá thì signal hết hạn. */
+      if(a>0&&!(s>0?bar.h>trig:bar.l<trig))sigExp++;
+      else if(a>0){
+        var e=s>0?Math.max(trig,bar.o):Math.min(trig,bar.o),sl=cfg.slMode==='atr'?e-s*cfg.slP*a:(s>0?d[g0.i].l-cfg.slP*a:d[g0.i].h+cfg.slP*a),rk=(e-sl)*s;
         var want=cfg.riskUsd>0?Math.min(cfg.riskUsd,bal):bal*(cfg.riskPct>0?cfg.riskPct:1)/100,nt=want*e/rk;
         if(rk>0&&rk>=e*1e-5&&bal>0&&nt>0){
           if(nt>bal*lev){nt=bal*lev;nCap++}
@@ -1129,8 +1131,8 @@ function runSigBacktest(d,cfg,pre){
       var sd=pos,px=null,why=null;
       var hitLiq=liqP!==null&&(sd>0?bar.l<=liqP:bar.h>=liqP),hitStop=sd>0?bar.l<=stop:bar.h>=stop;
       if(hitLiq&&(!hitStop||(sd>0?liqP>stop:liqP<stop))){px=liqP;why='thanh lý';liq++}
-      else if(hitStop){px=sd>0?Math.min(stop,bar.o):Math.max(stop,bar.o);why=stop===stop0?'cắt lỗ':'trail SL'}
-      else if(tp!==null&&(sd>0?bar.h>=tp:bar.l<=tp)){px=sd>0?Math.max(tp,bar.o):Math.min(tp,bar.o);why='chốt lời '+rr+'R'}
+      else if(hitStop){px=k===entI?stop:sd>0?Math.min(stop,bar.o):Math.max(stop,bar.o);why=stop===stop0?'cắt lỗ':'trail SL'}
+      else if(tp!==null&&(sd>0?bar.h>=tp:bar.l<=tp)){px=k===entI?tp:sd>0?Math.max(tp,bar.o):Math.min(tp,bar.o);why='chốt lời '+rr+'R'}
       if(px!==null){close(k,px,why);if(bal<=0)dead=true}
       else{
         best=sd>0?Math.max(best,bar.h):Math.min(best,bar.l);
@@ -1170,7 +1172,7 @@ function runSigBacktest(d,cfg,pre){
   for(k=start;k<n;k++){cv=curve[k];if(cv==null)continue;if(cv>pk)pk=cv;if((pk-cv)*B0>mddUsd)mddUsd=(pk-cv)*B0}
   return {bal0:B0,bal:bal,netUsd:bal-B0,mddUsd:mddUsd,nCap:nCap,trades:trades,curve:curve,start:start,bars:n-start,net:bal/B0-1,trN:trades.length,win:trades.length?wins/trades.length:0,
     pf:sloss>0?sw/sloss:(sw>0?Infinity:0),mdd:mdd,bh:d[n-1].c/d[start].c-1,best:trades.length?best2:0,worst:trades.length?worst:0,
-    avgBars:trades.length?bars/trades.length:0,liq:liq,sumR:sumR,avgR:trades.length?sumR/trades.length:0,sigN:pre.sigs.length};
+    avgBars:trades.length?bars/trades.length:0,liq:liq,sumR:sumR,avgR:trades.length?sumR/trades.length:0,sigN:pre.sigs.length,sigExp:sigExp};
 }
 function sBt(meta){
   var b=meta&&meta.bt;
@@ -3620,6 +3622,7 @@ function renderBt(){
   h+=btTableS('So sánh kiểu trail stoploss (khung '+tn+', RR '+cfg.rr+', bắt đầu khi đạt '+cfg.trailRR+'R, thông số mặc định)','Kiểu trail',X.trail.map(function(r){var d=BT_TRAIL[r.k];return {l:BT_TNAME[r.k]+(d.off?'':' ('+d.def+')'),b:r.b}}),true);
   if(X.start)h+=btTableS('So sánh mức bắt đầu trail (khung '+tn+', trail '+BT_TNAME[cfg.trail]+')','Bắt đầu khi đạt',X.start.map(function(r){return {l:r.v+'R',b:r.b}}),true);
   var notes=[];
+  if(b.sigExp>0)notes.push(b.sigExp+' nến signal bị bỏ vì nến ngay sau không phá đỉnh (LONG) hoặc đáy (SHORT) của nến signal, nên không có lệnh. Còn '+b.trN+' lệnh đã vào.');
   if(b.trN<30)notes.push('Khung '+tn+' chỉ có '+b.trN+' lệnh, mẫu quá nhỏ để kết luận. Thử tăng số nến, đổi khung hoặc chạy thêm coin khác.');
   notes.push('Dấu ★ đánh dấu dòng có tổng R cao nhất trên chính mẫu này. Chọn thông số đẹp nhất trên cùng một mẫu rất dễ bị khớp quá mức (overfitting), nên hãy kiểm tra lại trên coin hoặc khoảng thời gian khác.');
   notes.push('Balance ban đầu '+usd(cfg.bal0)+'. Mỗi lệnh rủi ro '+(cfg.riskUsd>0?usd(cfg.riskUsd)+' cố định':cfg.riskPct+'% balance hiện tại (lãi nhập vào vốn)')+', tức là mất đúng số đó nếu chạm cắt lỗ ban đầu. 1R bằng số tiền rủi ro đó. Số sau dấu "/" là balance sau khi tính lãi lỗ và phí.');
