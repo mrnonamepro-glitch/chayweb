@@ -343,9 +343,10 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 
     <section class="card" id="scancard" hidden aria-live="polite">
       <div class="scanhead"><h2>Quét nhiều coin</h2><span class="scanprog" id="scanprog"></span>
-        <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="sbtopen2">Backtest setup</button> <button type="button" class="btn" id="scanpfbtn">Rủi ro danh mục</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
+        <span><label class="scanonly"><input type="checkbox" id="scanonly"> Chỉ hiện coin có setup</label> <button type="button" class="btn" id="scanagain">Quét lại</button> <button type="button" class="btn" id="sbtopen2">Backtest setup</button> <button type="button" class="btn" id="scanscbtn">Chấm điểm setup</button> <button type="button" class="btn" id="scanpfbtn">Rủi ro danh mục</button> <button type="button" class="btn" id="scanclose">Đóng</button></span></div>
       <p class="note" id="scannote" hidden></p>
       <p class="hint2" id="scanlive" hidden></p>
+      <p class="hint2" id="scansc" hidden></p>
       <div id="scanpf"></div>
       <div class="scanrows" id="scanrows"></div>
       <p class="disc" id="scandisc">Setup là kết quả của luật cố định: "Sẵn sàng" khi H4 có xu hướng, H1 thuận và giá ở vùng vào H1, M15 xác nhận. "Có setup" khi H4 có xu hướng, H1 không đi ngược, và trong vài nến gần nhất có nến từ chối (xanh với LONG, đỏ với SHORT) ngay tại vùng vào lệnh H1 ở khung M15 hoặc H1, chưa chạm cắt lỗ và chưa đạt TP1. Không phải khuyến nghị đầu tư.</p>
@@ -356,6 +357,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
         <span><button type="button" class="btn" id="sbtclose">Đóng</button></span></div>
       <p class="hint2" style="margin:0 0 10px">Chạy lại đúng quy tắc quét (H4 xác định hướng, H1 vùng vào lệnh, M15 xác nhận) từng bước trên lịch sử của danh sách coin, rồi đếm xem mỗi setup chạm TP1 hay cắt lỗ trước. Mỗi bước chỉ dùng nến đã đóng, không nhìn trước tương lai. Dùng giá thật từ Binance, cần mở bằng file trên máy hoặc GitHub Pages.</p>
       <div class="btform" id="sbtform">
+        <div class="fld"><label for="sbt-fs">Funding &amp; OI</label><select id="sbt-fs"><option value="1" selected>Lấy dữ liệu (coin .P)</option><option value="0">Không lấy</option></select></div>
         <div class="fld"><label for="sbt-days">Lịch sử M15</label><select id="sbt-days"><option value="10">10 ngày</option><option value="20">20 ngày</option><option value="30" selected>30 ngày</option></select></div>
         <div class="fld"><label for="sbt-step">Quét mỗi</label><select id="sbt-step"><option value="1">15 phút</option><option value="2" selected>30 phút</option><option value="4">1 giờ</option></select></div>
         <div class="fld"><label for="sbt-hold">Giữ lệnh tối đa</label><select id="sbt-hold"><option value="48">12 giờ</option><option value="96" selected>24 giờ</option><option value="192">48 giờ</option></select></div>
@@ -1827,7 +1829,7 @@ function btSetupStep(st,nSteps){
           if(!out&&last-base>=st.maxHold)out={o:'time',g:(m[last].c-entry)*s/risk,jj:last};
           if(!out){st.unresolved++;st.done=true;break}
           var endJ=out.jj||j,cost=st.fee*2*entry/risk;
-          st.trades.push({t:m[jE].t,side:s,status:r.status,entry:entry,sl:sl,tp1:tp,out:out.o,g:out.g,r:out.g-cost,bars:endJ-base,riskPct:risk/entry*100,
+          st.trades.push({t:m[jE].t,side:s,status:r.status,entry:entry,sl:sl,tp1:tp,out:out.o,g:out.g,r:out.g-cost,bars:endJ-base,riskPct:risk/entry*100,si:m[i].t+900000,px24:(m[i].c/m[Math.max(0,i-96)].c-1)*100,rr:Math.abs(tp-entry)/risk,
             patt:!!(r.patt&&r.patt.length),src:r.plan.src||''});
           st.i=endJ+1;
           continue;
@@ -2010,6 +2012,50 @@ function pfSim(trades,o){
   closeUpTo(Infinity);
   var worst=0;Object.keys(day).forEach(function(k){if(day[k]<worst)worst=day[k]});
   return {n:n,w:w,skip:skip,skipped:skip.pos+skip.risk+skip.side+skip.corr,sumR:sumR,bal:B,net:B/START-1,dd:dd,peakRisk:peakRisk,peakPos:peakPos,worstDay:worst/START};
+}
+/* ---- Funding / OI và chấm điểm setup ---- */
+/* arr tăng dần theo t. Giá trị cuối cùng có t <= tt và không cũ hơn tol (ms); không có thì null. */
+function fsAt(arr,tt,tol){
+  if(!arr||!arr.length)return null;
+  var lo=0,hi=arr.length;
+  while(lo<hi){var m=(lo+hi)>>1;if(arr[m].t<=tt)lo=m+1;else hi=m}
+  if(lo===0)return null;
+  var e=arr[lo-1];
+  return tol&&tt-e.t>tol?null:e.v;
+}
+/* fund: %/8h, oiNow/oiPrev: giá trị OI hiện tại và 24h trước. Trả về {fund,oi24 (%)}; thiếu dữ liệu thì null. */
+function fsFeat(fund,oiNow,oiPrev){
+  return {fund:fund==null||!isFinite(fund)?null:fund,oi24:(oiNow>0&&oiPrev>0)?(oiNow/oiPrev-1)*100:null};
+}
+/* f: {status,rr,patt,side,fund,oi24,px24}. Chỉ tính các thành phần có dữ liệu rồi quy về thang 100. */
+function plScore(f){
+  var parts=[],sum=0,max=0,s=f.side>0?1:-1;
+  function add(k,pts,mx,note){parts.push({k:k,pts:pts,max:mx,note:note});sum+=pts;max+=mx}
+  add('Loại setup',f.status==='ready'?30:18,30,f.status==='ready'?'M15 đã xác nhận':'nến signal tại vùng vào');
+  var rr=f.rr;
+  add('R:R tới TP1',rr>=2?20:rr>=1.5?14:rr>=1?8:0,20,rr==null||!isFinite(rr)?'–':'1:'+rr.toFixed(2));
+  add('Mô hình giá cùng hướng',f.patt?10:0,10,f.patt?'có':'không');
+  if(f.fund!=null){
+    var c=f.fund*s;
+    add('Funding',c<=0?20:c<=0.01?15:c<=0.03?8:c<=0.05?3:0,20,(f.fund>=0?'+':'')+f.fund.toFixed(4)+'%/8h'+(c>0.03?' (phe của lệnh này đang đông)':c<=0?' (ngược phe lệnh, ít đông)':''));
+  }
+  if(f.oi24!=null&&f.px24!=null){
+    var pd=f.px24*s,o=f.oi24,pts,nt;
+    if(Math.abs(o)<2){pts=10;nt='OI đi ngang'}
+    else if(o>0&&pd>0){pts=20;nt='OI tăng, giá thuận hướng: có vị thế mới đẩy cùng chiều'}
+    else if(o>0){pts=6;nt='OI tăng nhưng giá ngược hướng: vị thế mới đang chống lệnh'}
+    else if(pd>0){pts=8;nt='giá thuận hướng nhưng OI giảm: lực đẩy yếu'}
+    else{pts=10;nt='OI giảm, giá ngược hướng: đang đóng vị thế'}
+    add('Open interest',pts,20,(o>0?'+':'')+o.toFixed(1)+'% / 24h · '+nt);
+  }
+  return {score:max?Math.round(sum/max*100):0,parts:parts,sum:sum,max:max,full:parts.length===5};
+}
+/* flt: {fundTh (%/8h, 0=tắt), oiTh (%, 0=tắt), minScore (0=tắt)}. Trả về lý do bị loại hoặc null. */
+function fsPass(t,flt){
+  if(flt.fundTh>0&&t.fund!=null&&t.fund*t.side>flt.fundTh)return 'funding';
+  if(flt.oiTh>0&&t.oi24!=null&&t.oi24<-flt.oiTh)return 'oi';
+  if(flt.minScore>0&&t.sc!=null&&t.sc<flt.minScore)return 'score';
+  return null;
 }
 //#LOGIC-END
 
@@ -2583,6 +2629,8 @@ async function sbtCoin(n,my,P){
   /* Bỏ nến cuối của mỗi khung vì đó là nến chưa đóng. */
   h4=h4.slice(0,-1);h1=h1.slice(0,-1);m15=m15.slice(0,-1);
   if(my!==sbt.id)return null;
+  var H=(P.fs&&n.fut)?await fsHist(sym,P.days):null;
+  if(my!==sbt.id)return null;
   var sets={'4h':h4,'1h':h1,'15m':m15},out={label:label,m15:m15.length,trades:{},scanned:0,ret:pfRet(h1)};
   for(var q=0;q<P.presets.length;q++){
     var pr=P.presets[q],st=btSetupInit(sets,{entry:P.entry,step:P.step,maxHold:P.hold,fee:P.fee,k:state.k,cfg:pr.cfg,key:'sbt|'+label+'|'+pr.id});
@@ -2590,7 +2638,7 @@ async function sbtCoin(n,my,P){
       await sleep(0);
       if(my!==sbt.id)return null;
     }
-    st.trades.forEach(function(t){t.coin=label});
+    st.trades.forEach(function(t){t.coin=label});sbtEnrich(st.trades,H);
     out.trades[pr.id]=st.trades;out.cnt=out.cnt||{};out.cnt[pr.id]=st.cnt;out.scanned=st.scanned;
   }
   return out;
@@ -2602,7 +2650,7 @@ async function sbtRun(){
   var pres=[];
   document.querySelectorAll('#sbtpre input:checked').forEach(function(c){var p=BT_PRESETS.filter(function(x){return x.id===c.dataset.id})[0];if(p)pres.push(p)});
   if(!pres.length){$('#sbtout').innerHTML='<p class="warn">Chọn ít nhất một bộ ngưỡng để chạy.</p>';return}
-  var P={entry:$('#sbt-entry').value,days:+$('#sbt-days').value,step:+$('#sbt-step').value,hold:+$('#sbt-hold').value,fee:Math.max(0,+$('#sbt-fee').value||0)/100,presets:pres};
+  var P={entry:$('#sbt-entry').value,days:+$('#sbt-days').value,step:+$('#sbt-step').value,hold:+$('#sbt-hold').value,fee:Math.max(0,+$('#sbt-fee').value||0)/100,fs:$('#sbt-fs').value==='1',presets:pres};
   var my=++sbt.id;sbt.busy=true;sbt.sel=pres[0].id;
   var res={P:P,coins:[],failed:[],trades:{},cnt:{},total:list.length,done:0,rets:{}};
   pres.forEach(function(p){res.trades[p.id]=[];res.cnt[p.id]={expired:0,late:0,noSig:0,invalid:0}});
@@ -2700,7 +2748,7 @@ function sbtPortfolio(r,tr){
   return h;
 }
 async function pfLive(){
-  var el=$('#scanpf'),its=scanState.items.filter(function(x){return (x.status==='ready'||x.status==='signal')&&x.side}).sort(function(a,b){return SCAN_RANK[a.status]-SCAN_RANK[b.status]});
+  var el=$('#scanpf'),its=scanState.items.filter(function(x){return (x.status==='ready'||x.status==='signal')&&x.side}).sort(function(a,b){return (b.score?b.score.score:-1)-(a.score?a.score.score:-1)||SCAN_RANK[a.status]-SCAN_RANK[b.status]});
   if(scanState.busy){el.innerHTML='<div class="pfbox"><p class="hint2">Đang quét, hãy đợi quét xong rồi bấm lại.</p></div>';return}
   if(!its.length){el.innerHTML='<div class="pfbox"><p class="hint2">Hiện không có coin nào "Sẵn sàng" hoặc "Có setup" để tính rủi ro danh mục.</p></div>';return}
   var my=++pfLive.id;
@@ -2729,7 +2777,7 @@ function pfLiveRender(){
   var nm=function(x){return '<b>'+esc(x.label)+'</b> '+(x.side>0?'LONG':'SHORT')};
   var h='<div class="pfbox"><b>Rủi ro danh mục nếu vào hết các setup đang hiện</b>'+pfForm('lpf-')+
     '<p class="hint2" style="margin:4px 0">'+C.its.length+' setup ('+nL+' LONG, '+nS+' SHORT). Vào hết với '+PFS.riskPct+'% mỗi lệnh thì tổng rủi ro mở là <b>'+tot.toFixed(1)+'% balance</b>'+(PFS.maxRiskPct&&tot>PFS.maxRiskPct?', vượt trần '+PFS.maxRiskPct+'%':'')+'.</p>';
-  h+='<ul><li>Nên giữ theo quy tắc (ưu tiên setup "Sẵn sàng", rồi theo thứ tự trong danh sách): '+(acc.length?acc.map(nm).join(', ')+' &rarr; rủi ro '+(acc.length*PFS.riskPct).toFixed(1)+'%':'không có')+'</li>';
+  h+='<ul><li>Nên giữ theo quy tắc (ưu tiên điểm setup cao nếu đã bấm "Chấm điểm setup", nếu chưa thì "Sẵn sàng" trước, rồi theo thứ tự danh sách): '+(acc.length?acc.map(nm).join(', ')+' &rarr; rủi ro '+(acc.length*PFS.riskPct).toFixed(1)+'%':'không có')+'</li>';
   if(rej.length)h+='<li>Nên bỏ qua hoặc giảm rủi ro: '+rej.map(function(q){return nm(q.x)+' ('+esc(q.why)+')'}).join('; ')+'</li>';
   h+='</ul>'+pfCorrBlock(co);
   if(C.fail.length)h+='<p class="hint2">Không tải được dữ liệu: '+esc(C.fail.join(', '))+' (coi như không tương quan).</p>';
@@ -2739,6 +2787,105 @@ function pfLiveRender(){
 $('#scanpf').addEventListener('change',function(e){if(pfRead(e))setTimeout(pfLiveRender,0)});
 $('#scanpf').addEventListener('click',function(e){if(e.target.id==='scanpfclose'){pfLive.id++;pfLive.cache=null;$('#scanpf').innerHTML=''}});
 $('#scanpfbtn').addEventListener('click',pfLive);
+async function scLive(){
+  var el=$('#scansc'),its=scanState.items.filter(function(x){return (x.status==='ready'||x.status==='signal')&&x.side&&x.plan&&x.plan.tp1!=null});
+  el.hidden=false;
+  if(scanState.busy){el.textContent='Đang quét, hãy đợi quét xong rồi bấm lại.';return}
+  if(!its.length){el.textContent='Không có setup "Sẵn sàng" hoặc "Có setup" để chấm điểm.';return}
+  var my=++scLive.id;el.textContent='Đang lấy funding và open interest của '+its.length+' coin…';
+  var fm={},fok=false;
+  try{(await lpFetch(['https://fapi.binance.com/fapi/v1/premiumIndex'])).forEach(function(r){fm[r.symbol]=+r.lastFundingRate*100});fok=true}catch(e){}
+  var idx=0,noData=0;
+  async function w(){
+    while(idx<its.length&&my===scLive.id){
+      var x=its[idx++],f=null,o24=null,px24=null;
+      if(x.fut){
+        if(fok&&fm[x.sym]!==undefined)f=fm[x.sym];
+        try{
+          var oi=(await sbtRetry(function(){return lpFetch(['https://fapi.binance.com/futures/data/openInterestHist?symbol='+x.sym+'&period=1h&limit=30'])})).map(function(q){return {t:+q.timestamp,v:+q.sumOpenInterestValue}});
+          if(oi.length){var last=oi[oi.length-1],q=fsFeat(f,last.v,fsAt(oi,last.t-86400000,2*3600000));o24=q.oi24}
+        }catch(e){}
+        try{var k=await sbtRetry(function(){return klines(x.sym,'1h',true,30)});if(k.length>25)px24=(k[k.length-1].c/k[k.length-25].c-1)*100}catch(e){}
+      }
+      if(f==null&&o24==null)noData++;
+      var e=(x.plan.entry.lo+x.plan.entry.hi)/2,rk=Math.abs(e-x.plan.sl),rr=rk>0?Math.abs(x.plan.tp1-e)/rk:null;
+      var sc=plScore({status:x.status,rr:rr,patt:!!(x.patt&&x.patt.length),side:x.side,fund:f,oi24:o24,px24:px24});
+      sc.fund=f;sc.oi24=o24;x.score=sc;
+    }
+  }
+  await Promise.all([w(),w(),w()]);
+  if(my!==scLive.id)return;
+  var order=its.slice().sort(function(a,b){return b.score.score-a.score.score});
+  el.innerHTML='Đã chấm điểm '+its.length+' setup (thang 100, điểm là heuristic, chưa được kiểm chứng trừ khi bạn xem bảng "Theo điểm" trong Backtest setup). Cao nhất: '+order.slice(0,5).map(function(x){return '<b>'+esc(x.label)+'</b> '+x.score.score}).join(', ')+'.'+(noData?' '+noData+' coin không có funding/OI (spot hoặc lỗi mạng), điểm tính trên phần còn lại.':'');
+  renderScan(scanState.items.length);
+}
+scLive.id=0;
+$('#scanscbtn').addEventListener('click',scLive);
+
+
+/* ---------- funding / OI: lấy dữ liệu, chấm điểm, lọc ---------- */
+var FSK='pivotlab.fs.v1',FSF={fundTh:0,oiTh:0,minScore:0};
+try{var _fs=JSON.parse(localStorage.getItem(FSK)||'null');if(_fs)Object.keys(FSF).forEach(function(k){if(typeof _fs[k]==='number')FSF[k]=_fs[k]})}catch(e){}
+function fsRead(e){
+  var k=e.target.getAttribute&&e.target.getAttribute('data-fs');if(!k)return false;
+  var v=parseFloat(e.target.value);if(!isFinite(v))v=0;
+  var lim={fundTh:[0,1],oiTh:[0,50],minScore:[0,100]}[k];
+  FSF[k]=Math.min(lim[1],Math.max(lim[0],v));
+  try{localStorage.setItem(FSK,JSON.stringify(FSF))}catch(x){}
+  return true;
+}
+async function fsHist(sym,days){
+  var out={fd:null,oi:null};
+  try{
+    var f=await sbtRetry(function(){return lpFetch(['https://fapi.binance.com/fapi/v1/fundingRate?symbol='+sym+'&limit=200'])});
+    out.fd=f.map(function(x){return {t:+x.fundingTime,v:+x.fundingRate*100}}).filter(function(x){return isFinite(x.v)}).sort(function(a,b){return a.t-b.t});
+  }catch(e){}
+  try{
+    var oi=[],end=null,left=days*24+30,g=0;
+    while(left>0&&g<4){
+      g++;
+      var lim=Math.min(500,left),rows=await sbtRetry(function(){return lpFetch(['https://fapi.binance.com/futures/data/openInterestHist?symbol='+sym+'&period=1h&limit='+lim+(end?'&endTime='+end:'')])});
+      if(!rows.length)break;
+      oi=rows.map(function(x){return {t:+x.timestamp,v:+x.sumOpenInterestValue}}).concat(oi);
+      left-=rows.length;if(rows.length<lim)break;
+      end=oi[0].t-1;
+    }
+    out.oi=oi.filter(function(x){return isFinite(x.v)&&x.v>0});
+  }catch(e){}
+  return out;
+}
+function sbtEnrich(trades,H){
+  trades.forEach(function(t){
+    var q=fsFeat(H?fsAt(H.fd,t.si,9*3600000):null,H?fsAt(H.oi,t.si,2*3600000):null,H?fsAt(H.oi,t.si-86400000,2*3600000):null);
+    t.fund=q.fund;t.oi24=q.oi24;
+    t.sc=plScore({status:t.status,rr:t.rr,patt:t.patt,side:t.side,fund:t.fund,oi24:t.oi24,px24:t.px24}).score;
+  });
+}
+function fsInputs(){
+  var f=function(k,l,mn,mx,st,tip){return '<label title="'+tip+'">'+l+' <input type="number" data-fs="'+k+'" id="sfs-'+k+'" min="'+mn+'" max="'+mx+'" step="'+st+'" value="'+FSF[k]+'"></label>'};
+  return '<div class="relctl">'+f('fundTh','Bỏ lệnh nếu funding phe lệnh &gt; (%/8h)',0,1,0.01,'LONG khi funding dương cao, hoặc SHORT khi funding âm sâu. 0 = tắt. Mức 0.01 là bình thường')+
+    f('oiTh','Bỏ lệnh nếu OI giảm hơn (%/24h)',0,50,1,'0 = tắt')+
+    f('minScore','Điểm tối thiểu',0,100,5,'0 = tắt')+'</div>';
+}
+function sbtFilters(r,tr){
+  var flt=FSF,trf=[],rm=[],why={funding:0,oi:0,score:0};
+  tr.forEach(function(t){var w=fsPass(t,flt);if(w){why[w]++;rm.push(t)}else trf.push(t)});
+  var haveF=tr.filter(function(t){return t.fund!=null}).length,haveO=tr.filter(function(t){return t.oi24!=null}).length;
+  var h='<details open id="sbtfs"><summary>Funding, OI và điểm setup: kiểm chứng và lọc</summary>'+fsInputs();
+  var st=btStats(trf);
+  h+=sbtTable('Trước và sau khi lọc',[sbtRow('Tất cả lệnh',btStats(tr)),sbtRow('Sau lọc (các lệnh dưới đây dùng cho phần Danh mục)',st),sbtRow('Các lệnh bị loại ('+rm.length+')',btStats(rm))]);
+  if(rm.length)h+='<p class="hint2" style="margin:4px 0">Lý do bị loại: funding '+why.funding+', OI '+why.oi+', điểm thấp '+why.score+'. Nếu nhóm "bị loại" có R trung bình cao hơn nhóm còn lại thì bộ lọc đang loại nhầm.</p>';
+  var B=function(fn,order){var g=btGroup(tr,fn);return order.filter(function(k){return g[k]}).map(function(k){return sbtRow(k,g[k])})};
+  h+=sbtTable('Theo điểm setup (thang 100)',B(function(t){return t.sc>=80?'Điểm 80–100':t.sc>=60?'Điểm 60–79':t.sc>=40?'Điểm 40–59':'Điểm dưới 40'},['Điểm 80–100','Điểm 60–79','Điểm 40–59','Điểm dưới 40']));
+  h+=sbtTable('Theo funding tại lúc quét (so với phe của lệnh)',B(function(t){if(t.fund==null)return 'Không có dữ liệu';var c=t.fund*t.side;return c<=0?'Phe lệnh ít đông (funding ngược phe hoặc 0)':c<=0.03?'Bình thường (0 đến 0.03%)':'Phe lệnh đang đông (trên 0.03%)'},['Phe lệnh ít đông (funding ngược phe hoặc 0)','Bình thường (0 đến 0.03%)','Phe lệnh đang đông (trên 0.03%)','Không có dữ liệu']));
+  h+=sbtTable('Theo open interest 24 giờ',B(function(t){if(t.oi24==null)return 'Không có dữ liệu';var pd=t.px24*t.side;return Math.abs(t.oi24)<2?'OI đi ngang (dưới 2%)':t.oi24>0?(pd>0?'OI tăng, giá thuận hướng':'OI tăng, giá ngược hướng'):'OI giảm từ 2% trở lên'},['OI tăng, giá thuận hướng','OI tăng, giá ngược hướng','OI đi ngang (dưới 2%)','OI giảm từ 2% trở lên','Không có dữ liệu']));
+  var nt=[];
+  nt.push(r.P.fs?('Có dữ liệu funding cho '+haveF+'/'+tr.length+' lệnh và OI cho '+haveO+'/'+tr.length+' lệnh'+(haveF<tr.length?' (coin spot, coin mới hoặc lỗi mạng thì không có; những lệnh đó không bị lọc và điểm được tính trên các thành phần còn lại)':'')+'.'):'Chưa lấy dữ liệu funding/OI (chọn "Lấy dữ liệu" ở form rồi chạy lại). Điểm chỉ gồm loại setup, R:R và mô hình giá.');
+  nt.push('Điểm là heuristic tự đặt: loại setup 30, R:R tới TP1 20, mô hình cùng hướng 10, funding 20, OI 20. Bảng "Theo điểm" là cách kiểm chứng: nếu điểm cao không cho R trung bình cao hơn điểm thấp, hoặc mỗi nhóm chỉ vài chục lệnh, thì điểm chưa có giá trị và đừng dùng để lọc.');
+  nt.push('Funding là mức đã chốt gần nhất trước lúc quét (8 giờ một lần), OI lấy theo giờ và so với 24 giờ trước. Binance chỉ lưu lịch sử OI khoảng 30 ngày. Lọc áp dụng sau khi mô phỏng: lệnh bị loại coi như không vào, nhưng chưa tính việc coin đó có thể vào setup kế tiếp. Đừng chỉnh ngưỡng đến khi đẹp trên chính mẫu này (khớp quá mức).');
+  h+=nt.map(function(x){return '<p class="hint2" style="margin:6px 0">'+esc(x)+'</p>'}).join('')+'</details>';
+  return {html:h,trf:trf};
+}
 function sbtRender(){
   var r=sbt.res,el=$('#sbtout');
   if(!r){el.innerHTML='';return}
@@ -2757,7 +2904,7 @@ function sbtRender(){
   h+=sbtTable('Chia theo hướng, loại setup và mô hình giá',rows);
   var byCoin=btGroup(tr,function(t){return t.coin}),ck=Object.keys(byCoin).sort(function(a,b){return byCoin[b].sumR-byCoin[a].sumR});
   if(ck.length)h+=sbtTable('Theo từng coin (sắp theo tổng R)',ck.map(function(k){return sbtRow(k,byCoin[k])}));
-  if(!sbt.busy&&tr.length>=2)h+=sbtPortfolio(r,tr);
+  if(!sbt.busy&&tr.length>=2){var FL=sbtFilters(r,tr);h+=FL.html;if(FL.trf.length>=2)h+=sbtPortfolio(r,FL.trf)}
   var recent=tr.slice().sort(function(a,b){return b.t-a.t}).slice(0,100);
   if(recent.length){
     h+='<details><summary>Danh sách lệnh gần nhất ('+recent.length+' lệnh) để tự đối chiếu với biểu đồ</summary><div class="tblwrap"><table class="sbttbl"><thead><tr><th>Lúc vào lệnh</th><th>Coin</th><th>Hướng</th><th>Loại</th><th class="num">Vào</th><th class="num">Cắt lỗ</th><th class="num">TP1</th><th>Kết quả</th><th class="num">R sau phí</th></tr></thead><tbody>'+recent.map(function(t){
@@ -2791,7 +2938,7 @@ $('#sbtopen2').addEventListener('click',sbtOpen);
 $('#sbtclose').addEventListener('click',function(){sbt.id++;sbt.busy=false;$('#sbtrun').disabled=false;$('#sbtstop').hidden=true;$('#sbtcard').hidden=true});
 $('#sbtstop').addEventListener('click',function(){sbt.id++;sbt.busy=false;$('#sbtrun').disabled=false;$('#sbtstop').hidden=true;if(sbt.res)$('#sbtprog').textContent='Đã dừng · '+sbt.res.coins.length+' coin có dữ liệu';sbtRender();$('#sbtprog').textContent='Đã dừng · '+(sbt.res?sbt.res.coins.length:0)+' coin có dữ liệu'});
 $('#sbtrun').addEventListener('click',sbtRun);
-$('#sbtout').addEventListener('change',function(e){if(e.target.id==='sbtsel'){sbt.sel=e.target.value;sbtRender()}else if(pfRead(e))setTimeout(sbtRender,0)});
+$('#sbtout').addEventListener('change',function(e){if(e.target.id==='sbtsel'){sbt.sel=e.target.value;sbtRender()}else if(pfRead(e)||fsRead(e))setTimeout(sbtRender,0)});
 sbtPresetsHtml();
 
 /* ---------- theo dõi và cảnh báo setup tự động ---------- */
@@ -2995,6 +3142,7 @@ function renderScan(total){
     if(r.items&&r.items.length&&r.status!=='error'){
       h+='<span class="sr3">Nến signal: '+r.items.map(function(x){return x.name+' '+(x.side>0?'LONG':'SHORT')+' ('+(x.ago===0?'vừa đóng':x.ago+' nến trước')+', '+'từ chối tại vùng vào H1, thuận H4'+')'}).join(' · ')+'</span>';
     }
+    if(r.score)h+='<span class="sr3"><b>Điểm setup '+r.score.score+'/100</b> · '+r.score.parts.map(function(q){return esc(q.k)+' '+q.pts+'/'+q.max+' ('+esc(q.note)+')'}).join(' · ')+'</span>';
     if(r.status!=='error')h+='<span class="sr3">Bấm để xem biểu đồ và phân tích chi tiết</span>';
     return h+'</button>';
   }).join('');
