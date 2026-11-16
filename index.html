@@ -2196,19 +2196,43 @@ function tfmt(t,full){
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function hostsFor(fut){return fut?['https://fapi.binance.com']:['https://api.binance.com','https://data-api.binance.vision']}
 function pathFor(fut){return fut?'/fapi/v1/klines':'/api/v3/klines'}
+/* Giới hạn tốc độ Binance: đếm trọng số (klines limit ≤100 = 1, ≤500 = 2, ≤1000 = 5). Đặt ngân sách 1000 trọng số/phút cho mỗi nhóm (Futures và Spot),
+   thấp hơn giới hạn của Binance (2400 Futures) để chừa chỗ cho các request khác. Khi bị 429/418 thì nghỉ rồi thử lại. */
+var BIN_BUDGET=1000;
+var BINQ={f:{next:0,pause:0},s:{next:0,pause:0}};
+function klineWeight(limit){return limit<=100?1:limit<=500?2:5}
+async function binSlot(fut,w){
+  var q=BINQ[fut?'f':'s'],now=Date.now();
+  var at=Math.max(now,q.next,q.pause);
+  q.next=at+(w||2)*60000/BIN_BUDGET;
+  if(at>now)await sleep(at-now);
+}
 async function klines(symbol,tf,fut,limit,endTime){
-  var hosts=hostsFor(fut),err;
+  var hosts=hostsFor(fut),err,w=klineWeight(limit||500);
   for(var h=0;h<hosts.length;h++){
-    var to=null;
-    try{
-      var ctl=new AbortController();to=setTimeout(function(){ctl.abort()},limit>500?15000:6000);
-      var r=await fetch(hosts[h]+pathFor(fut)+'?symbol='+symbol+'&interval='+tf+'&limit='+limit+(endTime?'&endTime='+endTime:''),{signal:ctl.signal});
-      clearTimeout(to);
-      if(r.status===400){var bad=new Error('invalid symbol');bad.invalid=true;throw bad}
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      var j=await r.json();
-      return j.map(function(k){return {t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]}});
-    }catch(e){clearTimeout(to);err=e;if(e&&e.invalid)throw e}
+    for(var tries=0;tries<3;tries++){
+      await binSlot(fut,w);
+      var to=null;
+      try{
+        var ctl=new AbortController();to=setTimeout(function(){ctl.abort()},limit>500?15000:6000);
+        var r=await fetch(hosts[h]+pathFor(fut)+'?symbol='+symbol+'&interval='+tf+'&limit='+limit+(endTime?'&endTime='+endTime:''),{signal:ctl.signal});
+        clearTimeout(to);
+        if(r.status===400){var bad=new Error('invalid symbol');bad.invalid=true;throw bad}
+        if(r.status===429||r.status===418){
+          var ra=+(r.headers.get('Retry-After')||0);
+          BINQ[fut?'f':'s'].pause=Date.now()+Math.max(ra*1000,8000)*(tries+1);
+          throw new Error('HTTP '+r.status);
+        }
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        var j=await r.json();
+        return j.map(function(k){return {t:k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]}});
+      }catch(e){
+        clearTimeout(to);err=e;
+        if(e&&e.invalid)throw e;
+        if(/^HTTP (429|418)$/.test(String(e&&e.message)))continue;
+        break;
+      }
+    }
   }
   throw err;
 }
@@ -3084,7 +3108,7 @@ function watchStat(){
   if(scanState.busy&&scanState.auto){el.textContent='Đang quét '+scanState.done+'/'+scanState.total+'…';pr.textContent='Đang quét';return}
   var left=Math.max(0,Math.round((wnext-Date.now())/1000));
   var cd=left>=3600?Math.floor(left/3600)+':'+pad2(Math.floor(left%3600/60))+':'+pad2(left%60):Math.floor(left/60)+':'+pad2(left%60);
-  el.textContent='Đang theo dõi '+n+' coin · quét lần tới sau '+cd+(WS.ntfy&&!WS.topic?' · chưa có mã kênh ntfy':'')+(n>100&&WS.mins<5?' · danh sách lớn, chu kỳ ngắn dễ bị Binance giới hạn tốc độ (lỗi 429), nên chọn từ 5 phút trở lên':'');
+  el.textContent='Đang theo dõi '+n+' coin · quét lần tới sau '+cd+(WS.ntfy&&!WS.topic?' · chưa có mã kênh ntfy':'')+(Math.ceil(n*6/BIN_BUDGET)*1>=WS.mins?' · một lượt quét ước tính ~'+Math.ceil(n*6/BIN_BUDGET)+' phút, không kịp chu kỳ '+WS.mins+' phút, nên tăng chu kỳ theo dõi':'');
   pr.textContent='Đang theo dõi';
 }
 async function wLock(){
@@ -4523,7 +4547,7 @@ function botLog(k,m,t){var S=BOT.S;if(!S)return;S.log.unshift({t:t||Date.now(),k
 function botCoins(){
   var seen={},out=[];
   parseCoinText(BOT.cfg.coins).tokens.forEach(function(t){var n=normSymbol(t);if(!n)return;var k=n.sym+(n.fut?'.P':'');if(!seen[k]){seen[k]=1;out.push(n)}});
-  return out.slice(0,40);
+  return out.slice(0,MAXC);
 }
 function botEquity(){var S=BOT.S,e=S.bal;S.pos.forEach(function(p){if(p.last!=null)e+=(p.last-p.entry)*p.side*p.qty});return e}
 function botNewSession(){
@@ -4725,7 +4749,7 @@ function botBuildForm(){
   $('#bot-coins').value=BOT.cfg.coins;
   document.querySelectorAll('select[data-bot]').forEach(function(s){s.value=String(BOT.cfg[s.getAttribute('data-bot')])});
 }
-function botCoinStat(){var n=botCoins().length,r=parseCoinText(BOT.cfg.coins);$('#bot-coinstat').textContent=n+' coin hợp lệ'+(r.bad?', '+r.bad+' mã sai':'')+(r.tokens.length>40?' (chỉ dùng 40 mã đầu)':'')}
+function botCoinStat(){var n=botCoins().length,r=parseCoinText(BOT.cfg.coins);$('#bot-coinstat').textContent=n+' coin hợp lệ'+(r.bad?', '+r.bad+' mã sai':'')+(r.tokens.length>MAXC?' (chỉ dùng '+MAXC+' mã đầu)':'')}
 function botRender(){
   var pn=$('#bot-pushnote');if(pn)pn.textContent=(WS.ntfy&&WS.pbot&&WS.topic)?'Thông báo điện thoại: đang bật (mục Cảnh báo setup tự động, ô "Gửi cảnh báo BOT").':'Thông báo điện thoại: đang tắt. Để bật, vào mục Cảnh báo setup tự động, tick "Gửi về điện thoại (ntfy)" và "Gửi cảnh báo BOT", rồi nhập mã kênh.';
   var S=BOT.S,fab=$('#botfab'),lab=$('#botlab');
