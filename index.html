@@ -175,6 +175,13 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 .botl time{font:11.5px var(--f-mono);color:var(--muted);white-space:nowrap}
 .botl.k-open span{color:var(--up)}.botl.k-stop span,.botl.k-err span{color:var(--down)}.botl.k-skip span,.botl.k-expire span{color:var(--muted)}
 #botpanel .tblwrap{max-height:220px}
+#botpanel tr.botrow{cursor:pointer}
+#botpanel tr.botrow:hover td,#botpanel tr.botrow:focus td{background:rgba(127,127,127,.16)}
+#tvbar{padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel2);font-size:13px;line-height:1.5}
+#tvbar .tvh{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+#tvbar .tvh b{font:600 14px var(--f-display)}
+#tvbar ul{margin:4px 0 0;padding-left:18px}
+#tvbar summary{cursor:pointer;color:var(--muted);font-size:12.5px}
 #sbtpf summary{cursor:pointer;font:600 15px var(--f-display)}
 .pfbox{margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
 .pfbox ul{margin:6px 0 0;padding-left:18px;font-size:13px}
@@ -335,12 +342,16 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
       <div class="wgrid">
         <label><input type="checkbox" id="w-ntfy"> <b>Gửi về điện thoại (ntfy)</b></label>
         <label><input type="checkbox" id="w-pscan" checked> Gửi cảnh báo SCAN (setup từ danh sách quét)</label>
-        <label><input type="checkbox" id="w-pbot" checked> Gửi cảnh báo BOT (bot vào/đóng lệnh)</label>
+        <label><input type="checkbox" id="w-pbot" checked> Gửi cảnh báo BOT (gửi về điện thoại)</label>
+        <label style="margin-left:22px"><input type="checkbox" id="w-pbsig" checked> BOT báo signal mới (mỗi lượt quét gộp thành 1 tin: signal nào vào hàng chờ, signal nào bị bỏ và lý do)</label>
+        <label style="margin-left:22px"><input type="checkbox" id="w-pbtrade" checked> BOT báo vào lệnh, đóng lệnh (nhiều lệnh cùng lúc gộp thành 1 tin)</label>
+        <label><input type="checkbox" id="w-pbpage" checked> BOT hiện thông báo ngay trên trang (kèm âm báo nếu bật "Âm báo trong trang")</label>
         <label>Mã kênh <input type="text" id="w-topic" spellcheck="false" autocapitalize="none" placeholder="vd: pivotlab-k3x9a2m7q1"></label>
         <label>Cách gửi <select id="w-mode"><option value="each">Mỗi coin một tin</option><option value="digest">Gộp tất cả vào một tin</option></select></label>
         <label><input type="checkbox" id="w-repeat"> Mỗi lần quét tự động đều báo lại toàn bộ coin đang có setup</label>
         <span><button type="button" class="btn" id="w-gen">Tạo mã ngẫu nhiên</button> <button type="button" class="btn" id="w-test">Gửi thử</button> <button type="button" class="btn" id="w-now">Quét ngay</button></span>
       </div>
+      <p class="hint2" id="w-nstat"></p>
       <ol class="wsteps">
         <li>Cài app <b>ntfy</b> (miễn phí) từ App Store trên iPhone, mở app, bấm <b>+</b> và đăng ký đúng <b>mã kênh</b> ở trên (server mặc định ntfy.sh). Cho phép thông báo.</li>
         <li>Bật "Gửi về điện thoại", bấm "Gửi thử". Điện thoại nhận thông báo là xong.</li>
@@ -415,6 +426,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
     </section>
 
     <section class="chartcard">
+      <div id="tvbar" hidden></div>
       <div class="chead">
         <div class="ro" id="ro"></div>
         <div class="seg tfmini" id="tfmini" role="group" aria-label="Đổi khung thời gian ngay trên biểu đồ">
@@ -2179,7 +2191,7 @@ function botPnl(p,px,feePct){return (px-p.entry)*p.side*p.qty-feePct/100*(p.entr
 
 /* ================= UI ================= */
 var $=function(s){return document.querySelector(s)};
-var state={symbol:'BTCUSDT',fut:true,mode:'sample',tf:'1h',label:'BTCUSDT.P',data:[],A:null,k:5,csv:false,bt:null,btName:'',plan:null,planSig:'',mtf:{status:'idle',tf:{},key:''},mplan:null,mplanSig:'',singleOpen:null,
+var state={tv:null,symbol:'BTCUSDT',fut:true,mode:'sample',tf:'1h',label:'BTCUSDT.P',data:[],A:null,k:5,csv:false,bt:null,btName:'',plan:null,planSig:'',mtf:{status:'idle',tf:{},key:''},mplan:null,mplanSig:'',singleOpen:null,
   view:{count:120,off:0},log:false,cross:null,hist:[],histInfo:{status:'idle',total:0},
   show:{sig:true,trend:true,fib:true,pat:true,piv:true,ema:true,vol:true,boll:true,macd:true,bt:true,plan:true}};
 var RPAD=8,geo=null;
@@ -3085,7 +3097,7 @@ sbtPresetsHtml();
 
 /* ---------- theo dõi và cảnh báo setup tự động ---------- */
 var WSK='pivotlab.wset.v1',WPK='pivotlab.wprev.v1';
-var WS={on:false,mins:5,ready:true,signal:true,near:false,sound:true,wake:false,ntfy:false,pscan:true,pbot:true,topic:'',mode:'each',repeat:false};
+var WS={on:false,mins:5,ready:true,signal:true,near:false,sound:true,wake:false,ntfy:false,pscan:true,pbot:true,pbsig:true,pbtrade:true,pbpage:true,topic:'',mode:'each',repeat:false};
 var wprev={},wtimer=null,wcount=null,wnext=0,wlock=null,wunseen=0,wbase=null;
 try{var _w=JSON.parse(localStorage.getItem(WSK)||'null');if(_w)Object.keys(WS).forEach(function(k){if(_w[k]!==undefined)WS[k]=_w[k]})}catch(e){}
 try{wprev=JSON.parse(localStorage.getItem(WPK)||'{}')||{}}catch(e){wprev={}}
@@ -3093,11 +3105,11 @@ function saveW(){try{localStorage.setItem(WSK,JSON.stringify(WS))}catch(e){}}
 function savePrev(){try{localStorage.setItem(WPK,JSON.stringify(wprev))}catch(e){}}
 function wUI(){
   $('#w-on').checked=WS.on;$('#w-mins').value=String(WS.mins);$('#w-ready').checked=WS.ready;$('#w-signal').checked=WS.signal;$('#w-near').checked=WS.near;
-  $('#w-sound').checked=WS.sound;$('#w-wake').checked=WS.wake;$('#w-ntfy').checked=WS.ntfy;$('#w-pscan').checked=WS.pscan;$('#w-pbot').checked=WS.pbot;$('#w-topic').value=WS.topic;$('#w-mode').value=WS.mode;$('#w-repeat').checked=WS.repeat;
+  $('#w-sound').checked=WS.sound;$('#w-wake').checked=WS.wake;$('#w-ntfy').checked=WS.ntfy;$('#w-pscan').checked=WS.pscan;$('#w-pbot').checked=WS.pbot;$('#w-pbsig').checked=WS.pbsig;$('#w-pbtrade').checked=WS.pbtrade;$('#w-pbpage').checked=WS.pbpage;$('#w-topic').value=WS.topic;$('#w-mode').value=WS.mode;$('#w-repeat').checked=WS.repeat;
 }
 function wRead(){
   WS.on=$('#w-on').checked;WS.mins=+$('#w-mins').value||5;WS.ready=$('#w-ready').checked;WS.signal=$('#w-signal').checked;WS.near=$('#w-near').checked;
-  WS.sound=$('#w-sound').checked;WS.wake=$('#w-wake').checked;WS.ntfy=$('#w-ntfy').checked;WS.pscan=$('#w-pscan').checked;WS.pbot=$('#w-pbot').checked;WS.mode=$('#w-mode').value||'each';WS.repeat=$('#w-repeat').checked;WS.topic=$('#w-topic').value.trim().replace(/[^A-Za-z0-9_\-]/g,'');
+  WS.sound=$('#w-sound').checked;WS.wake=$('#w-wake').checked;WS.ntfy=$('#w-ntfy').checked;WS.pscan=$('#w-pscan').checked;WS.pbot=$('#w-pbot').checked;WS.pbsig=$('#w-pbsig').checked;WS.pbtrade=$('#w-pbtrade').checked;WS.pbpage=$('#w-pbpage').checked;WS.mode=$('#w-mode').value||'each';WS.repeat=$('#w-repeat').checked;WS.topic=$('#w-topic').value.trim().replace(/[^A-Za-z0-9_\-]/g,'');
   saveW();
 }
 function watchStat(){
@@ -3148,7 +3160,7 @@ function wStart(){
     wTick();
   }else wSchedule();
 }
-['w-on','w-mins','w-ready','w-signal','w-near','w-sound','w-wake','w-ntfy','w-pscan','w-pbot','w-mode','w-repeat'].forEach(function(id){$('#'+id).addEventListener('change',function(){
+['w-on','w-mins','w-ready','w-signal','w-near','w-sound','w-wake','w-ntfy','w-pscan','w-pbot','w-pbsig','w-pbtrade','w-pbpage','w-mode','w-repeat'].forEach(function(id){$('#'+id).addEventListener('change',function(){
   var was=WS.on;wRead();wLock();
   if(id==='w-on'){
     if(WS.on&&!was){
@@ -3167,16 +3179,69 @@ $('#w-gen').addEventListener('click',function(){
   for(i=0;i<12;i++)t+=c[buf[i]%c.length];
   $('#w-topic').value=t;wRead();watchStat();
 });
-async function ntfySend(title,body,prio){
-  if(!WS.topic)return false;
-  var url='https://ntfy.sh/'+encodeURIComponent(WS.topic)+'?title='+encodeURIComponent(title)+'&priority='+(prio||'high')+'&tags='+encodeURIComponent('chart_with_upwards_trend')+'&click='+encodeURIComponent(location.href.split('#')[0]);
-  try{await fetch(url,{method:'POST',body:body,mode:'no-cors'});return true}catch(e){return false}
+/* ---------- Gửi ntfy: hàng đợi chung cho SCAN và BOT ----------
+   ntfy.sh giới hạn mỗi địa chỉ IP 250 tin/ngày và 60 request liên tiếp (sau đó 1 request/5 giây). Trước đây tin vượt giới hạn bị ntfy từ chối mà trang không biết.
+   Hàng đợi này: gửi lần lượt cách nhau 1,3 giây, có timeout, đọc được mã lỗi (429...), tự thử lại, đếm số tin trong 24 giờ,
+   dành riêng phần hạn mức cuối cho tin của BOT (tin SCAN dừng ở 170/250), và báo lỗi ngay trên trang. */
+var NTFY_DAY=250,NTK='pivotlab.ntfy.sent.v1',NQ={q:[],busy:false,last:'',warnAt:0};
+function nSentList(){try{var a=JSON.parse(localStorage.getItem(NTK)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}}
+function nCount(){var cut=Date.now()-86400000;return nSentList().filter(function(t){return t>cut}).length}
+function nMark(){var cut=Date.now()-86400000,a=nSentList().filter(function(t){return t>cut});a.push(Date.now());try{localStorage.setItem(NTK,JSON.stringify(a.slice(-400)))}catch(e){}}
+function nStatRender(){
+  var el=$('#w-nstat');if(!el)return;
+  var n=nCount();
+  el.textContent='Tin ntfy đã gửi trong 24 giờ qua: '+n+'/'+NTFY_DAY+' (giới hạn của ntfy.sh cho mỗi địa chỉ IP)'+(NQ.last?'. Lần gửi gần nhất: '+NQ.last:'')+(n>=NTFY_DAY-80?'. Sắp chạm giới hạn: tin SCAN sẽ bị dừng, chỉ còn tin BOT':'')+(NQ.q.length?'. Đang chờ gửi '+NQ.q.length+' tin':'')+'.';
 }
+function nWarn(msg){if(Date.now()-NQ.warnAt<20*60000)return;NQ.warnAt=Date.now();toast(msg)}
+async function nPost(it){
+  var url='https://ntfy.sh/'+encodeURIComponent(WS.topic)+'?title='+encodeURIComponent(it.title)+'&priority='+it.prio+'&tags='+encodeURIComponent('chart_with_upwards_trend')+'&click='+encodeURIComponent(location.href.split('#')[0]);
+  var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},12000);
+  try{
+    var r=await fetch(url,{method:'POST',body:it.body,signal:ctl.signal});
+    clearTimeout(to);
+    if(r.status===429)return 'limit';
+    return r.ok?'ok':'http'+r.status;
+  }catch(e){
+    clearTimeout(to);
+    if(e&&e.name==='AbortError')return 'timeout';
+    /* trình duyệt chặn đọc phản hồi hoặc mất mạng: gửi kiểu không đọc được phản hồi, nếu mất mạng thì vẫn lỗi */
+    var c2=new AbortController(),t2=setTimeout(function(){c2.abort()},12000);
+    try{await fetch(url,{method:'POST',body:it.body,mode:'no-cors',signal:c2.signal});clearTimeout(t2);return 'blind'}catch(e2){clearTimeout(t2);return 'net'}
+  }
+}
+function ntfyEnqueue(kind,title,body,prio){
+  return new Promise(function(res){
+    if(!WS.topic){res('notopic');return}
+    NQ.q.push({kind:kind,title:title,body:String(body).slice(0,3800),prio:prio||'high',tries:0,res:res});
+    nStatRender();nPump();
+  });
+}
+async function nPump(){
+  if(NQ.busy)return;
+  NQ.busy=true;
+  try{
+    while(NQ.q.length){
+      var it=NQ.q.shift(),n=nCount();
+      if(it.kind!=='test'&&n>=(it.kind==='scan'?NTFY_DAY-80:NTFY_DAY-5)){
+        nWarn('Đã gửi '+n+'/'+NTFY_DAY+' tin ntfy trong 24 giờ qua nên bỏ tin "'+it.title+'". ntfy.sh chỉ cho '+NTFY_DAY+' tin/ngày cho mỗi IP; hãy chọn "Gộp tất cả vào một tin" hoặc giảm tần suất.');
+        it.res('budget');continue;
+      }
+      var r=await nPost(it),d=new Date(),hm=pad2(d.getHours())+':'+pad2(d.getMinutes());
+      if(r==='ok'||r==='blind'){nMark();NQ.last=hm+(r==='blind'?' (không xác nhận được)':' (thành công)');it.res('ok');nStatRender();await wSleep(1300);continue}
+      it.tries++;
+      NQ.last=hm+' (lỗi '+r+')';
+      if(it.tries<3){NQ.q.unshift(it);nStatRender();await wSleep(r==='limit'?15000:4000*it.tries);continue}
+      nWarn(r==='limit'?'ntfy.sh từ chối tin "'+it.title+'" (429: vượt giới hạn gửi). Tin này đã bị bỏ.':'Không gửi được tin ntfy "'+it.title+'" ('+r+'). Kiểm tra kết nối mạng.');
+      it.res(r==='limit'?'limit':'fail');
+    }
+  }finally{NQ.busy=false;nStatRender()}
+}
+async function ntfySend(title,body,prio){return (await ntfyEnqueue('test',title,body,prio))==='ok'}
 $('#w-test').addEventListener('click',async function(){
   wRead();
   if(!WS.topic){toast('Hãy nhập hoặc tạo mã kênh ntfy trước.');return}
-  var ok=await ntfySend('Pivot Lab: thông báo thử','Nếu bạn thấy tin này trên điện thoại thì kênh ntfy đã hoạt động.','default');
-  toast(ok?'Đã gửi thử tới kênh ntfy. Kiểm tra app ntfy trên điện thoại (đã đăng ký đúng mã kênh chưa?).':'Không gửi được. Kiểm tra kết nối mạng.');
+  var r=await ntfyEnqueue('test','Pivot Lab: thông báo thử','Nếu bạn thấy tin này trên điện thoại thì kênh ntfy đã hoạt động.','default');
+  toast(r==='ok'?'Đã gửi thử tới kênh ntfy. Kiểm tra app ntfy trên điện thoại (đã đăng ký đúng mã kênh chưa?).':r==='limit'?'ntfy.sh từ chối vì vượt giới hạn gửi (tối đa 250 tin/ngày cho mỗi IP, hoặc gửi quá nhanh). Thử lại sau.':'Không gửi được ('+r+'). Kiểm tra kết nối mạng.');
 });
 $('#w-now').addEventListener('click',function(){
   var a=loadWatch();
@@ -3213,16 +3278,15 @@ async function wPush(list,newKeys){
   if(!WS.ntfy||!WS.pscan||!WS.topic)return;
   var real=list.filter(function(r){return !r.sample});
   if(!real.length)return;
-  if(WS.mode==='digest'){
+  if(WS.mode==='digest'||real.length>8){
     var lines=real.slice(0,20).map(function(r){return (newKeys[r.label]?'[MỚI] ':'')+wLine(r)});
     if(real.length>20)lines.push('… và '+(real.length-20)+' coin khác');
     var nn=real.filter(function(r){return newKeys[r.label]}).length;
-    await ntfySend('Pivot Lab: '+real.length+' coin có setup'+(nn?' ('+nn+' mới)':''),lines.join('\n'),'high');
+    ntfyEnqueue('scan','Pivot Lab: '+real.length+' coin có setup'+(nn?' ('+nn+' mới)':''),lines.join('\n'),'high');
   }else{
     for(var q=0;q<real.length;q++){
       var m=wMsg(real[q]);
-      await ntfySend(m.title,m.body,real[q].status==='near'?'default':'high');
-      if(q<real.length-1)await wSleep(700);
+      ntfyEnqueue('scan',m.title,m.body,real[q].status==='near'?'default':'high');
     }
   }
 }
@@ -3456,7 +3520,10 @@ function draw(){
   var lo=Infinity,hi=-Infinity,vmax=0,i;
   for(i=i0;i<=i1;i++){var bb=bar(i);if(bb.l<lo)lo=bb.l;if(bb.h>hi)hi=bb.h;if(bb.v>vmax)vmax=bb.v}
   if(!isFinite(lo))return;
-  var PM=sh.plan?planMain():null;
+  tvBarSync();
+  var TVa=tvActive()?state.tv:null;
+  var PM=sh.plan&&!TVa?planMain():null;
+  if(TVa)[TVa.sl,TVa.tp,TVa.entry,TVa.trig,TVa.exitPx,TVa.zone&&TVa.zone.lo,TVa.zone&&TVa.zone.hi].forEach(function(v){if(v!=null&&isFinite(v)){if(v<lo)lo=v;if(v>hi)hi=v}});
   if(PM){
     var pm0=PM;
     [pm0.entries[0].lo,pm0.entries[0].hi,pm0.sl.p,pm0.tps[0]?pm0.tps[0].p:pm0.entries[0].lo].forEach(function(v){if(v<lo)lo=v;if(v>hi)hi=v});
@@ -3603,6 +3670,8 @@ function draw(){
       ctx.fillStyle=L[2];ctx.textBaseline='bottom';ctx.fillText(L[1]+' '+fmt(L[0]),plx,y-2);
     });
   }
+
+  if(TVa)tvDraw({X:X,Y:Y,C:C,bw:bw,plotL:plotL,plotR:plotR,plotT:plotT,priceB:priceB});
 
   /* alerts */
   var akey=alertKey();
@@ -4015,11 +4084,13 @@ function beep(){
     });
   }catch(e){}
 }
-function toast(msg){
+function toast(msg,ms,fn){
   var box=$('#toasts');
   while(box.children.length>=3)box.removeChild(box.firstChild);
   var t=document.createElement('div');t.className='toast';t.setAttribute('role','alert');
   var sp=document.createElement('span');sp.textContent=msg;
+  if(fn){sp.style.cursor='pointer';sp.title='Bấm để xem';sp.addEventListener('click',function(){t.remove();fn()})}
+  if(ms)setTimeout(function(){if(t.parentNode)t.remove()},ms);
   var b=document.createElement('button');b.type='button';b.textContent='Đóng';
   b.addEventListener('click',function(){t.remove()});
   t.appendChild(sp);t.appendChild(b);box.appendChild(t);
@@ -4534,14 +4605,58 @@ var BOT={on:false,busy:false,cfg:Object.assign({},BOT_DEF),S:null,corr:null,rets
 try{var _b=JSON.parse(localStorage.getItem(BOTK)||'null');if(_b){BOT.on=!!_b.on;if(_b.cfg)Object.keys(BOT_DEF).forEach(function(k){if(_b.cfg[k]!==undefined&&typeof _b.cfg[k]===typeof BOT_DEF[k])BOT.cfg[k]=_b.cfg[k]});BOT.S=_b.S||null}}catch(e){}
 function botSave(){try{localStorage.setItem(BOTK,JSON.stringify({on:BOT.on,cfg:BOT.cfg,S:BOT.S}))}catch(e){}}
 function botT(t){var d=new Date(t);return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+' '+pad2(d.getHours())+':'+pad2(d.getMinutes())}
-var botPQ=Promise.resolve();
-/* Gửi thông báo ntfy khi bot vào/đóng lệnh. Dùng chung mã kênh với cảnh báo setup tự động. Bỏ qua sự kiện cũ (bù nến khi mở lại trang). */
-function botPush(title,body,t,prio){
-  try{
-    if(!WS.ntfy||!WS.pbot||!WS.topic)return;
-    if(Date.now()-(t||Date.now())>30*60000)return;
-    botPQ=botPQ.then(function(){return ntfySend(title,body,prio||'high')}).then(function(){return wSleep(700)}).catch(function(){});
-  }catch(e){}
+/* ---- Thông báo của bot ----
+   Mỗi sự kiện (signal mới, vào hàng chờ, bị bỏ, hết hạn, vào lệnh, đóng lệnh) được ghi vào BEV. Cuối mỗi lượt botTick, botFlush gom lại:
+   - trên trang: toast + âm báo (nếu bật);
+   - điện thoại: tối đa 2 tin mỗi lượt (1 tin signal, 1 tin vào/đóng lệnh), mỗi tin liệt kê đủ mọi sự kiện, kể cả sự kiện bù khi trang bị đóng lâu. */
+var BEV=[];
+function botEv(type,o){o.type=type;if(!o.t)o.t=Date.now();BEV.push(o)}
+function botEvLine(e){
+  var lab=(e.side>0?'LONG ':'SHORT ')+e.label,late=Date.now()-e.t>30*60000?' (bù, lúc '+botT(e.t)+')':'';
+  if(e.type==='open')return 'VÀO '+lab+' '+fmt(e.entry)+' · cắt lỗ '+fmt(e.sl)+' · TP1 '+fmt(e.tp)+' · R:R '+e.rr.toFixed(2)+' · điểm '+e.score+' · rủi ro '+usd(e.risk)+late;
+  if(e.type==='close')return 'ĐÓNG '+lab+': '+{tp:'chạm TP1',sl:'cắt lỗ',time:'hết giờ giữ'}[e.reason]+' ở '+fmt(e.px)+' · '+rtxt(e.R)+' ('+usd(e.pnl,true)+') · balance '+usd(e.bal)+late;
+  if(e.type==='skipopen')return 'BỎ vào lệnh '+lab+': '+e.why+late;
+  if(e.type==='exp')return 'HẾT HẠN '+lab+': không phá '+fmt(e.trig)+late;
+  if(e.out==='pend')return 'HÀNG CHỜ '+lab+': vào nếu phá '+fmt(e.trig)+' · cắt lỗ '+fmt(e.sl)+' · TP1 '+fmt(e.tp)+' · R:R '+e.rr.toFixed(2)+' · điểm '+e.score+' · hết hạn '+botT(e.te)+late;
+  return 'BỎ signal '+lab+': '+e.why+late;
+}
+function botFlush(){
+  var ev=BEV;BEV=[];
+  if(!ev.length)return;
+  var sigs=ev.filter(function(e){return e.type==='sig'||e.type==='exp'}),trs=ev.filter(function(e){return e.type==='open'||e.type==='close'||e.type==='skipopen'});
+  var cap=function(a){var l=a.slice(0,25).map(botEvLine);if(a.length>25)l.push('… và '+(a.length-25)+' sự kiện khác');return l};
+  /* trên trang */
+  if(WS.pbpage){
+    var pg=ev.filter(function(e){return (e.type==='sig'||e.type==='exp')?WS.pbsig:WS.pbtrade});
+    if(pg.length){
+      var onlySig=pg.every(function(e){return e.type==='sig'||e.type==='exp'}),dur=onlySig?45000:0;
+      if(pg.length<=3)pg.forEach(function(e){
+        var kd=e.type==='open'?'pos':e.type==='close'?'closed':(e.type==='sig'&&e.out==='pend')?'pend':'';
+        toast('BOT: '+botEvLine(e),dur,function(){if(kd&&e.id)botShowTrade(kd,e.id);else openScanned(e.label,state.tf)});
+      });
+      else toast('BOT: '+pg.length+' sự kiện mới ('+pg.slice(0,3).map(function(e){return {open:'vào',close:'đóng',skipopen:'bỏ vào',exp:'hết hạn',sig:e.out==='pend'?'hàng chờ':'bỏ signal'}[e.type]+' '+e.label}).join(', ')+'…). Bấm để mở bảng BOT xem đủ.',dur,function(){botOpenPanel(true)});
+      wSound();
+      try{if(window.Notification&&Notification.permission==='granted'&&document.visibilityState!=='visible')new Notification('Bot Pivot Lab',{body:botEvLine(pg[0])+(pg.length>1?' (+'+(pg.length-1)+' sự kiện khác)':'')})}catch(e){}
+    }
+  }
+  /* điện thoại */
+  if(!(WS.ntfy&&WS.pbot&&WS.topic))return;
+  var foot='\n(Demo, không phải lệnh thật)';
+  if(WS.pbtrade&&trs.length){
+    var n1=trs.length,e1=trs[0],title,prio='high';
+    if(n1===1)title='Bot Pivot Lab: '+({open:'vào ',close:'đóng ',skipopen:'bỏ vào '}[e1.type])+(e1.side>0?'LONG ':'SHORT ')+e1.label+(e1.type==='close'?' '+rtxt(e1.R):'');
+    else{
+      var no=trs.filter(function(e){return e.type==='open'}).length,nc=trs.filter(function(e){return e.type==='close'}).length,nk=n1-no-nc;
+      title='Bot Pivot Lab: '+n1+' sự kiện ('+[no?no+' vào lệnh':'',nc?nc+' đóng lệnh':'',nk?nk+' bỏ vào':''].filter(Boolean).join(', ')+')';
+    }
+    if(trs.every(function(e){return e.type==='close'&&e.pnl>=0}))prio='default';
+    ntfyEnqueue('bot',title,cap(trs).join('\n')+foot,prio);
+  }
+  if(WS.pbsig&&sigs.length){
+    var np=sigs.filter(function(e){return e.out==='pend'}).length,nx=sigs.filter(function(e){return e.type==='exp'}).length,nb=sigs.length-np-nx,e2=sigs[0];
+    var t2=sigs.length===1?'Bot Pivot Lab: '+(e2.type==='exp'?'hết hạn ':e2.out==='pend'?'vào hàng chờ ':'bỏ signal ')+(e2.side>0?'LONG ':'SHORT ')+e2.label:'Bot Pivot Lab: '+sigs.length+' signal ('+[np?np+' vào hàng chờ':'',nb?nb+' bị bỏ':'',nx?nx+' hết hạn':''].filter(Boolean).join(', ')+')';
+    ntfyEnqueue('bot',t2,cap(sigs).join('\n')+foot,np?'high':'default');
+  }
 }
 function botLog(k,m,t){var S=BOT.S;if(!S)return;S.log.unshift({t:t||Date.now(),k:k,m:m});if(S.log.length>400)S.log.length=400}
 function botCoins(){
@@ -4569,19 +4684,19 @@ function botClose(p,e){
   if(botDayKey(e.t)===S.dayKey)S.realizedToday+=pnl;
   S.pos=S.pos.filter(function(x){return x.id!==p.id});
   var eq=botEquity();if(eq>S.peak)S.peak=eq;
-  S.closed.unshift({id:p.id,label:p.label,side:p.side,entry:p.entry,exitPx:e.px,sl:p.sl,tp:p.tp,risk:p.risk,pnl:pnl,R:R,reason:e.reason,t0:p.t0,exitT:e.t,score:p.score,mfe:p.mfe,mae:p.mae});
+  S.closed.unshift({id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:p.side,entry:p.entry,exitPx:e.px,sl:p.sl,tp:p.tp,risk:p.risk,pnl:pnl,R:R,reason:e.reason,t0:p.t0,exitT:e.t,score:p.score,mfe:p.mfe,mae:p.mae,trig:p.trig,tc:p.tc,tfn:p.tfn,ctx:p.ctx});
   if(S.closed.length>300)S.closed.length=300;
   var why={tp:'chạm chốt lời TP1',sl:'chạm cắt lỗ',time:'hết thời gian giữ lệnh'}[e.reason],hrs=((e.t+900000-p.t0)/3600000).toFixed(1),notes=[];
   notes.push('giá đã đi tối đa '+p.mfe.toFixed(1)+'R có lợi và '+p.mae.toFixed(1)+'R bất lợi');
   if(e.reason==='sl'&&p.mfe>=0.8)notes.push('lệnh từng chạy +'+p.mfe.toFixed(1)+'R rồi mới quay lại cắt lỗ');
   if(e.reason==='sl'&&(e.t+900000-p.t0)<=1800000)notes.push('bị cắt lỗ trong vòng 2 nến M15 đầu tiên');
   botLog('close','Đóng '+(p.side>0?'LONG':'SHORT')+' '+p.label+' ở '+fmt(e.px)+': '+why+', '+rtxt(R)+' ('+usd(pnl,true)+'), giữ '+hrs+' giờ; '+notes.join('; ')+'. Balance '+usd(S.bal)+'.',e.t);
-  botPush('Bot Pivot Lab: đóng '+(p.side>0?'LONG ':'SHORT ')+p.label+' '+rtxt(R),why+' ở '+fmt(e.px)+' · '+usd(pnl,true)+'\nBalance '+usd(S.bal)+'\n(Demo, không phải lệnh thật)',e.t,pnl>=0?'default':'high');
+  botEv('close',{id:p.id,label:p.label,side:p.side,reason:e.reason,px:e.px,R:R,pnl:pnl,bal:S.bal,t:e.t});
 }
 /* Kiểm tra các giới hạn rồi mở vị thế. Trả về true nếu đã mở. */
 function botOpen(p,bar,entryRaw,now){
   var S=BOT.S,c=BOT.cfg,s=p.side,lab=(s>0?'LONG ':'SHORT ')+p.label;
-  var skip=function(m){botLog('skip','Bỏ '+lab+': '+m,bar.t);return false};
+  var skip=function(m){botLog('skip','Bỏ '+lab+': '+m,bar.t);botEv('skipopen',{label:p.label,side:s,why:m,t:bar.t});return false};
   if(S.end)return skip('bot đã ngừng mở lệnh mới.');
   var entry=entryRaw*(1+s*c.slip/100);
   if(!((entry-p.sl)*s>0&&(p.tp-entry)*s>0))return skip('giá vào '+fmt(entry)+' không còn hợp lệ so với cắt lỗ '+fmt(p.sl)+' và TP1 '+fmt(p.tp)+'.');
@@ -4600,11 +4715,11 @@ function botOpen(p,bar,entryRaw,now){
     var why={budget:'hết ngân sách lỗ trong ngày (hạn mức '+usd(bg.limit)+', đã lỗ '+usd(bg.loss)+', đang rủi ro '+usd(bg.open)+')',open:'đã chạm trần tổng rủi ro đang mở '+c.maxOpenPct+'%',small:'phần rủi ro còn được phép quá nhỏ (dưới 25% mức mong muốn '+usd(z.want)+')',invalid:'khoảng cắt lỗ không hợp lệ'}[z.why]||'không tính được khối lượng';
     return skip(why+'.');
   }
-  var pos={id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:s,entry:entry,sl:p.sl,tp:p.tp,qty:z.qty,risk:z.risk,t0:bar.t,checkT:bar.t,mfe:0,mae:0,score:p.score,last:entry,be:false};
+  var pos={id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:s,entry:entry,sl:p.sl,tp:p.tp,qty:z.qty,risk:z.risk,t0:bar.t,checkT:bar.t,mfe:0,mae:0,score:p.score,last:entry,be:false,trig:p.trig,tc:p.tc,tfn:p.tfn,ctx:p.ctx};
   S.pos.push(pos);
   var cut={budget:'bị cắt còn '+usd(z.risk)+' vì ngân sách lỗ trong ngày chỉ còn '+usd(bg.remain),open:'bị cắt còn '+usd(z.risk)+' vì trần tổng rủi ro mở',lev:'bị giới hạn bởi đòn bẩy tối đa '+c.maxLev+'x'}[z.cut];
   botLog('open','Vào '+lab+' ở '+fmt(entry)+(Math.abs(entry-entryRaw)>0?' (đã gồm trượt giá '+c.slip+'%)':'')+': giá phá '+(s>0?'đỉnh':'đáy')+' nến signal '+p.tfn+' ('+fmt(p.trig)+'). Điểm '+p.score+'/100 ('+p.why+'). Cắt lỗ '+fmt(p.sl)+', TP1 '+fmt(p.tp)+', R:R '+rr.toFixed(2)+'. Rủi ro '+usd(z.risk)+' = '+c.riskPct+'% × hệ số điểm '+z.mult+' × bối cảnh '+p.ctxMult+(S.tgtHalf?' × 0.5 (đã đạt mục tiêu)':'')+(cut?', '+cut:'')+'. Khối lượng '+z.qty.toPrecision(4)+', ngân sách ngày còn '+usd(Math.max(0,bg.remain-z.risk))+'.',bar.t);
-  botPush('Bot Pivot Lab: vào '+lab,'Giá vào '+fmt(entry)+' · cắt lỗ '+fmt(p.sl)+' · TP1 '+fmt(p.tp)+'\nR:R '+rr.toFixed(2)+' · điểm '+p.score+'/100 · rủi ro '+usd(z.risk)+'\n(Demo, không phải lệnh thật)',bar.t,'high');
+  botEv('open',{id:p.id,label:p.label,side:s,entry:entry,sl:p.sl,tp:p.tp,rr:rr,score:p.score,risk:z.risk,t:bar.t});
   return true;
 }
 async function botFetchM15(label,sym,fut,minT,now){
@@ -4625,7 +4740,7 @@ async function botMonitor(now){
         var r=botTrig(p,rows,now);
         if(!r)return;
         S.pend=S.pend.filter(function(x){return x.id!==p.id});
-        if(r.expired){botLog('expire','Hết hạn '+(p.side>0?'LONG ':'SHORT ')+p.label+': nến '+p.tfn+' kế tiếp nến signal không phá '+(p.side>0?'đỉnh':'đáy')+' ('+fmt(p.trig)+'), bỏ setup.',p.te);return}
+        if(r.expired){botLog('expire','Hết hạn '+(p.side>0?'LONG ':'SHORT ')+p.label+': nến '+p.tfn+' kế tiếp nến signal không phá '+(p.side>0?'đỉnh':'đáy')+' ('+fmt(p.trig)+'), bỏ setup.',p.te);botEv('exp',{label:p.label,side:p.side,trig:p.trig,t:p.te});return}
         botOpen(p,r.bar,r.entry,now);
       });
       S.pos.filter(function(p){return p.label===k}).forEach(function(p){
@@ -4663,6 +4778,8 @@ async function botScan(now){
   try{var b4=await sbtRetry(function(){return klines('BTCUSDT','4h',true,200)}),b1=await sbtRetry(function(){return klines('BTCUSDT','1h',true,200)});ctx=botCtx(b4.slice(0,-1),b1.slice(0,-1));ctx.ok=true}catch(e){}
   var cands=[],idx=0,errs=0,nsig=0,nExp=0,nLate=0,rets={};
   var MS={'15m':900000,'1h':3600000},TN={'15m':'M15','1h':'H1'};
+  /* truyền giá trị vào thay vì dùng biến của vòng lặp, vì hàm skip được gọi sau khi vòng lặp đã chạy tiếp sang coin khác */
+  function mkSkip(D,s,lab,g){return function(m){botLog('skip','Bỏ '+lab+' (nến signal '+TN[g.tf]+' lúc '+botT(g.t)+'): '+m,now);botEv('sig',{label:D.label,side:s,out:'skip',why:m,t:now})}}
   async function w(){
     while(idx<list.length){
       var n=list[idx++],D=null;
@@ -4678,11 +4795,11 @@ async function botScan(now){
       if(S.seen[key])continue;
       S.seen[key]=now;nsig++;
       var s=r.side,lab=(s>0?'LONG ':'SHORT ')+D.label,tc=best.tc,te=tc+MS[g.tf],trig=s>0?arr[ix].h:arr[ix].l;
-      var skip=function(m){botLog('skip','Bỏ '+lab+' (nến signal '+TN[g.tf]+' lúc '+botT(g.t)+'): '+m,now)};
+      var skip=mkSkip(D,s,lab,g);
       if(now>=te){nExp++;continue}
       var m15=D.sets['15m'],late=false,q;
       for(q=botFirstGE(m15,tc);q<m15.length&&m15[q].t<=now&&m15[q].t<te;q++)if(s>0?m15[q].h>trig:m15[q].l<trig)late=true;
-      if(late){nLate++;continue}
+      if(late){nLate++;botEv('sig',{label:D.label,side:s,out:'skip',why:'giá đã phá '+(s>0?'đỉnh':'đáy')+' nến signal '+TN[g.tf]+' ('+fmt(trig)+') trước khi bot thấy nên không đuổi giá',t:now});continue}
       var sl=r.plan.sl,tp=r.plan.tp1,rr=(tp-trig)*s/Math.abs(trig-sl),stopPct=Math.abs(trig-sl)/trig*100;
       if(!((trig-sl)*s>0&&(tp-trig)*s>0)){skip('cắt lỗ/TP1 không hợp lệ tại giá kích hoạt '+fmt(trig)+'.');continue}
       cands.push({D:D,r:r,g:g,s:s,lab:lab,tc:tc,te:te,trig:trig,sl:sl,tp:tp,rr:rr,stopPct:stopPct,key:key,skip:skip});
@@ -4719,8 +4836,10 @@ async function botScan(now){
     else if(ctx.ok)cn.push(ctx.dir===0?'BTC chưa rõ xu hướng':'BTC '+(ctx.dir>0?'tăng':'giảm')+' cùng hướng');
     if(ctx.ok&&ctx.volRatio!=null&&ctx.volRatio>2){cm*=0.5;cn.push('biến động BTC cao gấp '+ctx.volRatio.toFixed(1)+' lần bình thường nên giảm một nửa rủi ro')}
     var why=sc.parts.map(function(q){return q.k+' '+q.pts+'/'+q.max+' ('+q.note+')'}).join('; ');
-    var p={id:S.nid++,label:x.D.label,sym:x.D.sym,fut:x.D.fut,side:x.s,trig:x.trig,tc:x.tc,te:x.te,sl:x.sl,tp:x.tp,score:sc.score,why:why,ctxMult:cm,tfn:TN[x.g.tf],created:now};
+    var p={id:S.nid++,label:x.D.label,sym:x.D.sym,fut:x.D.fut,side:x.s,trig:x.trig,tc:x.tc,te:x.te,sl:x.sl,tp:x.tp,score:sc.score,why:why,ctxMult:cm,tfn:TN[x.g.tf],created:now,
+      ctx:{sigT:x.g.t,sigTf:x.g.tf,sigText:x.g.text||'',zone:(x.r.plan.entries&&x.r.plan.entries[0])?{lo:x.r.plan.entries[0].lo,hi:x.r.plan.entries[0].hi}:null,slNote:(x.r.plan.sl&&x.r.plan.sl.note)||''}};
     S.pend.push(p);made++;
+    botEv('sig',{id:p.id,label:p.label,side:p.side,out:'pend',trig:p.trig,sl:p.sl,tp:p.tp,rr:x.rr,score:p.score,te:p.te,t:now});
     botLog('pend','Chờ kích hoạt '+x.lab+': nến signal '+p.tfn+' lúc '+botT(x.g.t)+', sẽ vào nếu giá phá '+(x.s>0?'đỉnh':'đáy')+' '+fmt(x.trig)+' trước '+botT(x.te)+'. Điểm '+sc.score+'/100. R:R '+x.rr.toFixed(2)+'. '+cn.join('; ')+'.',now);
   });
   var cut=now-3*86400000;Object.keys(S.seen).forEach(function(k){if(S.seen[k]<cut)delete S.seen[k]});
@@ -4736,7 +4855,7 @@ async function botTick(){
     botCheckStop(now);
     if(BOT.on&&!S.end&&now-S.lastScan>=BOT.cfg.scanMin*60000)await botScan(now);
   }catch(e){if(BOT.S)botLog('err','Lỗi bot: '+(e&&e.message?e.message:e),Date.now())}
-  finally{BOT.busy=false;botSave();botRender()}
+  finally{BOT.busy=false;botSave();botRender();try{botFlush()}catch(e){}}
 }
 /* ---- giao diện ---- */
 var botTimer=null;
@@ -4775,11 +4894,158 @@ function botRender(){
   else if(bg.remain<=0)h+='<p class="note" style="margin-top:8px">Đã hết ngân sách lỗ trong ngày, bot không vào lệnh mới đến 0h giờ Việt Nam.</p>';
   $('#botstat').innerHTML=h;
   var tb=function(head,rows,empty){return rows.length?'<div class="tblwrap"><table class="sbttbl"><thead><tr>'+head.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':'<p class="hint2">'+empty+'</p>'};
-  $('#botpos').innerHTML=tb(['Coin','Hướng','Vào','Cắt lỗ','TP1','Rủi ro','Đang','Điểm'],S.pos.map(function(p){var u=(p.last-p.entry)*p.side/Math.abs(p.entry-p.sl);return '<tr><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.entry)+'</td><td class="num">'+fmt(p.sl)+'</td><td class="num">'+fmt(p.tp)+'</td><td class="num">'+usd(p.risk)+'</td><td class="num '+rcls(u)+'">'+rtxt(u)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh đang mở.');
-  $('#botpend').innerHTML=tb(['Coin','Hướng','Vào nếu phá','Cắt lỗ','Hết hạn','Điểm'],S.pend.map(function(p){return '<tr><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.trig)+'</td><td class="num">'+fmt(p.sl)+'</td><td>'+botT(p.te)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh chờ kích hoạt.');
-  $('#botclosed').innerHTML=tb(['Đóng lúc','Coin','Hướng','Kết quả','R','Lãi/lỗ'],S.closed.slice(0,15).map(function(p){return '<tr><td>'+botT(p.exitT)+'</td><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td>'+{tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ'}[p.reason]+'</td><td class="num '+rcls(p.R)+'">'+rtxt(p.R)+'</td><td class="num '+rcls(p.pnl)+'">'+usd(p.pnl,true)+'</td></tr>'}),'Chưa có lệnh nào đóng.');
+  $('#botpos').innerHTML=tb(['Coin','Hướng','Vào','Cắt lỗ','TP1','Rủi ro','Đang','Điểm'],S.pos.map(function(p){var u=(p.last-p.entry)*p.side/Math.abs(p.entry-p.sl);return '<tr class="botrow" tabindex="0" data-k="pos" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.entry)+'</td><td class="num">'+fmt(p.sl)+'</td><td class="num">'+fmt(p.tp)+'</td><td class="num">'+usd(p.risk)+'</td><td class="num '+rcls(u)+'">'+rtxt(u)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh đang mở.');
+  $('#botpend').innerHTML=tb(['Coin','Hướng','Vào nếu phá','Cắt lỗ','Hết hạn','Điểm'],S.pend.map(function(p){return '<tr class="botrow" tabindex="0" data-k="pend" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.trig)+'</td><td class="num">'+fmt(p.sl)+'</td><td>'+botT(p.te)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh chờ kích hoạt.');
+  $('#botclosed').innerHTML=tb(['Đóng lúc','Coin','Hướng','Kết quả','R','Lãi/lỗ'],S.closed.slice(0,15).map(function(p){return '<tr class="botrow" tabindex="0" data-k="closed" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+botT(p.exitT)+'</td><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td>'+{tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ'}[p.reason]+'</td><td class="num '+rcls(p.R)+'">'+rtxt(p.R)+'</td><td class="num '+rcls(p.pnl)+'">'+usd(p.pnl,true)+'</td></tr>'}),'Chưa có lệnh nào đóng.');
   $('#botlog').innerHTML=S.log.slice(0,80).map(function(l){return '<div class="botl k-'+l.k+'"><time>'+botT(l.t)+'</time><span>'+esc(l.m)+'</span></div>'}).join('')||'<p class="hint2">Chưa có hoạt động.</p>';
 }
+/* ---------- xem chart setup của một lệnh bot (đang chờ, đang mở, đã đóng) ---------- */
+var tvReq=0;
+/* chỉ số nến (gồm cả phần lịch sử, chỉ số âm) của thời điểm t; vượt nến cuối thì ngoại suy */
+function tvIdx(t){
+  var d=state.data,h=state.hist,n=d.length,hl=h.length,step=TF_MS[state.tf]||900000,arr,off;
+  if(!n)return null;
+  if(t>=d[0].t){arr=d;off=0}else if(hl&&t>=h[0].t){arr=h;off=-hl}else return null;
+  var lo=0,hi=arr.length-1;
+  while(lo<hi){var m=(lo+hi+1)>>1;if(arr[m].t<=t)lo=m;else hi=m-1}
+  if(arr===d&&lo===n-1&&t>arr[lo].t)return lo+(t-arr[lo].t)/step;
+  return lo+off;
+}
+function tvActive(){var v=state.tv;return !!v&&v.label===state.label&&v.tfk===state.tf}
+function tvKey(v){return v.label+'|'+v.kind+'|'+(v.t0||'')+'|'+(v.exitT||'')+'|'+v.tfk}
+function tvBarSync(){
+  var el=$('#tvbar');if(!el)return;
+  if(!tvActive()){state.tv=null;if(!el.hidden){el.hidden=true;el.innerHTML='';el.dataset.k=''}return}
+  var v=state.tv,k=tvKey(v);
+  if(!el.hidden&&el.dataset.k===k)return;
+  el.dataset.k=k;el.hidden=false;
+  var dir=v.side>0?'LONG':'SHORT',brk=v.side>0?'đỉnh':'đáy';
+  var st=v.kind==='pend'?'Lệnh chờ kích hoạt':v.kind==='pos'?'Lệnh đang mở':'Lệnh đã đóng: '+({tp:'chạm TP1',sl:'cắt lỗ',time:'hết giờ giữ'}[v.reason]||'')+' '+rtxt(v.R)+' ('+usd(v.pnl,true)+')';
+  var li=[];
+  li.push('<b>Nến signal '+esc(v.tfn)+'</b>'+(v.sigT?' lúc '+botT(v.sigT):'')+(v.sigText?': '+esc(v.sigText):'')+(v.zone?'. Vùng vào '+fmt(v.zone.lo)+' – '+fmt(v.zone.hi):'')+'.');
+  if(v.trig!=null)li.push('<b>Điều kiện vào:</b> giá phá '+brk+' nến signal ('+fmt(v.trig)+') trong nến '+esc(v.tfn)+' kế tiếp'+(v.te?', hạn chót '+botT(v.te):'')+'.');
+  if(v.entry!=null)li.push('<b>Đã vào</b> '+dir+' ở '+fmt(v.entry)+' lúc '+botT(v.t0)+(v.exitT?', <b>đóng</b> ở '+fmt(v.exitPx)+' lúc '+botT(v.exitT):', đang giữ')+'.');
+  li.push('<b>Cắt lỗ</b> '+fmt(v.sl)+(v.slNote?' ('+esc(v.slNote)+')':'')+' · <b>TP1</b> '+fmt(v.tp)+(v.score!=null?' · điểm '+v.score+'/100':'')+'.');
+  el.innerHTML='<div class="tvh"><b>'+dir+' '+esc(v.label)+'</b><span>'+esc(st)+'</span><button type="button" class="btn" id="tvexit">Thoát chế độ xem lệnh</button><button type="button" class="btn" id="tvbot">Mở bảng BOT</button></div><details'+(window.innerWidth>=700?' open':'')+'><summary>Chi tiết setup</summary><ul>'+li.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></details>';
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('#tvexit');
+  if(b){state.tv=null;draw();return}
+  if(e.target.closest&&e.target.closest('#tvbot'))botOpenPanel(true);
+});
+async function tvWaitHist(tA,my){
+  for(var k=0;k<75;k++){
+    var first=state.hist.length?state.hist[0].t:(state.data.length?state.data[0].t:0);
+    if(first<=tA||state.histInfo.status!=='loading'||my!==tvReq)return;
+    await wSleep(400);
+  }
+}
+function tvFocus(){
+  var v=state.tv;if(!v)return;
+  var step=TF_MS[v.tfk]||900000,n=state.data.length;
+  var tA=(v.sigT||v.created||v.t0||v.tc||Date.now())-14*step;
+  var tB=(v.exitT?v.exitT+step:(v.kind==='pend'?(v.te||Date.now()):Date.now()))+10*step;
+  var iA=tvIdx(tA),iB=tvIdx(tB);
+  if(iA==null)iA=state.hist.length?-state.hist.length:0;
+  if(iB==null)iB=n-1;
+  iB=Math.min(iB,n-1+RPAD-2);
+  state.view.count=Math.max(40,Math.min(500,Math.ceil(iB-iA+1)));
+  state.view.off=Math.max(-30,n-1+RPAD-iB);
+  clampView();
+}
+async function botShowTrade(kind,id){
+  var S=BOT.S;if(!S)return;
+  var p=null,ks=[kind].concat(['pend','pos','closed'].filter(function(k){return k!==kind}));
+  for(var ki=0;ki<ks.length&&!p;ki++){p=(ks[ki]==='pend'?S.pend:ks[ki]==='pos'?S.pos:S.closed).filter(function(x){return x.id===id})[0]||null;if(p)kind=ks[ki]}
+  if(!p){toast('Không tìm thấy lệnh này nữa (đã bị xóa khỏi danh sách).',8000);return}
+  var cx=p.ctx||{},tfk=cx.sigTf||(p.tfn==='H1'?'1h':'15m');
+  var v={kind:kind,label:p.label,side:p.side,tfk:tfk,tfn:p.tfn||({'1h':'H1','15m':'M15'}[tfk]),trig:p.trig!=null?p.trig:null,sl:p.sl,tp:p.tp,
+    entry:kind==='pend'?null:p.entry,t0:kind==='pend'?null:p.t0,exitT:p.exitT||null,exitPx:p.exitPx!=null?p.exitPx:null,reason:p.reason||'',R:p.R,pnl:p.pnl,score:p.score,
+    tc:p.tc||null,te:p.te||null,created:p.created||null,sigT:cx.sigT||(p.tc?p.tc-(TF_MS[tfk]||900000):null),sigText:cx.sigText||'',zone:cx.zone||null,slNote:cx.slNote||''};
+  var my=++tvReq;
+  state.tv=null;
+  botOpenPanel(false);
+  await openScanned(p.label,tfk);
+  if(my!==tvReq)return;
+  v.label=state.label;
+  state.tv=v;
+  await tvWaitHist((v.sigT||v.created||v.t0||v.tc||Date.now())-14*(TF_MS[tfk]||900000),my);
+  if(my!==tvReq)return;
+  tvFocus();draw();
+}
+function tvDraw(g){
+  var v=state.tv,X=g.X,Y=g.Y,C=g.C,bw=g.bw,plotL=g.plotL,plotR=g.plotR,plotT=g.plotT,priceB=g.priceB;
+  var up=C('--up'),down=C('--down'),ink=C('--ink'),panel=C('--panel'),scol=v.side>0?up:down;
+  var iS=v.sigT!=null?tvIdx(v.sigT):null,iE=v.t0!=null?tvIdx(v.t0):null,iX=v.exitT!=null?tvIdx(v.exitT):null,iTe=v.te!=null?tvIdx(v.te):null;
+  var xS=iS!=null?X(iS):plotL,xE=iE!=null?X(iE):null,xX=iX!=null?X(iX):null;
+  var xEnd=xX!=null?xX+bw/2:plotR;
+  var lbl=function(text,x,y,col,right){
+    ctx.font='600 11px '+C('--f-body');
+    var w=ctx.measureText(text).width+10,bx=right?x-w:x;
+    bx=Math.max(plotL+2,Math.min(plotR-w-2,bx));y=Math.max(plotT+10,Math.min(priceB-10,y));
+    ctx.globalAlpha=0.92;ctx.fillStyle=panel;ctx.fillRect(bx,y-9,w,18);ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(bx+0.5,y-8.5,w-1,17);
+    ctx.fillStyle=col;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(text,bx+5,y+0.5);
+  };
+  var hline=function(price,x1,x2,col,dash,w){
+    var y=Math.round(Y(price))+0.5;
+    if(y<plotT||y>priceB)return y;
+    ctx.strokeStyle=col;ctx.lineWidth=w||1.4;ctx.setLineDash(dash||[]);ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();ctx.setLineDash([]);
+    return y;
+  };
+  ctx.save();ctx.beginPath();ctx.rect(plotL,plotT,plotR-plotL,priceB-plotT);ctx.clip();
+  /* nến signal */
+  if(iS!=null){
+    ctx.globalAlpha=0.13;ctx.fillStyle=ink;ctx.fillRect(xS-bw/2,plotT,Math.max(bw,3),priceB-plotT);ctx.globalAlpha=1;
+  }
+  /* vùng vào */
+  if(v.zone){
+    var yA=Y(v.zone.hi),yB=Y(v.zone.lo);
+    ctx.globalAlpha=0.14;ctx.fillStyle=scol;ctx.fillRect(xS,Math.min(yA,yB),plotR-xS,Math.max(2,Math.abs(yB-yA)));ctx.globalAlpha=1;
+    lbl('Vùng vào '+(v.side>0?'LONG ':'SHORT ')+fmt(v.zone.lo)+' – '+fmt(v.zone.hi),Math.max(xS+6,plotL+4),v.side>0?Math.max(yA,yB)+12:Math.min(yA,yB)-12,scol);
+  }
+  /* mức phá của nến signal */
+  var xTrigEnd=xE!=null?xE+bw/2:(iTe!=null?X(iTe):plotR);
+  if(v.trig!=null){
+    var yT=hline(v.trig,xS,xTrigEnd,ink,[5,4],1.3);
+    lbl((v.side>0?'Phá đỉnh nến signal ':'Phá đáy nến signal ')+fmt(v.trig),Math.max(xS+6,plotL+4),yT+(v.side>0?-12:12),ink);
+    if(v.kind==='pend'&&iTe!=null)lbl('hết hạn '+botT(v.te),X(iTe),yT+(v.side>0?12:-12),ink,true);
+  }
+  /* cắt lỗ, chốt lời */
+  var x1=xE!=null?xE-bw/2:xS,x2=v.kind==='pend'?(iTe!=null?X(iTe):plotR):xEnd,dash=v.kind==='pend'?[6,4]:[];
+  if(v.entry!=null){
+    var ye=Y(v.entry),ytp=Y(v.tp),ysl=Y(v.sl);
+    ctx.globalAlpha=0.12;ctx.fillStyle=up;ctx.fillRect(x1,Math.min(ye,ytp),Math.max(2,x2-x1),Math.abs(ytp-ye));
+    ctx.fillStyle=down;ctx.fillRect(x1,Math.min(ye,ysl),Math.max(2,x2-x1),Math.abs(ysl-ye));ctx.globalAlpha=1;
+    hline(v.entry,x1,x2,ink,[2,3],1);
+  }
+  var ysl2=hline(v.sl,x1,x2,down,dash,1.6),ytp2=hline(v.tp,x1,x2,up,dash,1.6);
+  lbl('Cắt lỗ '+fmt(v.sl),x2,ysl2+(v.side>0?12:-12),down,true);
+  lbl('TP1 '+fmt(v.tp),x2,ytp2+(v.side>0?-12:12),up,true);
+  /* điểm vào */
+  if(xE!=null&&v.entry!=null){
+    var y0=Y(v.entry);ctx.fillStyle=scol;ctx.beginPath();
+    if(v.side>0){ctx.moveTo(xE,y0);ctx.lineTo(xE-7,y0+14);ctx.lineTo(xE+7,y0+14)}else{ctx.moveTo(xE,y0);ctx.lineTo(xE-7,y0-14);ctx.lineTo(xE+7,y0-14)}
+    ctx.closePath();ctx.fill();
+    lbl('Vào '+fmt(v.entry),xE+10,y0+(v.side>0?20:-20),scol);
+  }
+  /* điểm thoát */
+  if(xX!=null&&v.exitPx!=null){
+    var y1=Y(v.exitPx),ecol=(v.pnl>=0)?up:down;
+    ctx.fillStyle=ecol;ctx.strokeStyle=panel;ctx.lineWidth=2;ctx.beginPath();ctx.arc(xX,y1,6,0,6.283);ctx.fill();ctx.stroke();
+    lbl(({tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ giữ'}[v.reason]||'Đóng')+' '+rtxt(v.R),xX-10,y1+(v.pnl>=0?-18:18),ecol,true);
+  }
+  ctx.restore();
+}
+$('#botpanel').addEventListener('click',function(e){
+  var tr=e.target.closest&&e.target.closest('tr.botrow');if(!tr)return;
+  botShowTrade(tr.dataset.k,+tr.dataset.id);
+});
+$('#botpanel').addEventListener('keydown',function(e){
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  var tr=e.target.closest&&e.target.closest('tr.botrow');if(!tr)return;
+  e.preventDefault();botShowTrade(tr.dataset.k,+tr.dataset.id);
+});
 botBuildForm();botCoinStat();
 function botOpenPanel(open){
   var p=$('#botpanel');p.hidden=!open;$('#botfab').setAttribute('aria-expanded',open?'true':'false');
@@ -4831,7 +5097,7 @@ botRender();
 botTimer=setInterval(botTick,10000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')botTick()});
 if(BOT.on&&BOT.S){botLog('start','Trang được mở lại: bot tải các nến đã bỏ lỡ để cập nhật lệnh đang mở và lệnh chờ.');setTimeout(botTick,1200)}
-if(location.hash==='#pltest')window.__bot={BOT:BOT,tick:botTick,scan:botScan,render:botRender};
+if(location.hash==='#pltest')window.__bot={BOT:BOT,tick:botTick,scan:botScan,render:botRender,state:state,newSession:botNewSession,ev:botEv,flush:botFlush,show:botShowTrade,WS:WS,NQ:NQ,draw:draw,openPanel:botOpenPanel};
 
 /* boot */
 setSrc('', 'Đang tải…');
