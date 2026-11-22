@@ -343,7 +343,7 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
         <label><input type="checkbox" id="w-ntfy"> <b>Gửi về điện thoại (ntfy)</b></label>
         <label><input type="checkbox" id="w-pscan" checked> Gửi cảnh báo SCAN (setup từ danh sách quét)</label>
         <label><input type="checkbox" id="w-pbot" checked> Gửi cảnh báo BOT (gửi về điện thoại)</label>
-        <label style="margin-left:22px"><input type="checkbox" id="w-pbsig" checked> BOT báo signal mới (mỗi lượt quét gộp thành 1 tin: signal nào vào hàng chờ, signal nào bị bỏ và lý do)</label>
+        <label style="margin-left:22px"><input type="checkbox" id="w-pbsig" checked> BOT báo signal vào hàng chờ (signal bị bỏ không gửi về điện thoại, chỉ hiện trên trang và ghi trong nhật ký)</label>
         <label style="margin-left:22px"><input type="checkbox" id="w-pbtrade" checked> BOT báo vào lệnh, đóng lệnh (nhiều lệnh cùng lúc gộp thành 1 tin)</label>
         <label><input type="checkbox" id="w-pbpage" checked> BOT hiện thông báo ngay trên trang (kèm âm báo nếu bật "Âm báo trong trang")</label>
         <label>Mã kênh <input type="text" id="w-topic" spellcheck="false" autocapitalize="none" placeholder="vd: pivotlab-k3x9a2m7q1"></label>
@@ -4624,7 +4624,8 @@ function botEvLine(e){
 function botFlush(){
   var ev=BEV;BEV=[];
   if(!ev.length)return;
-  var sigs=ev.filter(function(e){return e.type==='sig'||e.type==='exp'}),trs=ev.filter(function(e){return e.type==='open'||e.type==='close'||e.type==='skipopen'});
+  /* điện thoại chỉ nhận: signal vào hàng chờ, vào lệnh, đóng lệnh (signal bị bỏ, hết hạn, bỏ vào lệnh chỉ hiện trên trang và ghi trong nhật ký, để tiết kiệm số tin ntfy mỗi ngày) */
+  var sigs=ev.filter(function(e){return e.type==='sig'&&e.out==='pend'}),trs=ev.filter(function(e){return e.type==='open'||e.type==='close'});
   var cap=function(a){var l=a.slice(0,25).map(botEvLine);if(a.length>25)l.push('… và '+(a.length-25)+' sự kiện khác');return l};
   /* trên trang */
   if(WS.pbpage){
@@ -4645,18 +4646,17 @@ function botFlush(){
   var foot='\n(Demo, không phải lệnh thật)';
   if(WS.pbtrade&&trs.length){
     var n1=trs.length,e1=trs[0],title,prio='high';
-    if(n1===1)title='Bot Pivot Lab: '+({open:'vào ',close:'đóng ',skipopen:'bỏ vào '}[e1.type])+(e1.side>0?'LONG ':'SHORT ')+e1.label+(e1.type==='close'?' '+rtxt(e1.R):'');
+    if(n1===1)title='Bot Pivot Lab: '+({open:'vào ',close:'đóng '}[e1.type])+(e1.side>0?'LONG ':'SHORT ')+e1.label+(e1.type==='close'?' '+rtxt(e1.R):'');
     else{
-      var no=trs.filter(function(e){return e.type==='open'}).length,nc=trs.filter(function(e){return e.type==='close'}).length,nk=n1-no-nc;
-      title='Bot Pivot Lab: '+n1+' sự kiện ('+[no?no+' vào lệnh':'',nc?nc+' đóng lệnh':'',nk?nk+' bỏ vào':''].filter(Boolean).join(', ')+')';
+      var no=trs.filter(function(e){return e.type==='open'}).length,nc=n1-no;
+      title='Bot Pivot Lab: '+n1+' sự kiện ('+[no?no+' vào lệnh':'',nc?nc+' đóng lệnh':''].filter(Boolean).join(', ')+')';
     }
     if(trs.every(function(e){return e.type==='close'&&e.pnl>=0}))prio='default';
     ntfyEnqueue('bot',title,cap(trs).join('\n')+foot,prio);
   }
   if(WS.pbsig&&sigs.length){
-    var np=sigs.filter(function(e){return e.out==='pend'}).length,nx=sigs.filter(function(e){return e.type==='exp'}).length,nb=sigs.length-np-nx,e2=sigs[0];
-    var t2=sigs.length===1?'Bot Pivot Lab: '+(e2.type==='exp'?'hết hạn ':e2.out==='pend'?'vào hàng chờ ':'bỏ signal ')+(e2.side>0?'LONG ':'SHORT ')+e2.label:'Bot Pivot Lab: '+sigs.length+' signal ('+[np?np+' vào hàng chờ':'',nb?nb+' bị bỏ':'',nx?nx+' hết hạn':''].filter(Boolean).join(', ')+')';
-    ntfyEnqueue('bot',t2,cap(sigs).join('\n')+foot,np?'high':'default');
+    var t2=sigs.length===1?'Bot Pivot Lab: vào hàng chờ '+(sigs[0].side>0?'LONG ':'SHORT ')+sigs[0].label:'Bot Pivot Lab: '+sigs.length+' signal vào hàng chờ';
+    ntfyEnqueue('bot',t2,cap(sigs).join('\n')+foot,'high');
   }
 }
 function botLog(k,m,t){var S=BOT.S;if(!S)return;S.log.unshift({t:t||Date.now(),k:k,m:m});if(S.log.length>400)S.log.length=400}
