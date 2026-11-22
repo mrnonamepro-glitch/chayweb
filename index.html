@@ -175,8 +175,8 @@ h2{font:600 15px/1.2 var(--f-display);margin:0 0 10px;letter-spacing:.01em}
 .botl time{font:11.5px var(--f-mono);color:var(--muted);white-space:nowrap}
 .botl.k-open span{color:var(--up)}.botl.k-stop span,.botl.k-err span{color:var(--down)}.botl.k-skip span,.botl.k-expire span{color:var(--muted)}
 #botpanel .tblwrap{max-height:220px}
-#botpanel tr.botrow{cursor:pointer}
-#botpanel tr.botrow:hover td,#botpanel tr.botrow:focus td{background:rgba(127,127,127,.16)}
+#botpanel tr.trade-row{cursor:pointer}
+#botpanel tr.trade-row:hover td,#botpanel tr.trade-row:focus td{background:rgba(127,127,127,.16)}
 #tvbar{padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel2);font-size:13px;line-height:1.5}
 #tvbar .tvh{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
 #tvbar .tvh b{font:600 14px var(--f-display)}
@@ -3237,6 +3237,7 @@ async function nPump(){
   }finally{NQ.busy=false;nStatRender()}
 }
 async function ntfySend(title,body,prio){return (await ntfyEnqueue('test',title,body,prio))==='ok'}
+nStatRender();
 $('#w-test').addEventListener('click',async function(){
   wRead();
   if(!WS.topic){toast('Hãy nhập hoặc tạo mã kênh ntfy trước.');return}
@@ -4894,9 +4895,9 @@ function botRender(){
   else if(bg.remain<=0)h+='<p class="note" style="margin-top:8px">Đã hết ngân sách lỗ trong ngày, bot không vào lệnh mới đến 0h giờ Việt Nam.</p>';
   $('#botstat').innerHTML=h;
   var tb=function(head,rows,empty){return rows.length?'<div class="tblwrap"><table class="sbttbl"><thead><tr>'+head.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':'<p class="hint2">'+empty+'</p>'};
-  $('#botpos').innerHTML=tb(['Coin','Hướng','Vào','Cắt lỗ','TP1','Rủi ro','Đang','Điểm'],S.pos.map(function(p){var u=(p.last-p.entry)*p.side/Math.abs(p.entry-p.sl);return '<tr class="botrow" tabindex="0" data-k="pos" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.entry)+'</td><td class="num">'+fmt(p.sl)+'</td><td class="num">'+fmt(p.tp)+'</td><td class="num">'+usd(p.risk)+'</td><td class="num '+rcls(u)+'">'+rtxt(u)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh đang mở.');
-  $('#botpend').innerHTML=tb(['Coin','Hướng','Vào nếu phá','Cắt lỗ','Hết hạn','Điểm'],S.pend.map(function(p){return '<tr class="botrow" tabindex="0" data-k="pend" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.trig)+'</td><td class="num">'+fmt(p.sl)+'</td><td>'+botT(p.te)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh chờ kích hoạt.');
-  $('#botclosed').innerHTML=tb(['Đóng lúc','Coin','Hướng','Kết quả','R','Lãi/lỗ'],S.closed.slice(0,15).map(function(p){return '<tr class="botrow" tabindex="0" data-k="closed" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+botT(p.exitT)+'</td><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td>'+{tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ'}[p.reason]+'</td><td class="num '+rcls(p.R)+'">'+rtxt(p.R)+'</td><td class="num '+rcls(p.pnl)+'">'+usd(p.pnl,true)+'</td></tr>'}),'Chưa có lệnh nào đóng.');
+  $('#botpos').innerHTML=tb(['Coin','Hướng','Vào','Cắt lỗ','TP1','Rủi ro','Đang','Điểm'],S.pos.map(function(p){var u=(p.last-p.entry)*p.side/Math.abs(p.entry-p.sl);return '<tr class="trade-row" tabindex="0" data-k="pos" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.entry)+'</td><td class="num">'+fmt(p.sl)+'</td><td class="num">'+fmt(p.tp)+'</td><td class="num">'+usd(p.risk)+'</td><td class="num '+rcls(u)+'">'+rtxt(u)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh đang mở.');
+  $('#botpend').innerHTML=tb(['Coin','Hướng','Vào nếu phá','Cắt lỗ','Hết hạn','Điểm'],S.pend.map(function(p){return '<tr class="trade-row" tabindex="0" data-k="pend" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td class="num">'+fmt(p.trig)+'</td><td class="num">'+fmt(p.sl)+'</td><td>'+botT(p.te)+'</td><td class="num">'+p.score+'</td></tr>'}),'Chưa có lệnh chờ kích hoạt.');
+  $('#botclosed').innerHTML=tb(['Đóng lúc','Coin','Hướng','Kết quả','R','Lãi/lỗ'],S.closed.slice(0,15).map(function(p){return '<tr class="trade-row" tabindex="0" data-k="closed" data-id="'+p.id+'" title="Bấm để xem chart setup vào lệnh"><td>'+botT(p.exitT)+'</td><td>'+esc(p.label)+'</td><td>'+(p.side>0?'LONG':'SHORT')+'</td><td>'+{tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ'}[p.reason]+'</td><td class="num '+rcls(p.R)+'">'+rtxt(p.R)+'</td><td class="num '+rcls(p.pnl)+'">'+usd(p.pnl,true)+'</td></tr>'}),'Chưa có lệnh nào đóng.');
   $('#botlog').innerHTML=S.log.slice(0,80).map(function(l){return '<div class="botl k-'+l.k+'"><time>'+botT(l.t)+'</time><span>'+esc(l.m)+'</span></div>'}).join('')||'<p class="hint2">Chưa có hoạt động.</p>';
 }
 /* ---------- xem chart setup của một lệnh bot (đang chờ, đang mở, đã đóng) ---------- */
@@ -5033,17 +5034,18 @@ function tvDraw(g){
   if(xX!=null&&v.exitPx!=null){
     var y1=Y(v.exitPx),ecol=(v.pnl>=0)?up:down;
     ctx.fillStyle=ecol;ctx.strokeStyle=panel;ctx.lineWidth=2;ctx.beginPath();ctx.arc(xX,y1,6,0,6.283);ctx.fill();ctx.stroke();
-    lbl(({tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ giữ'}[v.reason]||'Đóng')+' '+rtxt(v.R),xX-10,y1+(v.pnl>=0?-18:18),ecol,true);
+    var dTP=v.side>0?-1:1,eo=v.reason==='tp'?-dTP:v.reason==='sl'?dTP:(v.pnl>=0?-1:1);
+    lbl(({tp:'Chạm TP1',sl:'Cắt lỗ',time:'Hết giờ giữ'}[v.reason]||'Đóng')+' '+rtxt(v.R),xX-10,y1+eo*20,ecol,true);
   }
   ctx.restore();
 }
 $('#botpanel').addEventListener('click',function(e){
-  var tr=e.target.closest&&e.target.closest('tr.botrow');if(!tr)return;
+  var tr=e.target.closest&&e.target.closest('tr.trade-row');if(!tr)return;
   botShowTrade(tr.dataset.k,+tr.dataset.id);
 });
 $('#botpanel').addEventListener('keydown',function(e){
   if(e.key!=='Enter'&&e.key!==' ')return;
-  var tr=e.target.closest&&e.target.closest('tr.botrow');if(!tr)return;
+  var tr=e.target.closest&&e.target.closest('tr.trade-row');if(!tr)return;
   e.preventDefault();botShowTrade(tr.dataset.k,+tr.dataset.id);
 });
 botBuildForm();botCoinStat();
