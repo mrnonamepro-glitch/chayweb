@@ -3194,7 +3194,7 @@ function nStatRender(){
 }
 function nWarn(msg){if(Date.now()-NQ.warnAt<20*60000)return;NQ.warnAt=Date.now();toast(msg)}
 async function nPost(it){
-  var url='https://ntfy.sh/'+encodeURIComponent(WS.topic)+'?title='+encodeURIComponent(it.title)+'&priority='+it.prio+'&tags='+encodeURIComponent('chart_with_upwards_trend')+'&click='+encodeURIComponent(location.href.split('#')[0]);
+  var url='https://ntfy.sh/'+encodeURIComponent(WS.topic)+'?title='+encodeURIComponent(it.title)+'&priority='+it.prio+'&tags='+encodeURIComponent('chart_with_upwards_trend')+(/^(localhost|127\.|\[::1\])/.test(location.hostname)?'':'&click='+encodeURIComponent(location.href.split('#')[0]));
   var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},12000);
   try{
     var r=await fetch(url,{method:'POST',body:it.body,signal:ctl.signal});
@@ -4605,6 +4605,8 @@ var BOT_F2=[['riskPct','Rủi ro tối đa mỗi lệnh (%)',0.1,5,0.1,'Setup đ
 var BOT={on:false,busy:false,cfg:Object.assign({},BOT_DEF),S:null,corr:null,rets:{}};
 try{var _b=JSON.parse(localStorage.getItem(BOTK)||'null');if(_b){BOT.on=!!_b.on;if(_b.cfg)Object.keys(BOT_DEF).forEach(function(k){if(_b.cfg[k]!==undefined&&typeof _b.cfg[k]===typeof BOT_DEF[k])BOT.cfg[k]=_b.cfg[k]});BOT.S=_b.S||null}}catch(e){}
 function botSave(){try{localStorage.setItem(BOTK,JSON.stringify({on:BOT.on,cfg:BOT.cfg,S:BOT.S}))}catch(e){}}
+/* Cầu nối sang chương trình server (chỉ có khi chạy bằng pivot-bot-server). Ở trang HTML thường thì window.__plExec không tồn tại nên các lệnh gọi này không làm gì. */
+function exh(type,o){try{if(window.__plExec){var r=window.__plExec(type,JSON.parse(JSON.stringify(o)));if(r&&r.catch)r.catch(function(){})}}catch(e){}}
 function botT(t){var d=new Date(t);return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+' '+pad2(d.getHours())+':'+pad2(d.getMinutes())}
 /* ---- Thông báo của bot ----
    Mỗi sự kiện (signal mới, vào hàng chờ, bị bỏ, hết hạn, vào lệnh, đóng lệnh) được ghi vào BEV. Cuối mỗi lượt botTick, botFlush gom lại:
@@ -4693,6 +4695,7 @@ function botClose(p,e){
   if(e.reason==='sl'&&(e.t+900000-p.t0)<=1800000)notes.push('bị cắt lỗ trong vòng 2 nến M15 đầu tiên');
   botLog('close','Đóng '+(p.side>0?'LONG':'SHORT')+' '+p.label+' ở '+fmt(e.px)+': '+why+', '+rtxt(R)+' ('+usd(pnl,true)+'), giữ '+hrs+' giờ; '+notes.join('; ')+'. Balance '+usd(S.bal)+'.',e.t);
   botEv('close',{id:p.id,label:p.label,side:p.side,reason:e.reason,px:e.px,R:R,pnl:pnl,bal:S.bal,t:e.t});
+  exh('close',{id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:p.side,reason:e.reason,px:e.px,t:e.t,pnlSim:pnl,R:R,balSim:S.bal,entry:p.entry,risk:p.risk});
 }
 /* Kiểm tra các giới hạn rồi mở vị thế. Trả về true nếu đã mở. */
 function botOpen(p,bar,entryRaw,now){
@@ -4721,6 +4724,7 @@ function botOpen(p,bar,entryRaw,now){
   var cut={budget:'bị cắt còn '+usd(z.risk)+' vì ngân sách lỗ trong ngày chỉ còn '+usd(bg.remain),open:'bị cắt còn '+usd(z.risk)+' vì trần tổng rủi ro mở',lev:'bị giới hạn bởi đòn bẩy tối đa '+c.maxLev+'x'}[z.cut];
   botLog('open','Vào '+lab+' ở '+fmt(entry)+(Math.abs(entry-entryRaw)>0?' (đã gồm trượt giá '+c.slip+'%)':'')+': giá phá '+(s>0?'đỉnh':'đáy')+' nến signal '+p.tfn+' ('+fmt(p.trig)+'). Điểm '+p.score+'/100 ('+p.why+'). Cắt lỗ '+fmt(p.sl)+', TP1 '+fmt(p.tp)+', R:R '+rr.toFixed(2)+'. Rủi ro '+usd(z.risk)+' = '+c.riskPct+'% × hệ số điểm '+z.mult+' × bối cảnh '+p.ctxMult+(S.tgtHalf?' × 0.5 (đã đạt mục tiêu)':'')+(cut?', '+cut:'')+'. Khối lượng '+z.qty.toPrecision(4)+', ngân sách ngày còn '+usd(Math.max(0,bg.remain-z.risk))+'.',bar.t);
   botEv('open',{id:p.id,label:p.label,side:s,entry:entry,sl:p.sl,tp:p.tp,rr:rr,score:p.score,risk:z.risk,t:bar.t});
+  exh('open',{id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:s,entryRaw:entryRaw,entry:entry,sl:p.sl,tp:p.tp,risk:z.risk,balSim:S.bal,score:p.score,trig:p.trig,t:bar.t});
   return true;
 }
 async function botFetchM15(label,sym,fut,minT,now){
@@ -4741,7 +4745,7 @@ async function botMonitor(now){
         var r=botTrig(p,rows,now);
         if(!r)return;
         S.pend=S.pend.filter(function(x){return x.id!==p.id});
-        if(r.expired){botLog('expire','Hết hạn '+(p.side>0?'LONG ':'SHORT ')+p.label+': nến '+p.tfn+' kế tiếp nến signal không phá '+(p.side>0?'đỉnh':'đáy')+' ('+fmt(p.trig)+'), bỏ setup.',p.te);botEv('exp',{label:p.label,side:p.side,trig:p.trig,t:p.te});return}
+        if(r.expired){botLog('expire','Hết hạn '+(p.side>0?'LONG ':'SHORT ')+p.label+': nến '+p.tfn+' kế tiếp nến signal không phá '+(p.side>0?'đỉnh':'đáy')+' ('+fmt(p.trig)+'), bỏ setup.',p.te);botEv('exp',{label:p.label,side:p.side,trig:p.trig,t:p.te});exh('exp',{id:p.id,label:p.label,t:p.te});return}
         botOpen(p,r.bar,r.entry,now);
       });
       S.pos.filter(function(p){return p.label===k}).forEach(function(p){
@@ -4756,7 +4760,7 @@ async function botMonitor(now){
 function botCheckStop(now){
   var S=BOT.S,c=BOT.cfg,eq=botEquity();
   if(eq>S.peak)S.peak=eq;
-  var end=function(why,msg){S.end=why;S.pend.length&&botLog('expire','Hủy '+S.pend.length+' lệnh chờ kích hoạt.',now);S.pend=[];botLog('stop',msg,now)};
+  var end=function(why,msg){S.end=why;S.pend.length&&botLog('expire','Hủy '+S.pend.length+' lệnh chờ kích hoạt.',now);S.pend.length&&exh('pend_clear',{ids:S.pend.map(function(x){return x.id})});S.pend=[];botLog('stop',msg,now)};
   if(!S.end&&eq<=S.peak*(1-c.ddStop/100))end('dd','Dừng mở lệnh mới: equity '+usd(eq)+' đã sụt '+((1-eq/S.peak)*100).toFixed(1)+'% từ đỉnh '+usd(S.peak)+' (giới hạn '+c.ddStop+'%). Các lệnh đang mở vẫn được theo dõi đến khi đóng.');
   if(!S.tgtHit&&eq>=S.bal0*(1+c.tgtPct/100)){
     S.tgtHit=true;
@@ -4766,6 +4770,22 @@ function botCheckStop(now){
   }
   if(!S.end&&now>=S.startT+c.days*86400000)end('deadline','Hết '+c.days+' ngày: kết quả '+usd(eq)+' ('+((eq/S.bal0-1)*100).toFixed(2)+'% so với vốn đầu, mục tiêu +'+c.tgtPct+'%). Bot ngừng mở lệnh mới.');
   if(S.end&&!S.pos.length&&!S.pend.length&&BOT.on){BOT.on=false;botLog('stop','Phiên đã kết thúc, bot tạm dừng. Bật lại để bắt đầu phiên mới.',now)}
+}
+/* Bot dùng độ nhạy cố định, không đi theo thanh trượt "Độ nhạy" của biểu đồ (kéo thanh trượt trước đây làm bot đổi kết quả quét). */
+var BOT_K=5;
+/* Nhãn xu hướng có "trí nhớ" (vào nhãn cần điểm >=3, giữ nhãn đến khi điểm <1), nên kết quả trước đây phụ thuộc trang đã mở từ lúc nào.
+   Hàm này dựng lại trí nhớ đó từ chính các nến đang có (chạy lại từng nến, tối đa 150 nến gần nhất), nên kết quả chỉ phụ thuộc dữ liệu nến:
+   mở lại trang, bot server khởi động lại hay bắt đầu quét vào lúc khác đều cho cùng một kết quả. */
+function botWarm(sets,k,key){
+  ['4h','1h','15m'].forEach(function(tf){
+    var d=sets[tf];if(!d||d.length<60)return;
+    var N=d.length,cl=d.map(function(x){return x.c}),e20=emaArr(cl,20),e50=emaArr(cl,50),at=atrArr(d,14),raw=pivotsOf(d,k),prev=null;
+    for(var n=Math.max(60,N-150);n<N;n++){
+      var piv=alt(raw.filter(function(x){return x.i<n-k}));
+      prev=trendOf(d.slice(0,n),e20,e50,piv,at[n-1],prev).dir;
+    }
+    TMEM[key+'|'+tf]=prev;
+  });
 }
 async function botFetchSets(n){
   var f=await fetchBinance(n.sym,'4h',n.fut,300),rest=await Promise.all([klines(f.symbol,'1h',n.fut,300),klines(f.symbol,'15m',n.fut,300)]);
@@ -4777,7 +4797,8 @@ async function botScan(now){
   if(!list.length){botLog('scan','Danh sách coin của bot đang trống, hãy nhập danh sách ở mục "Danh sách coin và mục tiêu".',now);return}
   var ctx={dir:0,volRatio:null,ok:false};
   try{var b4=await sbtRetry(function(){return klines('BTCUSDT','4h',true,200)}),b1=await sbtRetry(function(){return klines('BTCUSDT','1h',true,200)});ctx=botCtx(b4.slice(0,-1),b1.slice(0,-1));ctx.ok=true}catch(e){}
-  var cands=[],idx=0,errs=0,nsig=0,nExp=0,nLate=0,rets={};
+  var cands=[],idx=0,errs=0,nsig=0,nExp=0,nLate=0,rets={},lateL=[],expL=[];
+  function shortL(D,s){return D.label.replace(/USDT\.P$/,'').replace(/USDT$/,'')+(s>0?'↑':'↓')}
   var MS={'15m':900000,'1h':3600000},TN={'15m':'M15','1h':'H1'};
   /* truyền giá trị vào thay vì dùng biến của vòng lặp, vì hàm skip được gọi sau khi vòng lặp đã chạy tiếp sang coin khác */
   function mkSkip(D,s,lab,g){return function(m){botLog('skip','Bỏ '+lab+' (nến signal '+TN[g.tf]+' lúc '+botT(g.t)+'): '+m,now);botEv('sig',{label:D.label,side:s,out:'skip',why:m,t:now})}}
@@ -4787,7 +4808,8 @@ async function botScan(now){
       try{D=await botFetchSets(n)}catch(e){errs++;continue}
       rets[D.label]=pfRet(D.sets['1h']);
       if(S.pend.some(function(p){return p.label===D.label})||S.pos.some(function(p){return p.label===D.label}))continue;
-      var r=scanOne(D.sets,state.k,'bot|'+D.label);
+      botWarm(D.sets,BOT_K,'bot|'+D.label);
+      var r=scanOne(D.sets,BOT_K,'bot|'+D.label);
       if(!(r.status==='ready'||r.status==='signal')||!r.side||!r.plan||r.plan.tp1==null||!r.items||!r.items.length)continue;
       var best=null;r.items.forEach(function(g){var tc=g.t+MS[g.tf];if(!best||tc>best.tc)best={g:g,tc:tc}});
       var g=best.g,arr=D.sets[g.tf],ix=btFirstGE(arr,g.t);
@@ -4797,10 +4819,10 @@ async function botScan(now){
       S.seen[key]=now;nsig++;
       var s=r.side,lab=(s>0?'LONG ':'SHORT ')+D.label,tc=best.tc,te=tc+MS[g.tf],trig=s>0?arr[ix].h:arr[ix].l;
       var skip=mkSkip(D,s,lab,g);
-      if(now>=te){nExp++;continue}
+      if(now>=te){nExp++;expL.push(shortL(D,s));continue}
       var m15=D.sets['15m'],late=false,q;
       for(q=botFirstGE(m15,tc);q<m15.length&&m15[q].t<=now&&m15[q].t<te;q++)if(s>0?m15[q].h>trig:m15[q].l<trig)late=true;
-      if(late){nLate++;botEv('sig',{label:D.label,side:s,out:'skip',why:'giá đã phá '+(s>0?'đỉnh':'đáy')+' nến signal '+TN[g.tf]+' ('+fmt(trig)+') trước khi bot thấy nên không đuổi giá',t:now});continue}
+      if(late){nLate++;lateL.push(shortL(D,s));botEv('sig',{label:D.label,side:s,out:'skip',why:'giá đã phá '+(s>0?'đỉnh':'đáy')+' nến signal '+TN[g.tf]+' ('+fmt(trig)+') trước khi bot thấy nên không đuổi giá',t:now});continue}
       var sl=r.plan.sl,tp=r.plan.tp1,rr=(tp-trig)*s/Math.abs(trig-sl),stopPct=Math.abs(trig-sl)/trig*100;
       if(!((trig-sl)*s>0&&(tp-trig)*s>0)){skip('cắt lỗ/TP1 không hợp lệ tại giá kích hoạt '+fmt(trig)+'.');continue}
       cands.push({D:D,r:r,g:g,s:s,lab:lab,tc:tc,te:te,trig:trig,sl:sl,tp:tp,rr:rr,stopPct:stopPct,key:key,skip:skip});
@@ -4840,15 +4862,16 @@ async function botScan(now){
     var p={id:S.nid++,label:x.D.label,sym:x.D.sym,fut:x.D.fut,side:x.s,trig:x.trig,tc:x.tc,te:x.te,sl:x.sl,tp:x.tp,score:sc.score,why:why,ctxMult:cm,tfn:TN[x.g.tf],created:now,
       ctx:{sigT:x.g.t,sigTf:x.g.tf,sigText:x.g.text||'',zone:(x.r.plan.entries&&x.r.plan.entries[0])?{lo:x.r.plan.entries[0].lo,hi:x.r.plan.entries[0].hi}:null,slNote:(x.r.plan.sl&&x.r.plan.sl.note)||''}};
     S.pend.push(p);made++;
+    exh('pend',{id:p.id,label:p.label,sym:p.sym,fut:p.fut,side:p.side,trig:p.trig,sl:p.sl,tp:p.tp,te:p.te,score:p.score,ctxMult:p.ctxMult,tfn:p.tfn,t:now});
     botEv('sig',{id:p.id,label:p.label,side:p.side,out:'pend',trig:p.trig,sl:p.sl,tp:p.tp,rr:x.rr,score:p.score,te:p.te,t:now});
     botLog('pend','Chờ kích hoạt '+x.lab+': nến signal '+p.tfn+' lúc '+botT(x.g.t)+', sẽ vào nếu giá phá '+(x.s>0?'đỉnh':'đáy')+' '+fmt(x.trig)+' trước '+botT(x.te)+'. Điểm '+sc.score+'/100. R:R '+x.rr.toFixed(2)+'. '+cn.join('; ')+'.',now);
   });
   var cut=now-3*86400000;Object.keys(S.seen).forEach(function(k){if(S.seen[k]<cut)delete S.seen[k]});
-  botLog('scan','Quét '+list.length+' coin'+(errs?' ('+errs+' lỗi tải dữ liệu)':'')+': '+nsig+' setup mới'+(nExp||nLate?' ('+(nExp?nExp+' đã quá hạn kích hoạt':'')+(nExp&&nLate?', ':'')+(nLate?nLate+' đã bị phá trước khi bot thấy nên không đuổi giá':'')+')':'')+', '+made+' vào hàng chờ'+(ctx.ok?'. BTC '+(ctx.dir>0?'tăng':ctx.dir<0?'giảm':'chưa rõ xu hướng')+', biến động '+(ctx.volRatio!=null?ctx.volRatio.toFixed(1)+'x bình thường':'chưa rõ'):'. Không lấy được dữ liệu BTC, bỏ qua bối cảnh')+'.',now);
+  botLog('scan','Quét '+list.length+' coin'+(errs?' ('+errs+' lỗi tải dữ liệu)':'')+': '+nsig+' setup mới'+(nExp||nLate?' ('+(nExp?nExp+' đã quá hạn kích hoạt'+(nExp<=30?' ['+expL.join(' ')+']':''):'')+(nExp&&nLate?', ':'')+(nLate?nLate+' đã bị phá trước khi bot thấy nên không đuổi giá'+(nLate<=40?' ['+lateL.join(' ')+']':''):'')+')':'')+', '+made+' vào hàng chờ'+(ctx.ok?'. BTC '+(ctx.dir>0?'tăng':ctx.dir<0?'giảm':'chưa rõ xu hướng')+', biến động '+(ctx.volRatio!=null?ctx.volRatio.toFixed(1)+'x bình thường':'chưa rõ'):'. Không lấy được dữ liệu BTC, bỏ qua bối cảnh')+'.',now);
 }
 async function botTick(){
   if(!BOT.on||BOT.busy||!BOT.S)return;
-  BOT.busy=true;
+  BOT.busy=true;BOT.busyT=Date.now();
   try{
     var S=BOT.S,now=Date.now();
     botRoll(now);
@@ -4856,7 +4879,7 @@ async function botTick(){
     botCheckStop(now);
     if(BOT.on&&!S.end&&now-S.lastScan>=BOT.cfg.scanMin*60000)await botScan(now);
   }catch(e){if(BOT.S)botLog('err','Lỗi bot: '+(e&&e.message?e.message:e),Date.now())}
-  finally{BOT.busy=false;botSave();botRender();try{botFlush()}catch(e){}}
+  finally{BOT.busy=false;BOT.lastTick=Date.now();botSave();botRender();try{botFlush()}catch(e){}}
 }
 /* ---- giao diện ---- */
 var botTimer=null;
@@ -5099,7 +5122,28 @@ botRender();
 botTimer=setInterval(botTick,10000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')botTick()});
 if(BOT.on&&BOT.S){botLog('start','Trang được mở lại: bot tải các nến đã bỏ lỡ để cập nhật lệnh đang mở và lệnh chờ.');setTimeout(botTick,1200)}
-if(location.hash==='#pltest')window.__bot={BOT:BOT,tick:botTick,scan:botScan,render:botRender,state:state,newSession:botNewSession,ev:botEv,flush:botFlush,show:botShowTrade,WS:WS,NQ:NQ,draw:draw,openPanel:botOpenPanel};
+/* Chế độ server: pivot-bot-server mở trang này bằng #server, áp cấu hình từ config.json rồi bật bot. */
+if(location.hash==='#server'){
+  window.__plServer=function(cfg){
+    cfg=cfg||{};
+    var bc=cfg.bot||{},wc=cfg.ws||{},changed=[];
+    Object.keys(bc).forEach(function(k){if(BOT_DEF[k]!==undefined&&typeof bc[k]===typeof BOT_DEF[k]){if(BOT.cfg[k]!==bc[k])changed.push(k);BOT.cfg[k]=bc[k]}});
+    Object.keys(wc).forEach(function(k){if(WS[k]!==undefined&&typeof wc[k]===typeof WS[k])WS[k]=wc[k]});
+    WS.sound=false;WS.pbpage=false;WS.wake=false;saveW();
+    var created=!BOT.S||!!cfg.freshSession;
+    if(created)botNewSession();
+    BOT.on=true;botSave();botBuildForm();botCoinStat();botRender();
+    setTimeout(botTick,800);
+    return {changed:changed,coins:botCoins().length,session:BOT.S.startT,fresh:created};
+  };
+  window.__plState=function(){
+    var S=BOT.S;if(!S)return {on:BOT.on,S:null};
+    var eq=0;try{eq=botEquity()}catch(e){}
+    return JSON.parse(JSON.stringify({on:BOT.on,busy:BOT.busy,busyT:BOT.busyT||0,lastTick:BOT.lastTick||0,now:Date.now(),equity:eq,cfg:BOT.cfg,ntfy:{on:WS.ntfy,bot:WS.pbot,topic:!!WS.topic,sent24h:(function(){try{return nCount()}catch(e){return null}})()},
+      S:{startT:S.startT,bal0:S.bal0,bal:S.bal,peak:S.peak,end:S.end,lastScan:S.lastScan,realizedToday:S.realizedToday,pos:S.pos,pend:S.pend,closed:S.closed.slice(0,30),nClosed:S.closed.length,log:S.log.slice(0,60)}}));
+  };
+}
+if(location.hash==='#pltest'||location.hash==='#server')window.__bot={an:analyze,tmem:TMEM,warm:botWarm,scanOne:scanOne,BOT_K:BOT_K,BOT:BOT,tick:botTick,scan:botScan,render:botRender,state:state,newSession:botNewSession,ev:botEv,flush:botFlush,show:botShowTrade,WS:WS,NQ:NQ,draw:draw,openPanel:botOpenPanel};
 
 /* boot */
 setSrc('', 'Đang tải…');
