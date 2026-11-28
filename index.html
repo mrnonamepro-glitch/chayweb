@@ -4674,10 +4674,10 @@ $('#entrycard').addEventListener('change',function(e){
 
 /* ---------- bot giao dịch demo (vốn ảo, giá thật từ Binance) ---------- */
 var BOTK='pivotlab.bot.v1';
-var BOT_DEF={coins:'',bal0:1000,tgtPct:10,days:7,onTarget:'stop',riskPct:1,dailyLossPct:2,maxOpenPct:4,maxPos:5,maxSide:3,corrTh:0.8,corrMax:2,ddStop:10,minScore:60,minRR:1.5,maxStopPct:6,maxLev:10,fee:0.05,slip:0.03,holdH:24,scanMin:5,useFs:1,trail:0,trailAt:50,trailBe:70,trailBuf:0.3,trailNear:85};
-var BOT_INT=['maxPos','maxSide','corrMax','days','holdH','scanMin','maxLev'];
+var BOT_DEF={coins:'',bal0:1000,tgtPct:10,days:7,onTarget:'stop',riskPct:1,dailyLossPct:2,maxOpenPct:4,maxPos:5,maxSide:3,corrTh:0.8,corrMax:2,ddStop:10,minScore:60,minRR:1.5,maxStopPct:6,maxLev:10,fee:0.05,slip:0.03,holdH:24,scanMin:5,sens:5,useFs:1,trail:0,trailAt:50,trailBe:70,trailBuf:0.3,trailNear:85};
+var BOT_INT=['maxPos','maxSide','corrMax','days','holdH','scanMin','maxLev','sens'];
 var BOT_F1=[['bal0','Vốn demo ($)',10,1000000,10,'Áp dụng khi bắt đầu phiên mới'],['tgtPct','Mục tiêu (% balance)',0.5,500,0.5,'Mục tiêu là đích để theo dõi tiến độ, bot không nới rủi ro để chạy theo mục tiêu'],['days','Trong số ngày',1,365,1,'Hết số ngày bot ngừng mở lệnh mới']];
-var BOT_F2=[['riskPct','Rủi ro tối đa mỗi lệnh (%)',0.1,5,0.1,'Setup điểm cao nhận đủ mức này, điểm thấp hơn nhận 50–75%'],['dailyLossPct','Lỗ tối đa mỗi ngày (%)',0.5,20,0.5,'Tính cả lỗ đã chốt và rủi ro các lệnh đang mở. Hết ngân sách bot không vào lệnh mới đến 0h giờ Việt Nam'],['maxOpenPct','Trần tổng rủi ro đang mở (%)',0.5,30,0.5,''],['maxPos','Tối đa số lệnh cùng lúc',1,30,1,''],['maxSide','Tối đa lệnh cùng chiều',1,30,1,''],['corrTh','Coi là tương quan khi ρ ≥',0.3,0.99,0.05,''],['corrMax','Tối đa lệnh cùng chiều tương quan',1,10,1,''],['ddStop','Tự dừng khi sụt vốn (%)',1,80,1,'Tính từ đỉnh equity'],['minScore','Điểm setup tối thiểu',0,100,5,''],['minRR','R:R tối thiểu tới TP1',0.5,5,0.1,''],['maxStopPct','Khoảng cắt lỗ tối đa (% giá)',0.5,30,0.5,''],['maxLev','Đòn bẩy tối đa (x)',1,125,1,'Khối lượng vị thế không vượt balance × đòn bẩy'],['fee','Phí mỗi chiều (%)',0,0.5,0.01,''],['slip','Trượt giá khi cắt lỗ/thoát (%)',0,1,0.01,'Làm demo sát thực tế hơn'],['holdH','Giữ lệnh tối đa (giờ)',1,240,1,''],['scanMin','Quét danh sách mỗi (phút)',1,60,1,''],['trailAt','Bảo vệ: bắt đầu dời cắt lỗ theo swing khi đã đi được (% đường tới TP)',10,95,5,'Chỉ dùng khi bật "Bảo vệ lệnh theo cấu trúc". Tính theo đường từ giá vào tới TP1 của chính lệnh đó, nên lệnh TP gần và lệnh TP xa được bảo vệ ở mốc khác nhau'],['trailBe','Bảo vệ: dời về hòa vốn khi đã đi được (% đường tới TP, 0 = tắt)',0,95,5,'Cắt lỗ dời về giá vào cộng bù phí và trượt giá, chỉ khi giá còn cách đó ít nhất 0.2 ATR'],['trailBuf','Bảo vệ: đệm đặt ngoài swing (× ATR M15)',0,2,0.1,'Cắt lỗ đặt dưới đáy swing (LONG) hoặc trên đỉnh swing (SHORT) một đoạn bằng số ATR này'],['trailNear','Bảo vệ: canh chốt sớm khi đã đi được (% đường tới TP)',50,99,1,'Chỉ dùng ở chế độ có chốt sớm. Khi giá vừa chạm vùng này mà nến đóng cửa bị từ chối (râu dài ngược hướng, hoặc đóng cửa thủng nến trước) thì chốt lời ngay']];
+var BOT_F2=[['riskPct','Rủi ro tối đa mỗi lệnh (%)',0.1,5,0.1,'Setup điểm cao nhận đủ mức này, điểm thấp hơn nhận 50–75%'],['dailyLossPct','Lỗ tối đa mỗi ngày (%)',0.5,20,0.5,'Tính cả lỗ đã chốt và rủi ro các lệnh đang mở. Hết ngân sách bot không vào lệnh mới đến 0h giờ Việt Nam'],['maxOpenPct','Trần tổng rủi ro đang mở (%)',0.5,30,0.5,''],['maxPos','Tối đa số lệnh cùng lúc',1,30,1,''],['maxSide','Tối đa lệnh cùng chiều',1,30,1,''],['corrTh','Coi là tương quan khi ρ ≥',0.3,0.99,0.05,''],['corrMax','Tối đa lệnh cùng chiều tương quan',1,10,1,''],['ddStop','Tự dừng khi sụt vốn (%)',1,80,1,'Tính từ đỉnh equity'],['sens','Độ nhạy của bot (số nến mỗi bên xác nhận đỉnh/đáy)',2,10,1,'Nhỏ: nhiều đỉnh/đáy hơn, nhạy hơn nhưng nhiều nhiễu. Lớn: ít đỉnh/đáy nhưng quan trọng hơn. Mặc định 5. Bot dùng giá trị này, không dùng thanh trượt Độ nhạy của biểu đồ. Backtest thì dùng thanh trượt, nên khi so sánh hãy để hai giá trị bằng nhau. Đổi giữa chừng có hiệu lực từ lần quét kế tiếp, hàng chờ và lệnh đang mở giữ nguyên'],['minScore','Điểm setup tối thiểu',0,100,5,''],['minRR','R:R tối thiểu tới TP1',0.5,5,0.1,''],['maxStopPct','Khoảng cắt lỗ tối đa (% giá)',0.5,30,0.5,''],['maxLev','Đòn bẩy tối đa (x)',1,125,1,'Khối lượng vị thế không vượt balance × đòn bẩy'],['fee','Phí mỗi chiều (%)',0,0.5,0.01,''],['slip','Trượt giá khi cắt lỗ/thoát (%)',0,1,0.01,'Làm demo sát thực tế hơn'],['holdH','Giữ lệnh tối đa (giờ)',1,240,1,''],['scanMin','Quét danh sách mỗi (phút)',1,60,1,''],['trailAt','Bảo vệ: bắt đầu dời cắt lỗ theo swing khi đã đi được (% đường tới TP)',10,95,5,'Chỉ dùng khi bật "Bảo vệ lệnh theo cấu trúc". Tính theo đường từ giá vào tới TP1 của chính lệnh đó, nên lệnh TP gần và lệnh TP xa được bảo vệ ở mốc khác nhau'],['trailBe','Bảo vệ: dời về hòa vốn khi đã đi được (% đường tới TP, 0 = tắt)',0,95,5,'Cắt lỗ dời về giá vào cộng bù phí và trượt giá, chỉ khi giá còn cách đó ít nhất 0.2 ATR'],['trailBuf','Bảo vệ: đệm đặt ngoài swing (× ATR M15)',0,2,0.1,'Cắt lỗ đặt dưới đáy swing (LONG) hoặc trên đỉnh swing (SHORT) một đoạn bằng số ATR này'],['trailNear','Bảo vệ: canh chốt sớm khi đã đi được (% đường tới TP)',50,99,1,'Chỉ dùng ở chế độ có chốt sớm. Khi giá vừa chạm vùng này mà nến đóng cửa bị từ chối (râu dài ngược hướng, hoặc đóng cửa thủng nến trước) thì chốt lời ngay']];
 var BOT={on:false,busy:false,cfg:Object.assign({},BOT_DEF),S:null,corr:null,rets:{}};
 try{var _b=JSON.parse(localStorage.getItem(BOTK)||'null');if(_b){BOT.on=!!_b.on;if(_b.cfg)Object.keys(BOT_DEF).forEach(function(k){if(_b.cfg[k]!==undefined&&typeof _b.cfg[k]===typeof BOT_DEF[k])BOT.cfg[k]=_b.cfg[k]});BOT.S=_b.S||null}}catch(e){}
 function botSave(){try{localStorage.setItem(BOTK,JSON.stringify({on:BOT.on,cfg:BOT.cfg,S:BOT.S}))}catch(e){}}
@@ -4855,8 +4855,10 @@ function botCheckStop(now){
   if(!S.end&&now>=S.startT+c.days*86400000)end('deadline','Hết '+c.days+' ngày: kết quả '+usd(eq)+' ('+((eq/S.bal0-1)*100).toFixed(2)+'% so với vốn đầu, mục tiêu +'+c.tgtPct+'%). Bot ngừng mở lệnh mới.');
   if(S.end&&!S.pos.length&&!S.pend.length&&BOT.on){BOT.on=false;botLog('stop','Phiên đã kết thúc, bot tạm dừng. Bật lại để bắt đầu phiên mới.',now)}
 }
-/* Bot dùng độ nhạy cố định, không đi theo thanh trượt "Độ nhạy" của biểu đồ (kéo thanh trượt trước đây làm bot đổi kết quả quét). */
+/* Bot dùng độ nhạy riêng (ô "Độ nhạy của bot" trong bảng cấu hình, mặc định 5), không đi theo thanh trượt "Độ nhạy" của biểu đồ
+   (kéo thanh trượt trước đây làm bot đổi kết quả quét, và bot HTML với bot server có thể chạy hai độ nhạy khác nhau mà không ai biết). */
 var BOT_K=5;
+function botK(){var k=Math.round(+BOT.cfg.sens);return(k>=2&&k<=10)?k:BOT_K}
 /* Nhãn xu hướng có "trí nhớ" (vào nhãn cần điểm >=3, giữ nhãn đến khi điểm <1), nên kết quả trước đây phụ thuộc trang đã mở từ lúc nào.
    Hàm này dựng lại trí nhớ đó từ chính các nến đang có (chạy lại từng nến, tối đa 150 nến gần nhất), nên kết quả chỉ phụ thuộc dữ liệu nến:
    mở lại trang, bot server khởi động lại hay bắt đầu quét vào lúc khác đều cho cùng một kết quả. */
@@ -4892,8 +4894,8 @@ async function botScan(now){
       try{D=await botFetchSets(n)}catch(e){errs++;continue}
       rets[D.label]=pfRet(D.sets['1h']);
       if(S.pend.some(function(p){return p.label===D.label})||S.pos.some(function(p){return p.label===D.label}))continue;
-      botWarm(D.sets,BOT_K,'bot|'+D.label);
-      var r=scanOne(D.sets,BOT_K,'bot|'+D.label);
+      var K=botK();BOT.kUsed=K;botWarm(D.sets,K,'bot|'+D.label);
+      var r=scanOne(D.sets,K,'bot|'+D.label);
       if(!(r.status==='ready'||r.status==='signal')||!r.side||!r.plan||r.plan.tp1==null||!r.items||!r.items.length)continue;
       var best=null;r.items.forEach(function(g){var tc=g.t+MS[g.tf];if(!best||tc>best.tc)best={g:g,tc:tc}});
       var g=best.g,arr=D.sets[g.tf],ix=btFirstGE(arr,g.t);
@@ -5263,11 +5265,11 @@ if(location.hash==='#server'){
   window.__plState=function(){
     var S=BOT.S;if(!S)return {on:BOT.on,S:null};
     var eq=0;try{eq=botEquity()}catch(e){}
-    return JSON.parse(JSON.stringify({on:BOT.on,busy:BOT.busy,busyT:BOT.busyT||0,lastTick:BOT.lastTick||0,now:Date.now(),equity:eq,cfg:BOT.cfg,ntfy:{on:WS.ntfy,bot:WS.pbot,topic:!!WS.topic,sent24h:(function(){try{return nCount()}catch(e){return null}})()},
+    return JSON.parse(JSON.stringify({on:BOT.on,kUsed:BOT.kUsed||null,busy:BOT.busy,busyT:BOT.busyT||0,lastTick:BOT.lastTick||0,now:Date.now(),equity:eq,cfg:BOT.cfg,ntfy:{on:WS.ntfy,bot:WS.pbot,topic:!!WS.topic,sent24h:(function(){try{return nCount()}catch(e){return null}})()},
       S:{startT:S.startT,bal0:S.bal0,bal:S.bal,peak:S.peak,end:S.end,lastScan:S.lastScan,realizedToday:S.realizedToday,pos:S.pos,pend:S.pend,closed:S.closed.slice(0,30),nClosed:S.closed.length,log:S.log.slice(0,60)}}));
   };
 }
-if(location.hash==='#pltest'||location.hash==='#server')window.__bot={an:analyze,tmem:TMEM,warm:botWarm,scanOne:scanOne,BOT_K:BOT_K,BOT:BOT,tick:botTick,scan:botScan,render:botRender,state:state,newSession:botNewSession,ev:botEv,flush:botFlush,show:botShowTrade,WS:WS,NQ:NQ,draw:draw,openPanel:botOpenPanel,trailEval:trailEval,botEval:botEval,botTrailCfg:botTrailCfg,btSetupInit:btSetupInit,btSetupStep:btSetupStep,btStats:btStats,BT_PRESETS:BT_PRESETS};
+if(location.hash==='#pltest'||location.hash==='#server')window.__bot={an:analyze,tmem:TMEM,warm:botWarm,scanOne:scanOne,BOT_K:BOT_K,botK:botK,BOT:BOT,tick:botTick,scan:botScan,render:botRender,state:state,newSession:botNewSession,ev:botEv,flush:botFlush,show:botShowTrade,WS:WS,NQ:NQ,draw:draw,openPanel:botOpenPanel,trailEval:trailEval,botEval:botEval,botTrailCfg:botTrailCfg,btSetupInit:btSetupInit,btSetupStep:btSetupStep,btStats:btStats,BT_PRESETS:BT_PRESETS};
 
 /* boot */
 setSrc('', 'Đang tải…');
